@@ -23,7 +23,7 @@ python3 generator/build.py            # writes docs/ and preview/
 python3 generator/build.py --static   # docs/ only
 ```
 
-The build fails if a correction no longer matches its record, and fails if an em dash appears in any page.
+The build fails if a correction no longer matches its record, and fails if an em dash appears in any page. Then run `python3 generator/check_site.py`, which checks that known records render, that place lists run in date order, that approximate points never look surveyed, and that every internal link resolves.
 
 To refresh the data after the site data layer changes, copy `site-data/data/*.json` from `tartary-corpus` into `data/` and rebuild. Keep `data/corrections.json`.
 
