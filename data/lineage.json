@@ -1,0 +1,513 @@
+[
+ {
+  "source": "M081",
+  "target": "M082",
+  "type": "derived",
+  "certainty": "stated",
+  "basis": "Jenkinson 1562 is parent of Ortelius 1570; Ortelius's reduced plate of Jenkinson"
+ },
+ {
+  "source": "M081",
+  "target": "M004",
+  "type": "derived",
+  "certainty": "stated",
+  "basis": "Ortelius 1570 Tartary map drawn from Jenkinson 1562 and Gastaldi"
+ },
+ {
+  "source": "M004",
+  "target": "M047",
+  "type": "same-plate",
+  "certainty": "stated",
+  "basis": "M047 is the 1603 impression of the 1570 plate"
+ },
+ {
+  "source": "M004",
+  "target": "M082",
+  "type": "same-atlas",
+  "certainty": "stated",
+  "basis": "Both plates of the 1570 Theatrum orbis terrarum"
+ },
+ {
+  "source": "M081",
+  "target": "M079",
+  "type": "derived",
+  "certainty": "stated",
+  "basis": "Jenkinson 1562 is a partial source of Mercator 1569"
+ },
+ {
+  "source": "M082",
+  "target": "M046",
+  "type": "reproduction",
+  "certainty": "probable",
+  "basis": "1914 reproduction of Jenkinson 1562, probably via the Ortelius plate (Kordt)"
+ },
+ {
+  "source": "M079",
+  "target": "M049",
+  "type": "derived",
+  "certainty": "stated",
+  "basis": "Mercator 1569 is parent of the Hondius Tartaria of 1606 (via the 1595 Asia)"
+ },
+ {
+  "source": "M049",
+  "target": "M050",
+  "type": "derived",
+  "certainty": "stated",
+  "basis": "Blaeu Tartaria from Hondius 1606"
+ },
+ {
+  "source": "M050",
+  "target": "M048",
+  "type": "derived",
+  "certainty": "stated",
+  "basis": "De Wit from Blaeu/Jansson Tartaria plus Martini"
+ },
+ {
+  "source": "M050",
+  "target": "M086",
+  "type": "derived",
+  "certainty": "stated",
+  "basis": "De Wit from Martini 1655 plus Blaeu Tartaria"
+ },
+ {
+  "source": "M049",
+  "target": "M096",
+  "type": "derived",
+  "certainty": "probable",
+  "basis": "Katib Celebi's Cihannüma outlines from the Mercator-Hondius Atlas Minor"
+ },
+ {
+  "source": "M052",
+  "target": "M053",
+  "type": "derived",
+  "certainty": "stated",
+  "basis": "Jaillot after Sanson 1652"
+ },
+ {
+  "source": "M052",
+  "target": "M054",
+  "type": "derived",
+  "certainty": "stated",
+  "basis": "Cantelli from Sanson 1652 plus Jesuit relations"
+ },
+ {
+  "source": "M083",
+  "target": "M051",
+  "type": "derived",
+  "certainty": "stated",
+  "basis": "Allard and Van der Aa reductions of Witsen 1687"
+ },
+ {
+  "source": "M083",
+  "target": "M033",
+  "type": "derived",
+  "certainty": "stated",
+  "basis": "Reduction of the Witsen 1687 map issued with Ides"
+ },
+ {
+  "source": "M080",
+  "target": "M084",
+  "type": "derived",
+  "certainty": "stated",
+  "basis": "Homann Heirs c.1739 from Strahlenberg 1730"
+ },
+ {
+  "source": "M056",
+  "target": "M084",
+  "type": "derived",
+  "certainty": "stated",
+  "basis": "Homann Heirs c.1739 from Kirilov 1734"
+ },
+ {
+  "source": "M056",
+  "target": "M100",
+  "type": "derived",
+  "certainty": "stated",
+  "basis": "Atlas Russicus 1745 from Kirilov 1734 and Petrine surveys"
+ },
+ {
+  "source": "M100",
+  "target": "M057",
+  "type": "same-atlas",
+  "certainty": "stated",
+  "basis": "M057 is a sheet of the 1745 Atlas Russicus"
+ },
+ {
+  "source": "M084",
+  "target": "M055",
+  "type": "derived",
+  "certainty": "probable",
+  "basis": "Lotter reduces the Homann/Seutter Russia and Tartary maps"
+ },
+ {
+  "source": "M099",
+  "target": "M006",
+  "type": "same-work",
+  "certainty": "stated",
+  "basis": "Remezov's Siberia sheets, catalogued as related states"
+ },
+ {
+  "source": "M028",
+  "target": "M099",
+  "type": "tradition",
+  "certainty": "probable",
+  "basis": "Same maker and survey programme (Remezov's chorographic drawings)"
+ },
+ {
+  "source": "M080",
+  "target": "M035",
+  "type": "corrected-by",
+  "certainty": "stated",
+  "basis": "Georgi's survey supersedes Strahlenberg's Baikal"
+ },
+ {
+  "source": "M006",
+  "target": "M035",
+  "type": "corrected-by",
+  "certainty": "probable",
+  "basis": "Georgi's survey supersedes Remezov's Baikal (card names Remezov, not a sheet)"
+ },
+ {
+  "source": "M107",
+  "target": "M022",
+  "type": "derived",
+  "certainty": "stated",
+  "basis": "d'Anville 1737 derives from the Kangxi Jesuit atlas"
+ },
+ {
+  "source": "M107",
+  "target": "M108",
+  "type": "same-work",
+  "certainty": "stated",
+  "basis": "M108 is the 1941 facsimile of the Kangxi atlas"
+ },
+ {
+  "source": "M107",
+  "target": "M009",
+  "type": "derived",
+  "certainty": "probable",
+  "basis": "Card dates the underlying surveys 1708-1717 (the Kangxi survey)"
+ },
+ {
+  "source": "M107",
+  "target": "M012",
+  "type": "derived",
+  "certainty": "probable",
+  "basis": "Card dates the underlying surveys 1708-1717 (the Kangxi survey)"
+ },
+ {
+  "source": "M107",
+  "target": "M110",
+  "type": "derived",
+  "certainty": "stated",
+  "basis": "Li Zhaoluo 1832 from the Kangxi and Qianlong survey atlases"
+ },
+ {
+  "source": "M107",
+  "target": "M111",
+  "type": "derived",
+  "certainty": "stated",
+  "basis": "Qianlong atlas, itself from the Kangxi atlas, reduced in 1821"
+ },
+ {
+  "source": "M022",
+  "target": "M072",
+  "type": "derived",
+  "certainty": "stated",
+  "basis": "Cary 1806 from d'Anville 1737"
+ },
+ {
+  "source": "M022",
+  "target": "M016",
+  "type": "derived",
+  "certainty": "probable",
+  "basis": "1790 atlas in the d'Anville lineage"
+ },
+ {
+  "source": "M022",
+  "target": "M019",
+  "type": "derived",
+  "certainty": "probable",
+  "basis": "1834 map in the d'Anville lineage"
+ },
+ {
+  "source": "M022",
+  "target": "M073",
+  "type": "derived",
+  "certainty": "probable",
+  "basis": "Cassini 1789 from d'Anville and Vaugondy"
+ },
+ {
+  "source": "M022",
+  "target": "M068",
+  "type": "derived",
+  "certainty": "probable",
+  "basis": "Jesuit d'Anville base"
+ },
+ {
+  "source": "M022",
+  "target": "M069",
+  "type": "derived",
+  "certainty": "probable",
+  "basis": "d'Anville base"
+ },
+ {
+  "source": "M088",
+  "target": "M068",
+  "type": "derived",
+  "certainty": "probable",
+  "basis": "Klaproth"
+ },
+ {
+  "source": "M088",
+  "target": "M069",
+  "type": "derived",
+  "certainty": "probable",
+  "basis": "Klaproth"
+ },
+ {
+  "source": "M088",
+  "target": "M077",
+  "type": "derived",
+  "certainty": "probable",
+  "basis": "Fremin's Asia revised with Klaproth's Chinese-source corrections"
+ },
+ {
+  "source": "M088",
+  "target": "M058",
+  "type": "derived",
+  "certainty": "stated",
+  "basis": "Klaproth is parent of SDUK 1838"
+ },
+ {
+  "source": "M077",
+  "target": "M058",
+  "type": "derived",
+  "certainty": "stated",
+  "basis": "Fremin 1829 is parent of SDUK 1838"
+ },
+ {
+  "source": "M088",
+  "target": "M089",
+  "type": "derived",
+  "certainty": "probable",
+  "basis": "Humboldt 1843 draws on Klaproth and Ritter"
+ },
+ {
+  "source": "M101",
+  "target": "M058",
+  "type": "derived",
+  "certainty": "stated",
+  "basis": "SDUK 1838 from Pyadyshev 1820s"
+ },
+ {
+  "source": "M101",
+  "target": "M059",
+  "type": "derived",
+  "certainty": "stated",
+  "basis": "SDUK 1838 from Pyadyshev"
+ },
+ {
+  "source": "M101",
+  "target": "M071",
+  "type": "derived",
+  "certainty": "stated",
+  "basis": "Lapie from the Russian Academy and Pyadyshev"
+ },
+ {
+  "source": "M058",
+  "target": "M059",
+  "type": "same-atlas",
+  "certainty": "stated",
+  "basis": "Both SDUK sheets of 1838 in the 1844 volume"
+ },
+ {
+  "source": "M058",
+  "target": "M060",
+  "type": "same-atlas",
+  "certainty": "stated",
+  "basis": "SDUK sheets in the 1844 volume"
+ },
+ {
+  "source": "M061",
+  "target": "M062",
+  "type": "same-plate",
+  "certainty": "stated",
+  "basis": "Mitchell's 1846 issue of Tanner's 1836 plate"
+ },
+ {
+  "source": "M061",
+  "target": "M063",
+  "type": "same-plate",
+  "certainty": "stated",
+  "basis": "Mitchell's 1850 issue of Tanner's 1836 plate"
+ },
+ {
+  "source": "M066",
+  "target": "M067",
+  "type": "same-atlas",
+  "certainty": "stated",
+  "basis": "Both sheets of Stieler's Hand-Atlas, 1845 issue"
+ },
+ {
+  "source": "M066",
+  "target": "M074",
+  "type": "derived",
+  "certainty": "probable",
+  "basis": "Meyer from Stieler/Perthes"
+ },
+ {
+  "source": "M031",
+  "target": "M091",
+  "type": "same-work",
+  "certainty": "stated",
+  "basis": "Both editions of Ptolemy's Geography maps"
+ },
+ {
+  "source": "M031",
+  "target": "M045",
+  "type": "same-work",
+  "certainty": "stated",
+  "basis": "Both editions of Ptolemy's Geography maps"
+ },
+ {
+  "source": "M044",
+  "target": "M085",
+  "type": "derived",
+  "certainty": "stated",
+  "basis": "Fries 1522 from Waldseemüller's modern tables and the Carta marina 1516"
+ },
+ {
+  "source": "M003",
+  "target": "M044",
+  "type": "tradition",
+  "certainty": "stated",
+  "basis": "Carta marina parallels Waldseemüller 1507"
+ },
+ {
+  "source": "M042",
+  "target": "M027",
+  "type": "derived",
+  "certainty": "stated",
+  "basis": "Bianco 1436 is a source for Fra Mauro"
+ },
+ {
+  "source": "M027",
+  "target": "M040",
+  "type": "tradition",
+  "certainty": "stated",
+  "basis": "Genoese 1457 runs parallel to Fra Mauro"
+ },
+ {
+  "source": "M002",
+  "target": "M039",
+  "type": "tradition",
+  "certainty": "stated",
+  "basis": "Catalan Atlas (1375) tradition"
+ },
+ {
+  "source": "M032",
+  "target": "M038",
+  "type": "tradition",
+  "certainty": "stated",
+  "basis": "Orosius/Isidore mappa mundi tradition (Hereford cf. Psalter)"
+ },
+ {
+  "source": "M043",
+  "target": "M038",
+  "type": "tradition",
+  "certainty": "stated",
+  "basis": "Orosius/Isidore mappa mundi tradition (Hereford cf. Ebstorf)"
+ },
+ {
+  "source": "M093",
+  "target": "M094",
+  "type": "derived",
+  "certainty": "stated",
+  "basis": "al-Istakhri's map set is parent of Ibn Hawqal's maps"
+ },
+ {
+  "source": "M001",
+  "target": "M021",
+  "type": "reproduction",
+  "certainty": "stated",
+  "basis": "Miller's 1928 reconstruction of al-Idrisi's 1154 map"
+ },
+ {
+  "source": "M118",
+  "target": "M102",
+  "type": "derived",
+  "certainty": "stated",
+  "basis": "Verbiest 1674 via Ricci-Aleni Chinese nomenclature"
+ },
+ {
+  "source": "M118",
+  "target": "M103",
+  "type": "derived",
+  "certainty": "stated",
+  "basis": "Nagakubo after Ricci 1602"
+ },
+ {
+  "source": "M106",
+  "target": "M116",
+  "type": "derived",
+  "certainty": "probable",
+  "basis": "Popular derivatives of the Guang yu tu"
+ },
+ {
+  "source": "M104",
+  "target": "M105",
+  "type": "same-work",
+  "certainty": "stated",
+  "basis": "The two faces of one 1136 stele (Hua yi tu and Yu ji tu)"
+ },
+ {
+  "source": "M083",
+  "target": "W079",
+  "type": "text",
+  "certainty": "stated",
+  "basis": "Linked text record: An Account of a New Map of Tartary (Philosophical Transactions)"
+ },
+ {
+  "source": "M083",
+  "target": "W122",
+  "type": "text",
+  "certainty": "probable",
+  "basis": "Witsen's map and his book Noord en Oost Tartarye (first edition 1692)"
+ },
+ {
+  "source": "M051",
+  "target": "W079",
+  "type": "text",
+  "certainty": "stated",
+  "basis": "Linked text record"
+ },
+ {
+  "source": "M080",
+  "target": "W002",
+  "type": "text",
+  "certainty": "stated",
+  "basis": "Strahlenberg's map and his book (English 1738)"
+ },
+ {
+  "source": "M095",
+  "target": "W219",
+  "type": "text",
+  "certainty": "stated",
+  "basis": "Kashgari's map within his Divan"
+ },
+ {
+  "source": "M096",
+  "target": "W211",
+  "type": "text",
+  "certainty": "stated",
+  "basis": "Katib Celebi's Cihannüma"
+ },
+ {
+  "source": "M094",
+  "target": "W039",
+  "type": "text",
+  "certainty": "stated",
+  "basis": "Ibn Hawqal's maps and Ouseley's translation of the text"
+ }
+]

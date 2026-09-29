@@ -1,0 +1,1328 @@
+{
+ "M001": [
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/2021667394/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  },
+  {
+   "kind": "image",
+   "url": "https://tile.loc.gov/image-services/iiif/service:gdc:gdcwdl:wd:l_:18:41:8:wdl_18418:T0000009",
+   "status": "ok"
+  }
+ ],
+ "M002": [
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/2010587630/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  },
+  {
+   "kind": "image",
+   "url": "https://tile.loc.gov/image-services/iiif/service:gmd:gmd3m:g3200m:g3200m:gct00215:ca000005",
+   "status": "ok"
+  }
+ ],
+ "M003": [
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/2003626426/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  },
+  {
+   "kind": "image",
+   "url": "https://tile.loc.gov/image-services/iiif/service:gmd:gmd3:g3200:g3200:ct000725C",
+   "status": "ok"
+  }
+ ],
+ "M004": [
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/g3200m.gct00126/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  },
+  {
+   "kind": "image",
+   "url": "https://tile.loc.gov/image-services/iiif/service:gmd:gmd3m:g3200m:g3200m:gct00126:ca000104",
+   "status": "ok"
+  }
+ ],
+ "M005": [
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/2021668691/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  },
+  {
+   "kind": "image",
+   "url": "https://tile.loc.gov/image-services/iiif/service:gdc:gdcwdl:wd:l_:17:56:8:wdl_17568:241",
+   "status": "ok"
+  }
+ ],
+ "M006": [
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/2018759314/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  },
+  {
+   "kind": "image",
+   "url": "https://tile.loc.gov/image-services/iiif/public:gdc:2018759314:001701",
+   "status": "ok"
+  },
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/2018759313/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  }
+ ],
+ "M007": [
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/99446168/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  },
+  {
+   "kind": "image",
+   "url": "https://tile.loc.gov/image-services/iiif/service:gmd:gmd7:g7270:g7270:mf000003",
+   "status": "ok"
+  }
+ ],
+ "M008": [
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/2011585232/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  },
+  {
+   "kind": "image",
+   "url": "https://tile.loc.gov/image-services/iiif/service:gmd:gmd7:g7001:g7001f:hl000028",
+   "status": "ok"
+  }
+ ],
+ "M009": [
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/2021668534/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  },
+  {
+   "kind": "image",
+   "url": "https://tile.loc.gov/image-services/iiif/service:gdc:gdcwdl:wd:l_:11:81:4:wdl_11814:KKR-20",
+   "status": "ok"
+  }
+ ],
+ "M010": [
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/2018694015/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  },
+  {
+   "kind": "image",
+   "url": "https://tile.loc.gov/image-services/iiif/public:gdc:2018694015:wmt0001",
+   "status": "ok"
+  }
+ ],
+ "M011": [
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/2021668704/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  },
+  {
+   "kind": "image",
+   "url": "https://tile.loc.gov/image-services/iiif/service:gdc:gdcwdl:wd:l_:17:58:1:wdl_17581:124",
+   "status": "ok"
+  }
+ ],
+ "M012": [
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/2006629395/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  },
+  {
+   "kind": "image",
+   "url": "https://tile.loc.gov/image-services/iiif/service:gmd:gmd7:g7820:g7820:ct004973",
+   "status": "ok"
+  }
+ ],
+ "M013": [
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/2013593009/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  },
+  {
+   "kind": "image",
+   "url": "https://tile.loc.gov/image-services/iiif/service:gmd:gmd7:g7420:g7420:ct003763",
+   "status": "ok"
+  }
+ ],
+ "M014": [
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/2021668613/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  },
+  {
+   "kind": "image",
+   "url": "https://tile.loc.gov/image-services/iiif/service:gdc:gdcwdl:wd:l_:15:03:8:wdl_15038:am004751",
+   "status": "ok"
+  }
+ ],
+ "M015": [
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/2006635530/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  },
+  {
+   "kind": "image",
+   "url": "https://tile.loc.gov/image-services/iiif/service:gmd:gmd7:g7820:g7820:ct004977",
+   "status": "ok"
+  }
+ ],
+ "M016": [
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/00552972/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  },
+  {
+   "kind": "image",
+   "url": "https://tile.loc.gov/image-services/iiif/service:gmd:gmd7m:g7820m:g7820m:gct00075:ca000001",
+   "status": "ok"
+  }
+ ],
+ "M017": [
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/2006636625/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  },
+  {
+   "kind": "image",
+   "url": "https://tile.loc.gov/image-services/iiif/service:gmd:gmd7:g7400:g7400:ct001993",
+   "status": "ok"
+  }
+ ],
+ "M018": [
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/2011585248/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  },
+  {
+   "kind": "image",
+   "url": "https://tile.loc.gov/image-services/iiif/service:gmd:gmd7:g7820:g7820:hl000024",
+   "status": "ok"
+  }
+ ],
+ "M019": [
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/2006458642/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  },
+  {
+   "kind": "image",
+   "url": "https://tile.loc.gov/image-services/iiif/service:gmd:gmd7:g7820:g7820:ct005060",
+   "status": "ok"
+  }
+ ],
+ "M020": [
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/2013593033/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  },
+  {
+   "kind": "image",
+   "url": "https://tile.loc.gov/image-services/iiif/service:gmd:gmd7:g7420:g7420:ct003772",
+   "status": "ok"
+  }
+ ],
+ "M021": [
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/2007626789/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  },
+  {
+   "kind": "image",
+   "url": "https://tile.loc.gov/image-services/iiif/service:gmd:gmd3:g3200:g3200:ct001903",
+   "status": "ok"
+  }
+ ],
+ "M022": [
+  {
+   "kind": "manifest",
+   "url": "https://iiif.archive.org/iiif/3/nouvelatlasdelac00anvi/manifest.json",
+   "status": "failed (504)"
+  }
+ ],
+ "M023": [
+  {
+   "kind": "manifest",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~283731~90056250/manifest",
+   "status": "ok"
+  }
+ ],
+ "M024": [],
+ "M025": [],
+ "M026": [
+  {
+   "kind": "manifest",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~36007~1201209/manifest",
+   "status": "ok"
+  }
+ ],
+ "M027": [],
+ "M028": [],
+ "M029": [
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/2005633013/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  },
+  {
+   "kind": "image",
+   "url": "https://tile.loc.gov/image-services/iiif/service:gmd:gmd7:g7800:g7800:ct001372r",
+   "status": "ok"
+  }
+ ],
+ "M030": [
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/2021668722/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  },
+  {
+   "kind": "image",
+   "url": "https://tile.loc.gov/image-services/iiif/service:gdc:gdcwdl:wd:l_:18:56:4:wdl_18564:T0000001",
+   "status": "ok"
+  }
+ ],
+ "M031": [],
+ "M032": [],
+ "M033": [],
+ "M034": [
+  {
+   "kind": "manifest",
+   "url": "https://iiif.archive.org/iiif/3/KarteeinesTheilsderTobollskischenundIrku65/manifest.json",
+   "status": "ok"
+  }
+ ],
+ "M035": [
+  {
+   "kind": "manifest",
+   "url": "https://iiif.archive.org/iiif/3/neuecartedesbaikalseeswelchebeyumschiffu73/manifest.json",
+   "status": "ok"
+  }
+ ],
+ "M036": [
+  {
+   "kind": "image",
+   "url": "https://digi.vatlib.it/iiifimage/MSS_Pal.lat.1362.pt.A/Pal.lat.1362.pt.A_0008_fa_0001v-2r.jp2",
+   "status": "ok"
+  }
+ ],
+ "M037": [
+  {
+   "kind": "image",
+   "url": "https://digi.vatlib.it/iiifimage/MSS_Pal.lat.1362.pt.B/Pal.lat.1362.pt.B_0001_fa_0001r.jp2",
+   "status": "ok"
+  }
+ ],
+ "M038": [],
+ "M039": [],
+ "M040": [],
+ "M041": [],
+ "M042": [],
+ "M043": [],
+ "M044": [
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/2016586433/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  },
+  {
+   "kind": "image",
+   "url": "https://tile.loc.gov/image-services/iiif/service:gmd:gmd3m:g3200m:g3200m:gct00046:ca000003r",
+   "status": "ok"
+  },
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/2016586443/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  }
+ ],
+ "M045": [
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/2021668470/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  },
+  {
+   "kind": "image",
+   "url": "https://tile.loc.gov/image-services/iiif/service:gdc:gdcwdl:wd:l_:10:66:4:wdl_10664:Tolomeo00257",
+   "status": "ok"
+  },
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/gdcwdl.wdl_10664/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  }
+ ],
+ "M046": [
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/2018759311/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  },
+  {
+   "kind": "image",
+   "url": "https://tile.loc.gov/image-services/iiif/public:gdc:2018759311:001301",
+   "status": "ok"
+  },
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/2003683482/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  }
+ ],
+ "M047": [
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/83690086/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  },
+  {
+   "kind": "image",
+   "url": "https://tile.loc.gov/image-services/iiif/service:gmd:gmd7:g7270:g7270:mf000002",
+   "status": "ok"
+  },
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/2003683482/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  }
+ ],
+ "M048": [
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/2006635534/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  },
+  {
+   "kind": "image",
+   "url": "https://tile.loc.gov/image-services/iiif/service:gmd:gmd7:g7820:g7820:ct004969",
+   "status": "ok"
+  },
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/79316818/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  }
+ ],
+ "M049": [
+  {
+   "kind": "manifest",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~329262~90128244/manifest",
+   "status": "ok"
+  },
+  {
+   "kind": "image",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/RUMSEY~8~1~329262~90128244",
+   "status": "ok"
+  }
+ ],
+ "M050": [
+  {
+   "kind": "manifest",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~282861~90054367/manifest",
+   "status": "ok"
+  },
+  {
+   "kind": "image",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/RUMSEY~8~1~282861~90054367",
+   "status": "ok"
+  }
+ ],
+ "M051": [
+  {
+   "kind": "manifest",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~297190~90068731/manifest",
+   "status": "ok"
+  },
+  {
+   "kind": "image",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/RUMSEY~8~1~297190~90068731",
+   "status": "ok"
+  }
+ ],
+ "M052": [
+  {
+   "kind": "manifest",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~294790~90065962/manifest",
+   "status": "ok"
+  },
+  {
+   "kind": "image",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/RUMSEY~8~1~294790~90065962",
+   "status": "ok"
+  }
+ ],
+ "M053": [
+  {
+   "kind": "manifest",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~284738~90057254/manifest",
+   "status": "ok"
+  },
+  {
+   "kind": "image",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/RUMSEY~8~1~284738~90057254",
+   "status": "ok"
+  }
+ ],
+ "M054": [
+  {
+   "kind": "manifest",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~290643~90062176/manifest",
+   "status": "ok"
+  },
+  {
+   "kind": "image",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/RUMSEY~8~1~290643~90062176",
+   "status": "ok"
+  }
+ ],
+ "M055": [
+  {
+   "kind": "manifest",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~238631~5511542/manifest",
+   "status": "ok"
+  },
+  {
+   "kind": "image",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/RUMSEY~8~1~238631~5511542",
+   "status": "ok"
+  }
+ ],
+ "M056": [
+  {
+   "kind": "manifest",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~315677~90084466/manifest",
+   "status": "ok"
+  },
+  {
+   "kind": "image",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/RUMSEY~8~1~315677~90084466",
+   "status": "ok"
+  }
+ ],
+ "M057": [
+  {
+   "kind": "manifest",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~216435~5502674/manifest",
+   "status": "ok"
+  },
+  {
+   "kind": "image",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/RUMSEY~8~1~216435~5502674",
+   "status": "ok"
+  }
+ ],
+ "M058": [
+  {
+   "kind": "manifest",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~20918~530019/manifest",
+   "status": "ok"
+  },
+  {
+   "kind": "image",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/RUMSEY~8~1~20918~530019",
+   "status": "ok"
+  }
+ ],
+ "M059": [
+  {
+   "kind": "manifest",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~20920~530021/manifest",
+   "status": "failed (000)"
+  },
+  {
+   "kind": "image",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/RUMSEY~8~1~20920~530021",
+   "status": "ok"
+  }
+ ],
+ "M060": [
+  {
+   "kind": "manifest",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~20908~530009/manifest",
+   "status": "ok"
+  },
+  {
+   "kind": "image",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/RUMSEY~8~1~20908~530009",
+   "status": "ok"
+  }
+ ],
+ "M061": [
+  {
+   "kind": "manifest",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~36707~1201429/manifest",
+   "status": "ok"
+  },
+  {
+   "kind": "image",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/RUMSEY~8~1~36707~1201429",
+   "status": "ok"
+  },
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/map45000245/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  }
+ ],
+ "M062": [
+  {
+   "kind": "manifest",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~2028~150063/manifest",
+   "status": "ok"
+  },
+  {
+   "kind": "image",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/RUMSEY~8~1~2028~150063",
+   "status": "ok"
+  },
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/map46000376/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  }
+ ],
+ "M063": [
+  {
+   "kind": "manifest",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~251444~5517568/manifest",
+   "status": "ok"
+  },
+  {
+   "kind": "image",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/RUMSEY~8~1~251444~5517568",
+   "status": "ok"
+  }
+ ],
+ "M064": [
+  {
+   "kind": "manifest",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~35108~1180733/manifest",
+   "status": "ok"
+  },
+  {
+   "kind": "image",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/RUMSEY~8~1~35108~1180733",
+   "status": "ok"
+  }
+ ],
+ "M065": [
+  {
+   "kind": "manifest",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~2748~260033/manifest",
+   "status": "failed (000)"
+  },
+  {
+   "kind": "image",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/RUMSEY~8~1~2748~260033",
+   "status": "ok"
+  }
+ ],
+ "M066": [
+  {
+   "kind": "manifest",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~373459~90140188/manifest",
+   "status": "ok"
+  },
+  {
+   "kind": "image",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/RUMSEY~8~1~373459~90140188",
+   "status": "ok"
+  }
+ ],
+ "M067": [
+  {
+   "kind": "manifest",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~373466~90140217/manifest",
+   "status": "ok"
+  },
+  {
+   "kind": "image",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/RUMSEY~8~1~373466~90140217",
+   "status": "ok"
+  }
+ ],
+ "M068": [
+  {
+   "kind": "manifest",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~264614~5524932/manifest",
+   "status": "ok"
+  },
+  {
+   "kind": "image",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/RUMSEY~8~1~264614~5524932",
+   "status": "ok"
+  }
+ ],
+ "M069": [
+  {
+   "kind": "manifest",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~264625~5524935/manifest",
+   "status": "ok"
+  },
+  {
+   "kind": "image",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/RUMSEY~8~1~264625~5524935",
+   "status": "ok"
+  }
+ ],
+ "M070": [
+  {
+   "kind": "manifest",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~292691~90064052/manifest",
+   "status": "ok"
+  },
+  {
+   "kind": "image",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/RUMSEY~8~1~292691~90064052",
+   "status": "ok"
+  }
+ ],
+ "M071": [
+  {
+   "kind": "manifest",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~28701~1120938/manifest",
+   "status": "ok"
+  },
+  {
+   "kind": "image",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/RUMSEY~8~1~28701~1120938",
+   "status": "failed (000)"
+  }
+ ],
+ "M072": [
+  {
+   "kind": "manifest",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~21542~640034/manifest",
+   "status": "ok"
+  },
+  {
+   "kind": "image",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/RUMSEY~8~1~21542~640034",
+   "status": "ok"
+  }
+ ],
+ "M073": [
+  {
+   "kind": "manifest",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~325598~90094511/manifest",
+   "status": "ok"
+  },
+  {
+   "kind": "image",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/RUMSEY~8~1~325598~90094511",
+   "status": "ok"
+  }
+ ],
+ "M074": [
+  {
+   "kind": "manifest",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~305025~90075622/manifest",
+   "status": "ok"
+  },
+  {
+   "kind": "image",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/RUMSEY~8~1~305025~90075622",
+   "status": "ok"
+  }
+ ],
+ "M075": [
+  {
+   "kind": "manifest",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~284513~90057055/manifest",
+   "status": "ok"
+  },
+  {
+   "kind": "image",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/RUMSEY~8~1~284513~90057055",
+   "status": "ok"
+  }
+ ],
+ "M076": [
+  {
+   "kind": "manifest",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~250878~5517279/manifest",
+   "status": "failed (000)"
+  },
+  {
+   "kind": "image",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/RUMSEY~8~1~250878~5517279",
+   "status": "ok"
+  }
+ ],
+ "M077": [
+  {
+   "kind": "manifest",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~377161~90143295/manifest",
+   "status": "ok"
+  },
+  {
+   "kind": "image",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/RUMSEY~8~1~377161~90143295",
+   "status": "ok"
+  }
+ ],
+ "M078": [
+  {
+   "kind": "manifest",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~34853~1180466/manifest",
+   "status": "ok"
+  },
+  {
+   "kind": "image",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/RUMSEY~8~1~34853~1180466",
+   "status": "ok"
+  }
+ ],
+ "M079": [
+  {
+   "kind": "image",
+   "url": "https://www.e-rara.ch/i3f/v20/30341994",
+   "status": "ok"
+  }
+ ],
+ "M080": [
+  {
+   "kind": "image",
+   "url": "https://www.e-rara.ch/i3f/v20/10118272",
+   "status": "ok"
+  }
+ ],
+ "M081": [
+  {
+   "kind": "image",
+   "url": "https://glam.uni.wroc.pl/iiif/image-api/OZK_9590_IV_C_117_0001",
+   "status": "ok"
+  },
+  {
+   "kind": "image",
+   "url": "https://imagines.manuscriptorium.com/loris/ULW___-BUW___9590_IV_C___0JXRYAA-pl/OZK_9590_IV_C_117_0001",
+   "status": "ok"
+  }
+ ],
+ "M082": [
+  {
+   "kind": "manifest",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~275314~90048451/manifest",
+   "status": "failed (000)"
+  },
+  {
+   "kind": "image",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/RUMSEY~8~1~275314~90048451",
+   "status": "ok"
+  },
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/2003683482/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  }
+ ],
+ "M083": [],
+ "M084": [
+  {
+   "kind": "manifest",
+   "url": "https://iiif.archive.org/iiif/3/arkivkopia.se-ublu-19395/manifest.json",
+   "status": "ok"
+  }
+ ],
+ "M085": [
+  {
+   "kind": "manifest",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~286302~90058821/manifest",
+   "status": "ok"
+  },
+  {
+   "kind": "image",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/RUMSEY~8~1~286302~90058821",
+   "status": "ok"
+  }
+ ],
+ "M086": [
+  {
+   "kind": "manifest",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~290055~90067458/manifest",
+   "status": "ok"
+  },
+  {
+   "kind": "image",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/RUMSEY~8~1~290055~90067458",
+   "status": "ok"
+  }
+ ],
+ "M087": [
+  {
+   "kind": "manifest",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~1551~160083/manifest",
+   "status": "ok"
+  },
+  {
+   "kind": "image",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/RUMSEY~8~1~1551~160083",
+   "status": "failed (000)"
+  }
+ ],
+ "M088": [
+  {
+   "kind": "manifest",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~377161~90143295/manifest",
+   "status": "ok"
+  }
+ ],
+ "M089": [],
+ "M090": [],
+ "M091": [
+  {
+   "kind": "manifest",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~291353~90063161/manifest",
+   "status": "ok"
+  },
+  {
+   "kind": "image",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/RUMSEY~8~1~291353~90063161",
+   "status": "ok"
+  },
+  {
+   "kind": "manifest",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~291351~90063079/manifest",
+   "status": "failed (000)"
+  }
+ ],
+ "M092": [
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/2021667235/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  }
+ ],
+ "M093": [
+  {
+   "kind": "image",
+   "url": "https://iiif.bodleian.ox.ac.uk/iiif/image/c825d84a-1984-48d0-bbeb-ff3081212fba",
+   "status": "ok"
+  },
+  {
+   "kind": "manifest",
+   "url": "https://iiif.bodleian.ox.ac.uk/iiif/manifest/26ae1dfa-db31-4a1a-889a-cb4e034215fc.json",
+   "status": "ok"
+  }
+ ],
+ "M094": [],
+ "M095": [
+  {
+   "kind": "manifest",
+   "url": "https://iiif.archive.org/iiif/3/diwanlughatalturkv13/manifest.json",
+   "status": "failed (504)"
+  }
+ ],
+ "M096": [
+  {
+   "kind": "image",
+   "url": "https://api.digitale-sammlungen.de/iiif/image/v2/bsb00096220_00198",
+   "status": "ok"
+  },
+  {
+   "kind": "manifest",
+   "url": "https://api.digitale-sammlungen.de/iiif/presentation/v2/bsb00096220/manifest",
+   "status": "ok"
+  }
+ ],
+ "M097": [
+  {
+   "kind": "image",
+   "url": "https://iiif.bodleian.ox.ac.uk/iiif/image/48645929-93bb-4629-8e1e-e1747ddca04f",
+   "status": "ok"
+  },
+  {
+   "kind": "manifest",
+   "url": "https://iiif.bodleian.ox.ac.uk/iiif/manifest/748a9d50-5a3a-440e-ab9d-567dd68b6abb.json",
+   "status": "ok"
+  }
+ ],
+ "M098": [
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/2013415532/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  },
+  {
+   "kind": "image",
+   "url": "https://tile.loc.gov/image-services/iiif/public:amed:2013415532:0029",
+   "status": "ok"
+  }
+ ],
+ "M099": [
+  {
+   "kind": "manifest",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~342759~90110903/manifest",
+   "status": "failed (000)"
+  },
+  {
+   "kind": "image",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/RUMSEY~8~1~342759~90110903",
+   "status": "ok"
+  },
+  {
+   "kind": "manifest",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~342758~90110902/manifest",
+   "status": "ok"
+  },
+  {
+   "kind": "manifest",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~342757~90110901/manifest",
+   "status": "ok"
+  },
+  {
+   "kind": "manifest",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~337555~90105533/manifest",
+   "status": "ok"
+  }
+ ],
+ "M100": [
+  {
+   "kind": "manifest",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~216394~5502659/manifest",
+   "status": "ok"
+  },
+  {
+   "kind": "image",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/RUMSEY~8~1~216394~5502659",
+   "status": "ok"
+  }
+ ],
+ "M101": [
+  {
+   "kind": "manifest",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~288430~90060114/manifest",
+   "status": "failed (000)"
+  },
+  {
+   "kind": "image",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/RUMSEY~8~1~288430~90060114",
+   "status": "ok"
+  },
+  {
+   "kind": "manifest",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~288432~90060116/manifest",
+   "status": "ok"
+  }
+ ],
+ "M102": [
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/gm71002352/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  },
+  {
+   "kind": "image",
+   "url": "https://tile.loc.gov/image-services/iiif/service:gmd:gmd3:g3200:g3200:ct004397ef",
+   "status": "ok"
+  }
+ ],
+ "M103": [
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/gm71005079/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  }
+ ],
+ "M104": [
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/gm71005081/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  },
+  {
+   "kind": "image",
+   "url": "https://tile.loc.gov/image-services/iiif/service:gmd:gmd7:g7820:g7820:ct000198",
+   "status": "ok"
+  },
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/2006458643/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  },
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/gm71005080/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  },
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/2021668264/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  }
+ ],
+ "M105": [
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/gm71005080/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  },
+  {
+   "kind": "image",
+   "url": "https://tile.loc.gov/image-services/iiif/service:gmd:gmd7:g7821:g7821c:ct001493",
+   "status": "ok"
+  },
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/2021668264/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  },
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/2002626770/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  }
+ ],
+ "M106": [
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/2008623187/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  },
+  {
+   "kind": "image",
+   "url": "https://tile.loc.gov/image-services/iiif/service:asian:lcnclscd:2008623187:1A001:00001a",
+   "status": "ok"
+  },
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/2021668268/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  }
+ ],
+ "M107": [
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/2002626779/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  },
+  {
+   "kind": "image",
+   "url": "https://tile.loc.gov/image-services/iiif/service:gmd:gmd7m:g7821m:g7821fm:gct00232:ca000001",
+   "status": "ok"
+  },
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/74650033/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  }
+ ],
+ "M108": [
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/74650033/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  },
+  {
+   "kind": "image",
+   "url": "https://tile.loc.gov/image-services/iiif/service:gmd:gmd7m:g7820m:g7820m:gct00265:ca000001",
+   "status": "ok"
+  },
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/2002626779/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  }
+ ],
+ "M109": [
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/gm71005018/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  },
+  {
+   "kind": "image",
+   "url": "https://tile.loc.gov/image-services/iiif/service:gmd:gmd3:g3200:g3200:ct003403",
+   "status": "ok"
+  },
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/2021668286/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  },
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/gm71005060/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  }
+ ],
+ "M110": [
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/gm71002481/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  },
+  {
+   "kind": "image",
+   "url": "https://tile.loc.gov/image-services/iiif/service:gmd:gmd7:g7820:g7820:ct003379a",
+   "status": "ok"
+  },
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/gm71005054/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  }
+ ],
+ "M111": [
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/2021668269/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  },
+  {
+   "kind": "image",
+   "url": "https://tile.loc.gov/image-services/iiif/service:gdc:gdcwdl:wd:l_:11:42:6:wdl_11426:0001",
+   "status": "ok"
+  }
+ ],
+ "M112": [
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/84117116/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  },
+  {
+   "kind": "image",
+   "url": "https://tile.loc.gov/image-services/iiif/service:gmd:gmd7m:g7900m:g7900m:gct00109:ca000001",
+   "status": "ok"
+  },
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/93684246/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  },
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/83675024/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  }
+ ],
+ "M113": [
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/85697416/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  },
+  {
+   "kind": "image",
+   "url": "https://tile.loc.gov/image-services/iiif/service:gmd:gmd3:g3200:g3200:ct007100",
+   "status": "ok"
+  },
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/gm71005079/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  },
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/2021668274/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  }
+ ],
+ "M114": [
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/2021668274/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  },
+  {
+   "kind": "image",
+   "url": "https://tile.loc.gov/image-services/iiif/service:gdc:gdcwdl:wd:l_:11:83:8:wdl_11838:ezu9",
+   "status": "ok"
+  },
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/2021668280/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  }
+ ],
+ "M115": [
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/gm71005078/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  },
+  {
+   "kind": "image",
+   "url": "https://tile.loc.gov/image-services/iiif/service:gmd:gmd7:g7801:g7801r:ct002202a",
+   "status": "ok"
+  },
+  {
+   "kind": "manifest",
+   "url": "https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~342757~90110901/manifest",
+   "status": "ok"
+  }
+ ],
+ "M116": [
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/2002626725/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  },
+  {
+   "kind": "image",
+   "url": "https://tile.loc.gov/image-services/iiif/service:gmd:gmd7m:g7820m:g7820m:gct00225:ca000001",
+   "status": "ok"
+  },
+  {
+   "kind": "manifest",
+   "url": "https://www.loc.gov/item/2008623187/manifest.json",
+   "status": "pattern (loc.gov blocks this workspace; open to confirm)"
+  }
+ ],
+ "M117": [
+  {
+   "kind": "image",
+   "url": "https://iiif.bodleian.ox.ac.uk/iiif/image/866462cc-d658-41da-a33d-5a8c375b1ac0",
+   "status": "ok"
+  },
+  {
+   "kind": "manifest",
+   "url": "https://iiif.bodleian.ox.ac.uk/iiif/manifest/58b9518f-d5ea-4cb3-aa15-f42640c50ef3.json",
+   "status": "ok"
+  }
+ ],
+ "M118": [
+  {
+   "kind": "manifest",
+   "url": "https://rmda.kulib.kyoto-u.ac.jp/iiif/metadata_manifest/RB00013547/manifest.json",
+   "status": "ok"
+  }
+ ],
+ "M119": [
+  {
+   "kind": "image",
+   "url": "https://rmda.kulib.kyoto-u.ac.jp/iiif/3/RB00029670%2FRB00029670_00001_0.ptif",
+   "status": "ok"
+  },
+  {
+   "kind": "manifest",
+   "url": "https://rmda.kulib.kyoto-u.ac.jp/iiif/metadata_manifest/RB00029670/manifest.json",
+   "status": "ok"
+  }
+ ]
+}

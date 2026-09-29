@@ -1,0 +1,40 @@
+[
+  {
+    "id": "C001",
+    "date": "2026-09-29",
+    "record": "M029",
+    "field": "cautions",
+    "summary": "The Olshin book on the Rossi \"Marco Polo\" maps was published in 2014, not 2019, and it leaves the question of authenticity open rather than calling the sheets copies or fabrications.",
+    "find": "The Rossi collection sheets have been examined (2019 monograph by Benjamin B. Olshin) with the conclusion that they are post-medieval copies or fabrications; this inventory records the catalogue status only.",
+    "replace": "The Rossi collection sheets are examined in Benjamin B. Olshin, The Mysteries of the Marco Polo Maps (University of Chicago Press, 2014), which sets out arguments for and against their authenticity and reaches no firm conclusion; this inventory records the catalogue status only.",
+    "sources": [
+      {
+        "title": "University of Chicago Press: The Mysteries of the Marco Polo Maps (2014)",
+        "url": "https://press.uchicago.edu/ucp/books/book/chicago/M/bo18178708.html"
+      },
+      {
+        "title": "Western Association of Map Libraries review, Information Bulletin 46(3)",
+        "url": "https://waml.org/waml-information-bulletin/46-3/the-mysteries-of-the-marco-polo-maps/"
+      }
+    ]
+  },
+  {
+    "id": "C002",
+    "date": "2026-09-29",
+    "record": "M029",
+    "field": "date.override",
+    "summary": "The dating note said scholarship treats the Rossi sheets as much later productions. Scholarship is divided (see C001), so the note now rests on the Library of Congress catalogue status alone.",
+    "find": "scholarship treats them as much later productions, so no date is plotted",
+    "replace": "the Library of Congress records their authenticity as undetermined and no date is accepted, so no date is plotted",
+    "sources": [
+      {
+        "title": "Library of Congress catalogue record for the sheet",
+        "url": "https://www.loc.gov/item/2005633013/"
+      },
+      {
+        "title": "Western Association of Map Libraries review of Olshin (2014)",
+        "url": "https://waml.org/waml-information-bulletin/46-3/the-mysteries-of-the-marco-polo-maps/"
+      }
+    ]
+  }
+]

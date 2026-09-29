@@ -1,0 +1,1630 @@
+[
+ {
+  "id": "mongols",
+  "name": "Mongols",
+  "family": "mongols",
+  "family_name": "Mongols and the Mongol empire",
+  "aliases": [
+   "'imperium Tartarorum'",
+   "Black Tatars",
+   "Dada",
+   "Darlekin",
+   "Eastern Mongols",
+   "Hor",
+   "Khoshut",
+   "Mongol",
+   "Mongol banners",
+   "Mongol princes",
+   "Mongolian nations",
+   "Mongous",
+   "Nirun",
+   "Otuz Tatar",
+   "Otuz Tatar (the earliest occurrence of the name Tatar)",
+   "Qoshot Mongols",
+   "Tümed",
+   "Tümed and Ordos Mongols"
+  ],
+  "record_count": 75
+ },
+ {
+  "id": "chinggisids",
+  "name": "Chinggisid rulers",
+  "family": "mongols",
+  "family_name": "Mongols and the Mongol empire",
+  "aliases": [
+   "Baiju",
+   "Chinggis",
+   "Chinggisids",
+   "Godan",
+   "Great Khan",
+   "Great Khan (Kublai)",
+   "Great Khan of Cathay",
+   "Guyuk",
+   "Güyük",
+   "Hülegü",
+   "Mongke",
+   "Muqali",
+   "Möngke",
+   "Möngke's court",
+   "Qaidu",
+   "Qubilai",
+   "Ögedei",
+   "Ögedei court"
+  ],
+  "record_count": 16
+ },
+ {
+  "id": "yuan",
+  "name": "Yuan dynasty",
+  "family": "mongols",
+  "family_name": "Mongols and the Mongol empire",
+  "aliases": [
+   "Mongols (Yuan)",
+   "Mongols / Yuan",
+   "Yuan",
+   "Yuan Mongols"
+  ],
+  "record_count": 8
+ },
+ {
+  "id": "northern-yuan",
+  "name": "Northern Yuan",
+  "family": "mongols",
+  "family_name": "Mongols and the Mongol empire",
+  "aliases": [
+   "Altan Khan",
+   "Altyn Khan",
+   "Khotogoit",
+   "Northern Yuan Mongols"
+  ],
+  "record_count": 6
+ },
+ {
+  "id": "khalkha",
+  "name": "Khalkha Mongols",
+  "family": "mongols",
+  "family_name": "Mongols and the Mongol empire",
+  "aliases": [
+   "Jebtsundamba Khutugtu",
+   "Khalkha"
+  ],
+  "record_count": 18
+ },
+ {
+  "id": "chakhar",
+  "name": "Chakhar Mongols",
+  "family": "mongols",
+  "family_name": "Mongols and the Mongol empire",
+  "aliases": [
+   "Chahar",
+   "Chakhar"
+  ],
+  "record_count": 4
+ },
+ {
+  "id": "khorchin",
+  "name": "Khorchin Mongols",
+  "family": "mongols",
+  "family_name": "Mongols and the Mongol empire",
+  "aliases": [
+   "Khorchin"
+  ],
+  "record_count": 4
+ },
+ {
+  "id": "buryats",
+  "name": "Buryats",
+  "family": "mongols",
+  "family_name": "Mongols and the Mongol empire",
+  "aliases": [
+   "Buryat"
+  ],
+  "record_count": 15
+ },
+ {
+  "id": "kereit",
+  "name": "Kereit",
+  "family": "mongols",
+  "family_name": "Mongols and the Mongol empire",
+  "aliases": [
+   "Keraits"
+  ],
+  "record_count": 6
+ },
+ {
+  "id": "naiman",
+  "name": "Naiman",
+  "family": "mongols",
+  "family_name": "Mongols and the Mongol empire",
+  "aliases": [
+   "Naimans"
+  ],
+  "record_count": 5
+ },
+ {
+  "id": "merkit",
+  "name": "Merkit",
+  "family": "mongols",
+  "family_name": "Mongols and the Mongol empire",
+  "aliases": [],
+  "record_count": 2
+ },
+ {
+  "id": "onggut",
+  "name": "Onggut",
+  "family": "mongols",
+  "family_name": "Mongols and the Mongol empire",
+  "aliases": [],
+  "record_count": 2
+ },
+ {
+  "id": "ilkhanate",
+  "name": "Ilkhanate",
+  "family": "mongols",
+  "family_name": "Mongols and the Mongol empire",
+  "aliases": [
+   "Abaqa",
+   "Arghun",
+   "Ghazan",
+   "Ilkhanate Persia",
+   "Ilkhanids",
+   "Ilkhans",
+   "Oljeitu"
+  ],
+  "record_count": 14
+ },
+ {
+  "id": "chagatai",
+  "name": "Chagatai ulus",
+  "family": "mongols",
+  "family_name": "Mongols and the Mongol empire",
+  "aliases": [
+   "Chagatai",
+   "Chaghadaids",
+   "Chaghatai ulus",
+   "Chaghatay",
+   "Chaghatay tribes",
+   "Chaghatay ulus"
+  ],
+  "record_count": 12
+ },
+ {
+  "id": "moghuls",
+  "name": "Moghuls of Moghulistan",
+  "family": "mongols",
+  "family_name": "Mongols and the Mongol empire",
+  "aliases": [
+   "Moghul khans",
+   "Moghulistan",
+   "Moghuls"
+  ],
+  "record_count": 8
+ },
+ {
+  "id": "uriyangkhad",
+  "name": "Uriyangkhad",
+  "family": "mongols",
+  "family_name": "Mongols and the Mongol empire",
+  "aliases": [],
+  "record_count": 2
+ },
+ {
+  "id": "daur",
+  "name": "Daur",
+  "family": "mongols",
+  "family_name": "Mongols and the Mongol empire",
+  "aliases": [
+   "Daurs"
+  ],
+  "record_count": 2
+ },
+ {
+  "id": "oirats",
+  "name": "Oirats",
+  "family": "western-mongols",
+  "family_name": "Western Mongols (Oirat, Dzungar, Kalmyk)",
+  "aliases": [
+   "Eleuths",
+   "Oirat",
+   "Wala"
+  ],
+  "record_count": 20
+ },
+ {
+  "id": "dzungars",
+  "name": "Dzungars",
+  "family": "western-mongols",
+  "family_name": "Western Mongols (Oirat, Dzungar, Kalmyk)",
+  "aliases": [
+   "Amursana",
+   "Dzungar",
+   "Dzungar Mongols",
+   "Galdan",
+   "Qalmaqs",
+   "Tsewang Rabtan",
+   "Zunghars",
+   "Zunghars mentioned"
+  ],
+  "record_count": 28
+ },
+ {
+  "id": "kalmyks",
+  "name": "Kalmyks",
+  "family": "western-mongols",
+  "family_name": "Western Mongols (Oirat, Dzungar, Kalmyk)",
+  "aliases": [
+   "Altai Kalmyks",
+   "Donduk Dashi",
+   "Dörbet",
+   "Kalmyk",
+   "Kalmyks of Astrakhan",
+   "Qalmaq",
+   "Telengits",
+   "Volga Kalmyks"
+  ],
+  "record_count": 37
+ },
+ {
+  "id": "torghuts",
+  "name": "Torghuts",
+  "family": "western-mongols",
+  "family_name": "Western Mongols (Oirat, Dzungar, Kalmyk)",
+  "aliases": [
+   "Torghut"
+  ],
+  "record_count": 9
+ },
+ {
+  "id": "golden-horde",
+  "name": "Golden Horde",
+  "family": "jochid-tatars",
+  "family_name": "Golden Horde and its Tatar successor khanates",
+  "aliases": [
+   "Aq Orda",
+   "Batu",
+   "Batu and Sartaq",
+   "Berke",
+   "Edigu",
+   "Golden Horde khans",
+   "Golden Horde towns",
+   "Janibek",
+   "Jochid ulus",
+   "Jochids",
+   "Kok Orda",
+   "Mamai",
+   "Osbeth/Uzbek of the Golden Horde",
+   "Sartaq",
+   "Telebuga",
+   "Toqtamish",
+   "Uzbek Khan",
+   "Zavolha"
+  ],
+  "record_count": 34
+ },
+ {
+  "id": "crimean-tatars",
+  "name": "Crimean Tatars and Crimean khanate",
+  "family": "jochid-tatars",
+  "family_name": "Golden Horde and its Tatar successor khanates",
+  "aliases": [
+   "Crimean Tatars",
+   "Crimean khanate",
+   "Giray",
+   "Islam Giray III",
+   "Perekop",
+   "Precopenses",
+   "Tatars of the Crimea"
+  ],
+  "record_count": 19
+ },
+ {
+  "id": "kazan",
+  "name": "Kazan Tatars and Kazan khanate",
+  "family": "jochid-tatars",
+  "family_name": "Golden Horde and its Tatar successor khanates",
+  "aliases": [
+   "Kazan",
+   "Kazan Tatars",
+   "Kazan khanate",
+   "Tatars of Kazan"
+  ],
+  "record_count": 14
+ },
+ {
+  "id": "astrakhan",
+  "name": "Astrakhan khanate and Tatars",
+  "family": "jochid-tatars",
+  "family_name": "Golden Horde and its Tatar successor khanates",
+  "aliases": [
+   "Astrakhan",
+   "Astrakhan Tatars",
+   "Astrakhan khanate"
+  ],
+  "record_count": 3
+ },
+ {
+  "id": "nogai",
+  "name": "Nogai Horde",
+  "family": "jochid-tatars",
+  "family_name": "Golden Horde and its Tatar successor khanates",
+  "aliases": [
+   "Nogai",
+   "Nogai and Astrakhan Tatars",
+   "Nogais",
+   "Nogay Horde",
+   "Nogays"
+  ],
+  "record_count": 25
+ },
+ {
+  "id": "siberian-tatars",
+  "name": "Siberian Tatars and khanate of Sibir",
+  "family": "jochid-tatars",
+  "family_name": "Golden Horde and its Tatar successor khanates",
+  "aliases": [
+   "Kuchum",
+   "Kuchum's khanate",
+   "Siberian Tatars",
+   "Siberian khanate"
+  ],
+  "record_count": 13
+ },
+ {
+  "id": "volga-tatars",
+  "name": "Volga Tatars",
+  "family": "jochid-tatars",
+  "family_name": "Golden Horde and its Tatar successor khanates",
+  "aliases": [
+   "Astrakhan and Volga Tatars"
+  ],
+  "record_count": 2
+ },
+ {
+  "id": "kasimov",
+  "name": "Kasimov khanate",
+  "family": "jochid-tatars",
+  "family_name": "Golden Horde and its Tatar successor khanates",
+  "aliases": [],
+  "record_count": 1
+ },
+ {
+  "id": "successor-khanates",
+  "name": "Tatar successor khanates",
+  "family": "jochid-tatars",
+  "family_name": "Golden Horde and its Tatar successor khanates",
+  "aliases": [
+   "Crimean, Kazan and Astrakhan successor khanates",
+   "Tatar nations"
+  ],
+  "record_count": 2
+ },
+ {
+  "id": "jurchen",
+  "name": "Jurchen",
+  "family": "manchus",
+  "family_name": "Jurchen and Manchus (incl. the Qing as a Manchu dynasty)",
+  "aliases": [
+   "Hada",
+   "Haixi",
+   "Hoifa",
+   "Hulun confederation",
+   "Jianzhou",
+   "Ula",
+   "Yehe",
+   "Yeren"
+  ],
+  "record_count": 4
+ },
+ {
+  "id": "jin",
+  "name": "Jin dynasty (Jurchen)",
+  "family": "manchus",
+  "family_name": "Jurchen and Manchus (incl. the Qing as a Manchu dynasty)",
+  "aliases": [
+   "Jin",
+   "Jin remnants",
+   "Jurchen (Jin)",
+   "Jurchen / Jin",
+   "Later Jin"
+  ],
+  "record_count": 10
+ },
+ {
+  "id": "manchus",
+  "name": "Manchus",
+  "family": "manchus",
+  "family_name": "Jurchen and Manchus (incl. the Qing as a Manchu dynasty)",
+  "aliases": [
+   "Jurchen / Manchus",
+   "Manchu",
+   "Niuche",
+   "Oost Tartaren",
+   "Tunguses and Manchus"
+  ],
+  "record_count": 18
+ },
+ {
+  "id": "qing",
+  "name": "Qing dynasty",
+  "family": "manchus",
+  "family_name": "Jurchen and Manchus (incl. the Qing as a Manchu dynasty)",
+  "aliases": [
+   "'Tartari Orientali'",
+   "Chinese frontier posts",
+   "Kangxi Qing intervention",
+   "Manchu / Qing",
+   "Mongol princes at Jehol",
+   "Qing",
+   "Qing / Manchu",
+   "Qing / Manchu court",
+   "Qing China",
+   "Qing administration",
+   "Qing court",
+   "Qing empire",
+   "Qing frontier",
+   "Qing garrisons",
+   "Shunzhi",
+   "Tartarischen Cham"
+  ],
+  "record_count": 42
+ },
+ {
+  "id": "solon",
+  "name": "Solon, Hezhe and other Manchurian peoples",
+  "family": "manchus",
+  "family_name": "Jurchen and Manchus (incl. the Qing as a Manchu dynasty)",
+  "aliases": [
+   "Bohai",
+   "Fiyaka",
+   "Hezhe",
+   "Mohe",
+   "Solon",
+   "Solon, Daur, Hezhe and other Manchurian peoples",
+   "Sushen",
+   "Warka",
+   "Yilou"
+  ],
+  "record_count": 4
+ },
+ {
+  "id": "kazakhs",
+  "name": "Kazakhs",
+  "family": "turkic-central-asia",
+  "family_name": "Turkic and Central Asian peoples and states",
+  "aliases": [
+   "Abulkhair Khan",
+   "Kazakh",
+   "Kazakh frontier",
+   "Kazakh hordes",
+   "Kazakh khans",
+   "Kazatskaia",
+   "Kirghiz (Kazakhs)",
+   "Kirghiz of the Middle Horde",
+   "Kirghiz-Kaisaks",
+   "Kirgis-Kaisaks",
+   "Kirgiz-Kaisaks"
+  ],
+  "record_count": 29
+ },
+ {
+  "id": "kyrgyz",
+  "name": "Kyrgyz",
+  "family": "turkic-central-asia",
+  "family_name": "Turkic and Central Asian peoples and states",
+  "aliases": [
+   "Burut",
+   "Hia-kia-sse",
+   "Kirghiz"
+  ],
+  "record_count": 22
+ },
+ {
+  "id": "uzbeks",
+  "name": "Uzbeks",
+  "family": "turkic-central-asia",
+  "family_name": "Turkic and Central Asian peoples and states",
+  "aliases": [
+   "Khivan Uzbeks",
+   "Shibanids",
+   "Uzbek tribal amirs",
+   "Uzbek tribes",
+   "Uzbeks of Abu'l-Khayr",
+   "Uzbeks of Khiva"
+  ],
+  "record_count": 11
+ },
+ {
+  "id": "bukhara",
+  "name": "Bukhara khanate and Bukharans",
+  "family": "turkic-central-asia",
+  "family_name": "Turkic and Central Asian peoples and states",
+  "aliases": [
+   "Ashtarkhanids",
+   "Bukhara",
+   "Bukharan merchants",
+   "Bukharans in Siberia",
+   "Emirate of Bukhara",
+   "Janids"
+  ],
+  "record_count": 10
+ },
+ {
+  "id": "khiva",
+  "name": "Khiva khanate",
+  "family": "turkic-central-asia",
+  "family_name": "Turkic and Central Asian peoples and states",
+  "aliases": [
+   "Khiva",
+   "Khivans"
+  ],
+  "record_count": 5
+ },
+ {
+  "id": "kokand",
+  "name": "Kokand",
+  "family": "turkic-central-asia",
+  "family_name": "Turkic and Central Asian peoples and states",
+  "aliases": [],
+  "record_count": 2
+ },
+ {
+  "id": "karakalpaks",
+  "name": "Karakalpaks",
+  "family": "turkic-central-asia",
+  "family_name": "Turkic and Central Asian peoples and states",
+  "aliases": [],
+  "record_count": 4
+ },
+ {
+  "id": "turkmen",
+  "name": "Turkmen",
+  "family": "turkic-central-asia",
+  "family_name": "Turkic and Central Asian peoples and states",
+  "aliases": [
+   "Ghuzz",
+   "Oghuz",
+   "Oghuz (Turkmen)",
+   "Turkmen tribes",
+   "Turkmens",
+   "Turkmens of the eastern Caspian"
+  ],
+  "record_count": 11
+ },
+ {
+  "id": "uyghurs",
+  "name": "Uyghurs",
+  "family": "turkic-central-asia",
+  "family_name": "Turkic and Central Asian peoples and states",
+  "aliases": [
+   "Hami",
+   "Hoei-hou",
+   "Toghuzghuz",
+   "Toquz Oghuz",
+   "Turfan",
+   "Uighur city-states",
+   "Uighurs",
+   "Uyghur"
+  ],
+  "record_count": 22
+ },
+ {
+  "id": "altishahr-muslims",
+  "name": "Turkic Muslims of the Tarim",
+  "family": "turkic-central-asia",
+  "family_name": "Turkic and Central Asian peoples and states",
+  "aliases": [
+   "Chinese Muslims from Great Tartary",
+   "Khojas",
+   "Muslims of Turkestan",
+   "Naqshbandi Khojas",
+   "Turkestani Muslims",
+   "Turkic Muslim begs",
+   "Turkic Muslims",
+   "Turkic Muslims of Altishahr"
+  ],
+  "record_count": 11
+ },
+ {
+  "id": "bashkirs",
+  "name": "Bashkirs",
+  "family": "turkic-central-asia",
+  "family_name": "Turkic and Central Asian peoples and states",
+  "aliases": [
+   "Bashkir"
+  ],
+  "record_count": 12
+ },
+ {
+  "id": "chuvash",
+  "name": "Chuvash",
+  "family": "turkic-central-asia",
+  "family_name": "Turkic and Central Asian peoples and states",
+  "aliases": [],
+  "record_count": 4
+ },
+ {
+  "id": "teleuts",
+  "name": "Teleuts",
+  "family": "turkic-central-asia",
+  "family_name": "Turkic and Central Asian peoples and states",
+  "aliases": [
+   "Teleut"
+  ],
+  "record_count": 2
+ },
+ {
+  "id": "kumyks",
+  "name": "Kumyks",
+  "family": "turkic-central-asia",
+  "family_name": "Turkic and Central Asian peoples and states",
+  "aliases": [],
+  "record_count": 2
+ },
+ {
+  "id": "timurids",
+  "name": "Timurids",
+  "family": "turkic-central-asia",
+  "family_name": "Turkic and Central Asian peoples and states",
+  "aliases": [
+   "Shahrukh",
+   "Tamberlano",
+   "Timur"
+  ],
+  "record_count": 14
+ },
+ {
+  "id": "kipchaks",
+  "name": "Kipchaks and Cumans",
+  "family": "turkic-central-asia",
+  "family_name": "Turkic and Central Asian peoples and states",
+  "aliases": [
+   "Comans",
+   "Cumans",
+   "Cumans / Qipchaqs",
+   "Kipchaks",
+   "Köten",
+   "Polovtsy",
+   "Qipchaq",
+   "Qipchaqs"
+  ],
+  "record_count": 18
+ },
+ {
+  "id": "khwarazm",
+  "name": "Khwarazmshahs",
+  "family": "turkic-central-asia",
+  "family_name": "Turkic and Central Asian peoples and states",
+  "aliases": [
+   "Khwarazm",
+   "Khwarazmians"
+  ],
+  "record_count": 7
+ },
+ {
+  "id": "qarakhanids",
+  "name": "Qarakhanids",
+  "family": "turkic-central-asia",
+  "family_name": "Turkic and Central Asian peoples and states",
+  "aliases": [],
+  "record_count": 3
+ },
+ {
+  "id": "qara-khitai",
+  "name": "Qara Khitai",
+  "family": "turkic-central-asia",
+  "family_name": "Turkic and Central Asian peoples and states",
+  "aliases": [],
+  "record_count": 1
+ },
+ {
+  "id": "seljuks",
+  "name": "Seljuks",
+  "family": "turkic-central-asia",
+  "family_name": "Turkic and Central Asian peoples and states",
+  "aliases": [
+   "Seljuks of Rum"
+  ],
+  "record_count": 3
+ },
+ {
+  "id": "ghaznavids",
+  "name": "Ghaznavids",
+  "family": "turkic-central-asia",
+  "family_name": "Turkic and Central Asian peoples and states",
+  "aliases": [],
+  "record_count": 2
+ },
+ {
+  "id": "samanids",
+  "name": "Samanids",
+  "family": "turkic-central-asia",
+  "family_name": "Turkic and Central Asian peoples and states",
+  "aliases": [],
+  "record_count": 2
+ },
+ {
+  "id": "turks-generic",
+  "name": "Turks (general)",
+  "family": "turkic-central-asia",
+  "family_name": "Turkic and Central Asian peoples and states",
+  "aliases": [
+   "Turkic peoples",
+   "Turks",
+   "Turks (as neighbours)"
+  ],
+  "record_count": 16
+ },
+ {
+  "id": "old-turks",
+  "name": "Göktürks and early Turkic peoples",
+  "family": "early-steppe",
+  "family_name": "Early steppe and pre-Mongol peoples",
+  "aliases": [
+   "Basmil",
+   "Chigil",
+   "Kimek",
+   "Kok Turk",
+   "Qarluq",
+   "Qay",
+   "Qun",
+   "Qurıqan",
+   "Tatabi",
+   "Tujue / Turks",
+   "Tukhsi",
+   "Turgesh",
+   "Turks (Tujue)",
+   "Yabaku",
+   "Yaghma"
+  ],
+  "record_count": 9
+ },
+ {
+  "id": "qara-qoyunlu",
+  "name": "Qara Qoyunlu and Aq Qoyunlu",
+  "family": "turkic-central-asia",
+  "family_name": "Turkic and Central Asian peoples and states",
+  "aliases": [
+   "Aq Qoyunlu",
+   "Qara Qoyunlu",
+   "Ussuncassan"
+  ],
+  "record_count": 2
+ },
+ {
+  "id": "scythians",
+  "name": "Scythians and Massagetae",
+  "family": "early-steppe",
+  "family_name": "Early steppe and pre-Mongol peoples",
+  "aliases": [
+   "Massagetae",
+   "Scythians"
+  ],
+  "record_count": 2
+ },
+ {
+  "id": "xiongnu",
+  "name": "Xiongnu and Huns",
+  "family": "early-steppe",
+  "family_name": "Early steppe and pre-Mongol peoples",
+  "aliases": [
+   "Hioun-nou",
+   "Huns",
+   "Huns / Xiongnu",
+   "Xiongnu"
+  ],
+  "record_count": 6
+ },
+ {
+  "id": "wusun",
+  "name": "Wusun and Kangju",
+  "family": "early-steppe",
+  "family_name": "Early steppe and pre-Mongol peoples",
+  "aliases": [
+   "Kangju",
+   "Wusun"
+  ],
+  "record_count": 1
+ },
+ {
+  "id": "xianbei",
+  "name": "Xianbei",
+  "family": "early-steppe",
+  "family_name": "Early steppe and pre-Mongol peoples",
+  "aliases": [],
+  "record_count": 1
+ },
+ {
+  "id": "sogdians",
+  "name": "Sogdians",
+  "family": "early-steppe",
+  "family_name": "Early steppe and pre-Mongol peoples",
+  "aliases": [],
+  "record_count": 1
+ },
+ {
+  "id": "alans",
+  "name": "Alans",
+  "family": "early-steppe",
+  "family_name": "Early steppe and pre-Mongol peoples",
+  "aliases": [],
+  "record_count": 4
+ },
+ {
+  "id": "avars",
+  "name": "Avars",
+  "family": "early-steppe",
+  "family_name": "Early steppe and pre-Mongol peoples",
+  "aliases": [],
+  "record_count": 1
+ },
+ {
+  "id": "khazars",
+  "name": "Khazars",
+  "family": "early-steppe",
+  "family_name": "Early steppe and pre-Mongol peoples",
+  "aliases": [],
+  "record_count": 7
+ },
+ {
+  "id": "pechenegs",
+  "name": "Pechenegs",
+  "family": "early-steppe",
+  "family_name": "Early steppe and pre-Mongol peoples",
+  "aliases": [],
+  "record_count": 4
+ },
+ {
+  "id": "bulghars",
+  "name": "Volga Bulghars",
+  "family": "early-steppe",
+  "family_name": "Early steppe and pre-Mongol peoples",
+  "aliases": [
+   "Bulgars",
+   "Bulghars",
+   "Volga Bulgars"
+  ],
+  "record_count": 10
+ },
+ {
+  "id": "burtas",
+  "name": "Burtas",
+  "family": "early-steppe",
+  "family_name": "Early steppe and pre-Mongol peoples",
+  "aliases": [],
+  "record_count": 2
+ },
+ {
+  "id": "khitan",
+  "name": "Khitan (Liao)",
+  "family": "early-steppe",
+  "family_name": "Early steppe and pre-Mongol peoples",
+  "aliases": [
+   "Khitan",
+   "Khitan / Liao",
+   "Kitan remnants"
+  ],
+  "record_count": 6
+ },
+ {
+  "id": "tangut",
+  "name": "Tangut (Xi Xia)",
+  "family": "early-steppe",
+  "family_name": "Early steppe and pre-Mongol peoples",
+  "aliases": [
+   "Mi nyag",
+   "Tangut",
+   "Xi Xia"
+  ],
+  "record_count": 4
+ },
+ {
+  "id": "magyars",
+  "name": "Magyars",
+  "family": "early-steppe",
+  "family_name": "Early steppe and pre-Mongol peoples",
+  "aliases": [],
+  "record_count": 1
+ },
+ {
+  "id": "radhanites",
+  "name": "Radhanites",
+  "family": "religious",
+  "family_name": "Religious communities and missions",
+  "aliases": [],
+  "record_count": 1
+ },
+ {
+  "id": "samoyeds",
+  "name": "Samoyeds (Nenets and others)",
+  "family": "siberian",
+  "family_name": "Indigenous peoples of Siberia and the North Pacific",
+  "aliases": [
+   "Nenets",
+   "Samoyeds"
+  ],
+  "record_count": 8
+ },
+ {
+  "id": "ostyaks",
+  "name": "Ostyaks (Khanty)",
+  "family": "siberian",
+  "family_name": "Indigenous peoples of Siberia and the North Pacific",
+  "aliases": [
+   "Ostiaks",
+   "Ostyaks"
+  ],
+  "record_count": 9
+ },
+ {
+  "id": "voguls",
+  "name": "Voguls (Mansi)",
+  "family": "siberian",
+  "family_name": "Indigenous peoples of Siberia and the North Pacific",
+  "aliases": [
+   "Voguls",
+   "Voguls / Ostiaks"
+  ],
+  "record_count": 6
+ },
+ {
+  "id": "tungus",
+  "name": "Tungus (Evenki)",
+  "family": "siberian",
+  "family_name": "Indigenous peoples of Siberia and the North Pacific",
+  "aliases": [
+   "Tungus",
+   "Tunguses"
+  ],
+  "record_count": 13
+ },
+ {
+  "id": "yakuts",
+  "name": "Yakuts",
+  "family": "siberian",
+  "family_name": "Indigenous peoples of Siberia and the North Pacific",
+  "aliases": [
+   "Yakut"
+  ],
+  "record_count": 9
+ },
+ {
+  "id": "chukchi",
+  "name": "Chukchi",
+  "family": "siberian",
+  "family_name": "Indigenous peoples of Siberia and the North Pacific",
+  "aliases": [],
+  "record_count": 3
+ },
+ {
+  "id": "koryaks",
+  "name": "Koryaks",
+  "family": "siberian",
+  "family_name": "Indigenous peoples of Siberia and the North Pacific",
+  "aliases": [],
+  "record_count": 3
+ },
+ {
+  "id": "itelmens",
+  "name": "Itelmens (Kamchadals)",
+  "family": "siberian",
+  "family_name": "Indigenous peoples of Siberia and the North Pacific",
+  "aliases": [
+   "Itelmens",
+   "Kamchadals"
+  ],
+  "record_count": 7
+ },
+ {
+  "id": "aleuts",
+  "name": "Aleuts",
+  "family": "siberian",
+  "family_name": "Indigenous peoples of Siberia and the North Pacific",
+  "aliases": [],
+  "record_count": 4
+ },
+ {
+  "id": "ainu",
+  "name": "Ainu",
+  "family": "siberian",
+  "family_name": "Indigenous peoples of Siberia and the North Pacific",
+  "aliases": [
+   "Kuril Ainu"
+  ],
+  "record_count": 1
+ },
+ {
+  "id": "siberian-peoples",
+  "name": "Siberian peoples (general)",
+  "family": "siberian",
+  "family_name": "Indigenous peoples of Siberia and the North Pacific",
+  "aliases": [
+   "Finnic, Samoyed and Tungusic peoples",
+   "Siberian peoples",
+   "Siberian peoples as classified by Hübner"
+  ],
+  "record_count": 5
+ },
+ {
+  "id": "finno-ugric",
+  "name": "Finno-Ugric peoples of the Volga and north",
+  "family": "siberian",
+  "family_name": "Indigenous peoples of Siberia and the North Pacific",
+  "aliases": [
+   "Cheremis",
+   "Finno-Ugrians",
+   "Finns",
+   "Komi",
+   "Lapps",
+   "Mari",
+   "Mordvins",
+   "Yugra",
+   "Zyrians"
+  ],
+  "record_count": 10
+ },
+ {
+  "id": "rus",
+  "name": "Rus' principalities",
+  "family": "russia",
+  "family_name": "Rus, Muscovy and the Russian Empire",
+  "aliases": [
+   "Rus",
+   "Rus merchants",
+   "Rus principalities",
+   "Ruthenians",
+   "Ryazan"
+  ],
+  "record_count": 15
+ },
+ {
+  "id": "muscovy",
+  "name": "Muscovy",
+  "family": "russia",
+  "family_name": "Rus, Muscovy and the Russian Empire",
+  "aliases": [
+   "Ivan IV",
+   "Muscovites",
+   "Muscovy / Russia",
+   "Stroganovs",
+   "Vasilii III"
+  ],
+  "record_count": 22
+ },
+ {
+  "id": "russian-empire",
+  "name": "Russian Empire",
+  "family": "russia",
+  "family_name": "Rus, Muscovy and the Russian Empire",
+  "aliases": [
+   "Oros",
+   "Russia",
+   "Russia (Amur frontier)",
+   "Russian Cossack administration",
+   "Russian Pomors",
+   "Russian Siberia",
+   "Russian administration",
+   "Russian caravan trade",
+   "Russian caravans",
+   "Russian empire",
+   "Russian mining administration",
+   "Russian mining and Cossack administration",
+   "Russian naval expedition",
+   "Russians",
+   "Russians (as neighbouring state)",
+   "Russians in Siberia",
+   "U ru su"
+  ],
+  "record_count": 28
+ },
+ {
+  "id": "cossacks",
+  "name": "Cossacks",
+  "family": "russia",
+  "family_name": "Rus, Muscovy and the Russian Empire",
+  "aliases": [
+   "Don Cossacks",
+   "Razin",
+   "Ural Cossacks",
+   "Yermak",
+   "Zaporozhian Cossacks"
+  ],
+  "record_count": 12
+ },
+ {
+  "id": "chinese",
+  "name": "Chinese (general)",
+  "family": "china",
+  "family_name": "Chinese dynasties and states",
+  "aliases": [
+   "Cathay",
+   "Cathay/Sinae identification",
+   "Chinese",
+   "Chinese dynasties"
+  ],
+  "record_count": 16
+ },
+ {
+  "id": "tang",
+  "name": "Tang dynasty",
+  "family": "china",
+  "family_name": "Chinese dynasties and states",
+  "aliases": [
+   "Tang China"
+  ],
+  "record_count": 1
+ },
+ {
+  "id": "song",
+  "name": "Song dynasty",
+  "family": "china",
+  "family_name": "Chinese dynasties and states",
+  "aliases": [
+   "Song"
+  ],
+  "record_count": 3
+ },
+ {
+  "id": "ming",
+  "name": "Ming dynasty",
+  "family": "china",
+  "family_name": "Chinese dynasties and states",
+  "aliases": [
+   "Koxinga",
+   "Ming",
+   "Ming China",
+   "Ming and Qing China",
+   "Ming loyalists",
+   "Zheng regime"
+  ],
+  "record_count": 16
+ },
+ {
+  "id": "tibetans",
+  "name": "Tibetans and Tibetan polities",
+  "family": "tibet",
+  "family_name": "Tibetans and Tibetan polities",
+  "aliases": [
+   "Baltis",
+   "Ladakhi kingdom",
+   "Ladakhi kings",
+   "Lhazang Khan",
+   "Phag mo gru",
+   "Rin spungs",
+   "Sa skya",
+   "Tibet",
+   "Tibetan Yarlung dynasty",
+   "Tibetan polities",
+   "Tibetans",
+   "Tufan",
+   "dGa' ldan pho brang",
+   "gTsang pa"
+  ],
+  "record_count": 27
+ },
+ {
+  "id": "tibetan-buddhism",
+  "name": "Tibetan Buddhist hierarchs",
+  "family": "religious",
+  "family_name": "Religious communities and missions",
+  "aliases": [
+   "Dalai Lama",
+   "Tibetan Buddhism",
+   "Tibetan Gelugpa",
+   "Tibetan Lama",
+   "Tibetan hierarchs",
+   "Tibetan religious lineages"
+  ],
+  "record_count": 8
+ },
+ {
+  "id": "persia",
+  "name": "Persia",
+  "family": "iran-islamic",
+  "family_name": "Persian, Arab, Ottoman and other Islamic states",
+  "aliases": [
+   "Persians",
+   "Qajar Persia",
+   "Safavids",
+   "Zand period"
+  ],
+  "record_count": 8
+ },
+ {
+  "id": "ottomans",
+  "name": "Ottomans",
+  "family": "iran-islamic",
+  "family_name": "Persian, Arab, Ottoman and other Islamic states",
+  "aliases": [
+   "Ottoman Empire",
+   "Ottoman empire",
+   "Ottoman garrisons",
+   "Ottoman ports"
+  ],
+  "record_count": 14
+ },
+ {
+  "id": "mamluks",
+  "name": "Mamluks",
+  "family": "iran-islamic",
+  "family_name": "Persian, Arab, Ottoman and other Islamic states",
+  "aliases": [
+   "Mamluk Egypt"
+  ],
+  "record_count": 7
+ },
+ {
+  "id": "abbasids",
+  "name": "Abbasid caliphate",
+  "family": "iran-islamic",
+  "family_name": "Persian, Arab, Ottoman and other Islamic states",
+  "aliases": [
+   "Abbasid Baghdad",
+   "Baghdad caliphate"
+  ],
+  "record_count": 2
+ },
+ {
+  "id": "ismailis",
+  "name": "Ismailis",
+  "family": "iran-islamic",
+  "family_name": "Persian, Arab, Ottoman and other Islamic states",
+  "aliases": [
+   "Mulahi"
+  ],
+  "record_count": 1
+ },
+ {
+  "id": "saracens",
+  "name": "Saracens",
+  "family": "iran-islamic",
+  "family_name": "Persian, Arab, Ottoman and other Islamic states",
+  "aliases": [],
+  "record_count": 3
+ },
+ {
+  "id": "mughals",
+  "name": "Mughals",
+  "family": "iran-islamic",
+  "family_name": "Persian, Arab, Ottoman and other Islamic states",
+  "aliases": [],
+  "record_count": 2
+ },
+ {
+  "id": "afghans",
+  "name": "Afghans",
+  "family": "iran-islamic",
+  "family_name": "Persian, Arab, Ottoman and other Islamic states",
+  "aliases": [],
+  "record_count": 1
+ },
+ {
+  "id": "kurds",
+  "name": "Kurds",
+  "family": "iran-islamic",
+  "family_name": "Persian, Arab, Ottoman and other Islamic states",
+  "aliases": [],
+  "record_count": 2
+ },
+ {
+  "id": "hormuz",
+  "name": "Kingdom of Hormuz",
+  "family": "iran-islamic",
+  "family_name": "Persian, Arab, Ottoman and other Islamic states",
+  "aliases": [
+   "Hormuz kingdom"
+  ],
+  "record_count": 1
+ },
+ {
+  "id": "negudaris",
+  "name": "Negudaris",
+  "family": "iran-islamic",
+  "family_name": "Persian, Arab, Ottoman and other Islamic states",
+  "aliases": [],
+  "record_count": 1
+ },
+ {
+  "id": "circassians",
+  "name": "Circassians",
+  "family": "caucasus",
+  "family_name": "Peoples of the Caucasus",
+  "aliases": [
+   "Cherkess",
+   "Kabardians"
+  ],
+  "record_count": 11
+ },
+ {
+  "id": "georgians",
+  "name": "Georgians",
+  "family": "caucasus",
+  "family_name": "Peoples of the Caucasus",
+  "aliases": [],
+  "record_count": 4
+ },
+ {
+  "id": "armenians",
+  "name": "Armenians",
+  "family": "caucasus",
+  "family_name": "Peoples of the Caucasus",
+  "aliases": [],
+  "record_count": 6
+ },
+ {
+  "id": "abkhaz",
+  "name": "Abkhaz",
+  "family": "caucasus",
+  "family_name": "Peoples of the Caucasus",
+  "aliases": [],
+  "record_count": 2
+ },
+ {
+  "id": "ossetes",
+  "name": "Ossetes",
+  "family": "caucasus",
+  "family_name": "Peoples of the Caucasus",
+  "aliases": [],
+  "record_count": 1
+ },
+ {
+  "id": "chechens",
+  "name": "Chechens",
+  "family": "caucasus",
+  "family_name": "Peoples of the Caucasus",
+  "aliases": [],
+  "record_count": 1
+ },
+ {
+  "id": "dagestan",
+  "name": "Dagestani peoples",
+  "family": "caucasus",
+  "family_name": "Peoples of the Caucasus",
+  "aliases": [
+   "Dagestani polities",
+   "Daghestani",
+   "Kaitag",
+   "Tarku"
+  ],
+  "record_count": 2
+ },
+ {
+  "id": "caucasian-peoples",
+  "name": "Caucasian peoples (general)",
+  "family": "caucasus",
+  "family_name": "Peoples of the Caucasus",
+  "aliases": [
+   "Caucasian peoples"
+  ],
+  "record_count": 2
+ },
+ {
+  "id": "poland-lithuania",
+  "name": "Poland and Lithuania",
+  "family": "europe",
+  "family_name": "European peoples and powers",
+  "aliases": [
+   "Jagiello",
+   "Lithuania",
+   "Lithuanians",
+   "Poland",
+   "Poland-Lithuania",
+   "Poles"
+  ],
+  "record_count": 10
+ },
+ {
+  "id": "hungarians",
+  "name": "Hungarians",
+  "family": "europe",
+  "family_name": "European peoples and powers",
+  "aliases": [
+   "Béla IV",
+   "Coloman"
+  ],
+  "record_count": 5
+ },
+ {
+  "id": "genoese",
+  "name": "Genoese",
+  "family": "europe",
+  "family_name": "European peoples and powers",
+  "aliases": [
+   "Fryazi"
+  ],
+  "record_count": 2
+ },
+ {
+  "id": "venetians",
+  "name": "Venetians",
+  "family": "europe",
+  "family_name": "European peoples and powers",
+  "aliases": [],
+  "record_count": 1
+ },
+ {
+  "id": "holy-roman-empire",
+  "name": "Holy Roman Empire",
+  "family": "europe",
+  "family_name": "European peoples and powers",
+  "aliases": [
+   "Bavaria",
+   "Bohemians",
+   "Empire (Frederick II, Conrad IV)",
+   "Frederick II",
+   "Germans"
+  ],
+  "record_count": 3
+ },
+ {
+  "id": "swedes",
+  "name": "Swedes",
+  "family": "europe",
+  "family_name": "European peoples and powers",
+  "aliases": [
+   "Swedish captives"
+  ],
+  "record_count": 3
+ },
+ {
+  "id": "livonian-order",
+  "name": "Livonian Order",
+  "family": "europe",
+  "family_name": "European peoples and powers",
+  "aliases": [],
+  "record_count": 1
+ },
+ {
+  "id": "croats",
+  "name": "Croats and Dalmatians",
+  "family": "europe",
+  "family_name": "European peoples and powers",
+  "aliases": [
+   "Croats and Dalmatian communes"
+  ],
+  "record_count": 1
+ },
+ {
+  "id": "slavs",
+  "name": "Slavs",
+  "family": "europe",
+  "family_name": "European peoples and powers",
+  "aliases": [],
+  "record_count": 2
+ },
+ {
+  "id": "crusader-states",
+  "name": "Crusader states",
+  "family": "europe",
+  "family_name": "European peoples and powers",
+  "aliases": [],
+  "record_count": 1
+ },
+ {
+  "id": "portuguese",
+  "name": "Portuguese",
+  "family": "europe",
+  "family_name": "European peoples and powers",
+  "aliases": [
+   "Portuguese Macau",
+   "Portuguese at Macau",
+   "Portuguese captives",
+   "Portuguese traders"
+  ],
+  "record_count": 4
+ },
+ {
+  "id": "spanish",
+  "name": "Spanish Philippines",
+  "family": "europe",
+  "family_name": "European peoples and powers",
+  "aliases": [],
+  "record_count": 1
+ },
+ {
+  "id": "european-powers",
+  "name": "European powers (general)",
+  "family": "europe",
+  "family_name": "European peoples and powers",
+  "aliases": [
+   "European powers"
+  ],
+  "record_count": 1
+ },
+ {
+  "id": "korea",
+  "name": "Korea",
+  "family": "east-south-asia",
+  "family_name": "Other East, South and Southeast Asian peoples",
+  "aliases": [
+   "Joseon",
+   "Koreans"
+  ],
+  "record_count": 6
+ },
+ {
+  "id": "japan",
+  "name": "Japan",
+  "family": "east-south-asia",
+  "family_name": "Other East, South and Southeast Asian peoples",
+  "aliases": [
+   "Japanese",
+   "Japanese castaways"
+  ],
+  "record_count": 3
+ },
+ {
+  "id": "india",
+  "name": "Indians",
+  "family": "east-south-asia",
+  "family_name": "Other East, South and Southeast Asian peoples",
+  "aliases": [
+   "Dogras",
+   "Gurkhas"
+  ],
+  "record_count": 3
+ },
+ {
+  "id": "burma-siam",
+  "name": "Burmese and Siamese",
+  "family": "east-south-asia",
+  "family_name": "Other East, South and Southeast Asian peoples",
+  "aliases": [
+   "Burmese",
+   "Siamese"
+  ],
+  "record_count": 1
+ },
+ {
+  "id": "nestorians",
+  "name": "Church of the East (Nestorians)",
+  "family": "religious",
+  "family_name": "Religious communities and missions",
+  "aliases": [
+   "Nestorian Christians",
+   "Nestorians"
+  ],
+  "record_count": 4
+ },
+ {
+  "id": "franciscans",
+  "name": "Franciscans",
+  "family": "religious",
+  "family_name": "Religious communities and missions",
+  "aliases": [],
+  "record_count": 1
+ },
+ {
+  "id": "jesuits",
+  "name": "Jesuit mission",
+  "family": "religious",
+  "family_name": "Religious communities and missions",
+  "aliases": [],
+  "record_count": 1
+ },
+ {
+  "id": "orthodox-church",
+  "name": "Russian Orthodox church",
+  "family": "religious",
+  "family_name": "Religious communities and missions",
+  "aliases": [],
+  "record_count": 1
+ },
+ {
+  "id": "tartars-unspecified",
+  "name": "Tartars or Tatars (as named)",
+  "family": "tartar-label",
+  "family_name": "Named only as Tartars or Tatars",
+  "aliases": [
+   "Kosan",
+   "Tartari Campestres",
+   "Tartars",
+   "Tartars (Tattari, Tatari)",
+   "Tartars (as named in title)",
+   "Tatar",
+   "Tatars",
+   "White Tatars",
+   "Wild Tatars"
+  ],
+  "record_count": 42
+ }
+]

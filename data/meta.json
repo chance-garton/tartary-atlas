@@ -1,0 +1,14 @@
+{
+ "built": "2026-09-28",
+ "source": "Tartary_Multilingual_Source_Inventory.xlsx (W001-W303, M001-M119)",
+ "counts": {
+  "records": 422,
+  "written": 303,
+  "maps": 119,
+  "places": 356,
+  "places_plotted": 326,
+  "peoples": 138,
+  "lineage_edges": 73,
+  "maps_with_iiif": 98
+ }
+}
