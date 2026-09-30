@@ -39,7 +39,7 @@ Site-wide settings (name, address, repository link, researcher, podcast link) si
 
 ## Pages
 
-* `/` the front door: a period map, five question trails with pictures, a strip of old maps, one featured passage, twelve places, six witnesses, and links down into the archive. The featured passage is drawn at random on every visit from a pool of about a hundred (`FEATURE_PER_TRAIL`, `FEATURE_PER_SOURCE` in the generator), never the one seen last time; "Show me another" walks a fresh shuffle; Back returns to the passage that was showing. `FIRST_FEATURE` is what shows when the page script does not run.
+* `/` the front door: the question, one passage from the record beside it (first thing on the page, with a Draw another button), a period map, five question trails, a strip of old maps, twelve places, six witnesses, and the vault. No counts strip and no progress report. The passage is drawn at random on every visit from a pool of about a hundred (`FEATURE_PER_TRAIL`, `FEATURE_PER_SOURCE` in the generator), never the one seen last time; "Draw another" walks a fresh shuffle; Back returns to the passage that was showing. `FIRST_FEATURE` is what shows when the page script does not run.
 * `/passages/` and `/passages/<trail>/` the passage explorer (cities, architecture, customs, names, outliers): search with the found words marked, how the author knew, century, order, shuffle, a count of what matches and a Clear filters button. Each menu shows how many passages every choice would give. Reads `assets/passages-<trail>.json`.
 * `/sources/` every source that has been read, in plain words.
 * `/maps/` the old maps: a picture gallery of every map with a working image route, by century, with a search box.
@@ -81,3 +81,7 @@ Also written: `sitemap.xml`, `robots.txt`, `404.html`, `.nojekyll`.
 * Map images load from each holding library's IIIF server; nothing is copied into this repository or the static site. The private preview artifact carries its own small copies, because an artifact cannot load images from other sites. Check each library's terms before copying pictures anywhere public (David Rumsey: CC BY-NC-SA; Bodleian: CC BY-NC; the Vatican Library reserves rights).
 * The vegetable lamb engraving is from Henry Lee, The Vegetable Lamb of Tartary (1887), via Wikimedia Commons, public domain.
 * Fonts: Newsreader, Public Sans, IBM Plex Mono, and IM Fell English SC (Igino Marini) for the wordmark, from Google Fonts.
+
+## Names the visitor sees
+
+The navigation reads In their words (`/passages/`), Map room (`/maps/`), Wander the map (`/map/`), Witnesses (`/sources/`), The vault (`/archive/`), About. Inside the vault: The many Tartarys (`/labels/`), Who counted as a Tartar? (`/meanings/`), Who copied whom (`/lineage/`), Every book and map (`/records/`), Every place (`/places/`), Who's who (`/peoples/`), How it was made (`/method/`), Spot a mistake? (`/corrections/`). Addresses did not change. Visitor-facing copy avoids the project's working words (record, card, catalogue, IIIF, read for passages, profile only); How it was made is the one page that explains the machinery.

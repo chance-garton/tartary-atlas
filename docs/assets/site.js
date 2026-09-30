@@ -202,13 +202,12 @@
     if (p.n) notes += '<p>' + esc(p.n) + '</p>';
     if (notes) notes = '<details class="psg-notes"><summary>' + (p.c ? 'Keep in mind' : 'A note on this quote') + '</summary>' + notes + '</details>';
     var b = BASIS[p.b] || [p.b, ''];
-    var links = '<a href="' + esc(p.u) + '" rel="noopener">Read the page' + (p.p ? ' (p. ' + esc(p.p) + ')' : '') + '</a>';
+    var links = '<a href="' + esc(p.u) + '" rel="noopener">See the original page' + (p.p ? ' (p. ' + esc(p.p) + ')' : '') + '</a>';
     links += '<button type="button" class="psg-copy" data-copy>Copy quote</button>';
     var tale = '';
     if (o.source !== false) {
       tale = '<a class="psg-tale" href="' + TA.href('w/' + p.r) + '"><span class="psg-tale-k">Explore this Tartaria tale</span>' +
-        '<span class="psg-tale-t">' + esc(p.sr) + '</span><span class="psg-tale-n">' + esc(p.sw) + ' · ' + numText(p.sn) + ' passage' + (p.sn === 1 ? '' : 's') +
-        ' · who wrote it, how they knew, what to watch out for</span></a>';
+        '<span class="psg-tale-t">' + esc(p.sr) + '</span><span class="psg-tale-n">' + esc(p.sw) + ' · ' + numText(p.sn) + ' passage' + (p.sn === 1 ? '' : 's') + '</span></a>';
     }
     return '<article class="psg' + (o.cls ? ' ' + o.cls : '') + '" id="p-' + esc(p.i) + '" data-th="' + esc(p.th) + '" data-b="' + esc(p.b) + '" data-y="' + (p.y == null ? '' : p.y) + '">' +
       '<div class="psg-meta">' + meta + '</div><h3>' + esc(p.h) + '</h3><p class="gloss">' + esc(p.g) + '</p>' + quote +
@@ -334,7 +333,7 @@
       failed = true;
       moreRow.hidden = true;
       el.querySelector('.filterbar').insertAdjacentHTML('afterend',
-        '<p class="banner">The full list of passages could not load here, so searching and filtering are off. The first passages are shown below.</p>');
+        '<p class="banner">Search is off for the moment: the full list could not load. Here are the first passages.</p>');
     });
     [q, bs, wh].forEach(function (x) { x.addEventListener('input', function () { refresh(); }); });
     od.addEventListener('input', function () { order = null; refresh(); });
@@ -769,8 +768,8 @@
     function on(b) { return ['all', ['==', ['get', 'b'], b], ['>', ['get', 'n'], 0]]; }
     function initMap() {
       if (!window.maplibregl) {
-        mapEl.innerHTML = '<div class="map-fallback">The interactive map could not load here. Every place and record is still listed on the ' +
-          '<a href="' + TA.href('places') + '">Places</a> and <a href="' + TA.href('records') + '">Records</a> pages.</div>';
+        mapEl.innerHTML = '<div class="map-fallback">The map could not load here. Try <a href="' + TA.href('places') + '">every place</a> or <a href="' + TA.href('records') + '">every book and map</a> ' +
+          'instead.</div>';
         return;
       }
       try {
@@ -781,8 +780,8 @@
           minZoom: 0.8, maxZoom: 9, attributionControl: false, dragRotate: false, pitchWithRotate: false
         });
       } catch (e) {
-        mapEl.innerHTML = '<div class="map-fallback">This browser could not start the map (it needs WebGL). The ' +
-          '<a href="' + TA.href('places') + '">Places</a> page lists every place.</div>';
+        mapEl.innerHTML = '<div class="map-fallback">This browser could not start the map. ' +
+          '<a href="' + TA.href('places') + '">See every place as a list</a>.</div>';
         return;
       }
       map.touchZoomRotate.disableRotation();
@@ -827,7 +826,7 @@
           map.on('mousemove', id, function (e) {
             map.getCanvas().style.cursor = 'pointer';
             var f = e.features[0].properties;
-            popup.setLngLat(e.lngLat).setHTML('<strong>' + esc(f.name) + '</strong><br>' + f.n + ' record' + (f.n === 1 ? '' : 's') +
+            popup.setLngLat(e.lngLat).setHTML('<strong>' + esc(f.name) + '</strong><br>' + f.n + ' source' + (f.n === 1 ? '' : 's') +
               ' · ' + esc(D.basis[f.b]).toLowerCase()).addTo(map);
           });
           map.on('mouseleave', id, function () { map.getCanvas().style.cursor = ''; popup.remove(); });
@@ -924,10 +923,10 @@
         pn.innerHTML = '<div class="eyebrow"><span class="basis-dot ' + p.b + '"></span> ' + esc(D.basis[p.b] || '') + '</div>' +
           '<h2>' + esc(p.n) + '</h2>' +
           (p.psg ? '<p><a class="btn primary" href="' + TA.href('place/' + p.id) + '">Read ' + p.psg + ' passage' + (p.psg === 1 ? '' : 's') + ' about ' + esc(p.n) + '</a></p>' : '') +
-          '<p class="small muted">' + recs.length + ' record' + (recs.length === 1 ? '' : 's') + ' in this selection, in date order. ' +
-          '<a href="' + TA.href('place/' + p.id) + '">Open the place page</a></p>' +
-          (recs.length ? '<ol class="rlist">' + recs.map(recItem).join('') + '</ol>' : '<p class="muted">No records match the current filters.</p>') +
-          '<p><button type="button" class="chip" data-clear>Clear selection</button></p>';
+          '<p class="small muted">Named in ' + recs.length + ' book' + (recs.length === 1 ? '' : 's') + ' and maps. ' +
+          '<a href="' + TA.href('place/' + p.id) + '">See everything about ' + esc(p.n) + '</a></p>' +
+          (recs.length ? '<ol class="rlist">' + recs.map(recItem).join('') + '</ol>' : '<p class="muted">Nothing in these years. Widen the dates.</p>') +
+          '<p><button type="button" class="chip" data-clear>Pick another place</button></p>';
         pn.querySelector('[data-clear]').addEventListener('click', function () { select(null); });
         return;
       }
@@ -937,16 +936,16 @@
       var nopoint = Object.keys(P).map(function (k) { return P[k]; })
         .filter(function (p) { return p.count && p.b === 'none'; })
         .sort(function (a, b) { return b.count - a.count; }).slice(0, 10);
-      pn.innerHTML = '<h2 style="font-family:var(--font-body);font-size:var(--step-0);font-weight:650">Start with one of these</h2>' +
+      pn.innerHTML = '<h2 style="font-family:var(--font-body);font-size:var(--step-0);font-weight:650">Try one of these</h2>' +
         '<ul class="tags">' + ranked.map(function (p) {
           return '<li><button type="button" class="chip" data-sel="' + esc(p.id) + '"><span class="basis-dot ' + p.b + '"></span>' + esc(p.n) +
             ' <span class="mono muted">' + p.count + '</span></button></li>';
         }).join('') + '</ul>' +
-        (nopoint.length ? '<div class="nopoint"><p>Named, but deliberately not plotted:</p><ul>' + nopoint.map(function (p) {
+        (nopoint.length ? '<div class="nopoint"><p>Too big for one dot:</p><ul>' + nopoint.map(function (p) {
           return '<li><a href="' + TA.href('place/' + p.id) + '"><span class="chip"><span class="basis-dot none"></span>' + esc(p.n) +
             ' <span class="mono muted">' + p.count + '</span></span></a></li>';
         }).join('') + '</ul><p class="small muted" style="margin-top:6px">Tartary and Great Tartary changed shape from map to map. ' +
-          '<a href="' + TA.href('labels') + '">See when each Tartary label was in use</a>.</p></div>' : '');
+          '<a href="' + TA.href('labels') + '">See the many Tartarys</a>.</p></div>' : '');
       pn.querySelectorAll('[data-sel]').forEach(function (b) {
         b.addEventListener('click', function () {
           var p = P[b.getAttribute('data-sel')];
@@ -991,7 +990,7 @@
         (groups.length ? groups.map(function (g) {
           return '<div style="display:grid;gap:4px"><div class="eyebrow">' + esc(g.name) + ' · ' + g.items.length + '</div>' +
             '<ul class="note-list">' + g.items.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ul></div>';
-        }).join('') : '<p class="muted">No record carries a Tartary label in these years.</p>');
+        }).join('') : '<p class="muted">No Tartary on the maps in these years.</p>');
     }
     inp.addEventListener('input', upd);
     upd();

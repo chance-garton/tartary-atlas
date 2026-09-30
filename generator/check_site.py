@@ -62,6 +62,7 @@ kz = (D/'place/kazan/index.html').read_text()
 check(kz.count('<article class="psg"') == sum(1 for p in psg if 'kazan' in p['place_ids']), 'kazan place page carries every Kazan passage')
 front = (D/'index.html').read_text()
 check('Follow a question' in front and front.count('class="trail"') == 5 and 'data-module="feature"' in front, 'front page has the five trails and a featured passage')
+check(0 < front.index('One passage from the record') < front.index('Follow a question') and 'What has been read' not in front, 'front page: the passage comes first, above the trails, with no progress report')
 # 3c. the pills above a set of passages are buttons that filter it
 w43 = (D/'w/W043/index.html').read_text()
 check('data-module="pset"' in w43 and w43.count('class="pill" data-f=') >= 3 and 'data-copy' in w43, 'source page: trail pills are filter buttons, cards carry a copy button')
