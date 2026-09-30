@@ -969,8 +969,7 @@ def page_home(site, ctx):
     front_rec = site.rec.get(fm.get("rec", ""), None)
     credit = ""
     if front_rec:
-        credit = (f'<p class="front-credit"><a href="{ctx.link(site.rkey(front_rec))}">Abraham Ortelius, Tartary, or the kingdom of the Great Khan, 1570</a>. '
-                  f'{esc(site.holder(front_rec["id"]))}.</p>')
+        credit = (f'<p class="front-credit"><a href="{ctx.link(site.rkey(front_rec))}">Map by Ortelius, 1570</a></p>')
     tools = ('<div class="front-tools" data-tools hidden>'
              '<button type="button" class="btn" data-roam>Roam the map</button>'
              '<span class="front-zoom"><button type="button" class="btn icon" data-zoom-out aria-label="Zoom out">−</button>'
@@ -986,11 +985,11 @@ def page_home(site, ctx):
                 f'<p class="front-at" data-at hidden></p>'
                 f'<div class="feature-slot" data-slot aria-live="polite">{psg_card(site, ctx, first, cls="big")}</div></div>')
     hero = (f'<section class="front" data-module="feature"><script type="application/json">{feat_json}</script>'
-            f'{stage}<div class="front-body"><div class="front-plate"><div class="eyebrow">Tartary in the historical record</div>'
+            f'{stage}<div class="front-body"><div class="front-plate">'
             f'<h1>What did the people who went there write down?</h1>'
-            f'<p class="lede">Travellers, envoys, captives and monks, in their own words. '
-            f'<a href="{ctx.link("passages")}">Read all {num(n_psg)} passages</a>.</p>'
-            f'<p class="front-how" data-how hidden>Every dot on the map is a place they wrote about. Every diamond is something odd the mapmaker wrote on it.</p>'
+            f'<p class="lede"><a href="{ctx.link("passages")}">{num(n_psg)} passages</a> from travellers, envoys, captives and monks.</p>'
+            f'<p class="front-how" data-how hidden><span><i class="key dot"></i>A place they wrote about</span>'
+            f'<span><i class="key dia"></i>A note on the map</span></p>'
             f'{credit}</div>'
             f'{card}</div></section>')
 

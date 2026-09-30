@@ -556,12 +556,12 @@
       openSlip('<p class="slip-k">Written on the map</p><h3>' + esc(s.t) + '</h3><p>' + esc(s.w) + '</p>' +
         (s.l ? '<p class="orig" lang="la">' + esc(s.l) + '</p><p class="slip-note">The Latin as read from the sheet. It may be partial.</p>' : ''));
     }
-    function mark(cls, label, x, y, fn) {
+    function mark(cls, label, x, y, fn, tip) {
       var OSD = window.OpenSeadragon, b = document.createElement('button');
       b.type = 'button';
       b.className = 'fpin ' + cls;
       b.setAttribute('aria-label', label);
-      b.innerHTML = '<span>' + esc(label) + '</span>';
+      b.innerHTML = '<span>' + esc(tip || label) + '</span>';
       // The viewer reads the pointer itself, so a press on a mark is caught by a tracker of its own.
       var tr = new OSD.MouseTracker({ element: b, clickHandler: function (e) { if (e.quick !== false) fn(); } });
       b.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fn(); } });
@@ -573,10 +573,7 @@
       roaming = on;
       stage.classList.toggle('roam', on);
       document.documentElement.classList.toggle('roaming', on);
-      var t = viewer.gestureSettingsTouch, m = viewer.gestureSettingsMouse, p = viewer.gestureSettingsPen;
-      m.scrollToZoom = on;
-      [t, p].forEach(function (g) { g.dragToPan = on; g.pinchToZoom = on; g.flickEnabled = on; });
-      viewer.canvas.style.touchAction = on ? 'none' : 'pan-y';
+      viewer.gestureSettingsMouse.scrollToZoom = on;
       stage.querySelector('[data-roam]').hidden = on;
       stage.querySelector('[data-close]').hidden = !on;
       closeSlip();
@@ -586,7 +583,8 @@
     function startMap() {
       var OSD = window.OpenSeadragon;
       if (!M || !OSD || !stage) return;
-      var quiet = { dragToPan: false, pinchToZoom: false, flickEnabled: false, clickToZoom: false, dblClickToZoom: false, scrollToZoom: false };
+      // The map can always be dragged and pinched. Only the wheel waits for roaming, so the page still scrolls past.
+      var quiet = { dragToPan: true, pinchToZoom: true, flickEnabled: true, clickToZoom: false, dblClickToZoom: false, scrollToZoom: false };
       viewer = OSD({
         element: stage.querySelector('[data-osd]'),
         tileSources: M.tiled ? M.src : { type: 'image', url: M.src },
@@ -597,9 +595,9 @@
       });
       viewer.addHandler('open', function () {
         open = true;
-        viewer.canvas.style.touchAction = 'pan-y';
+        viewer.canvas.style.touchAction = 'none';
         M.pins.forEach(function (pin) {
-          marks[pin.i] = mark(pin.k === 'town' ? 'town' : 'name', pin.n + ', lettered ' + pin.m, pin.x, pin.y, function () { pickPin(pin); });
+          marks[pin.i] = mark(pin.k === 'town' ? 'town' : 'name', pin.n + ', lettered ' + pin.m, pin.x, pin.y, function () { pickPin(pin); }, pin.n);
         });
         M.sights.forEach(function (s) { mark('sight', s.t, s.x, s.y, function () { pickSight(s); }); });
         stage.querySelector('[data-tools]').hidden = false;
