@@ -1,0 +1,363 @@
+{
+ "about": "The front door: places and curiosities pinned on Ortelius's map of Tartary (M047). xy is in full-resolution pixels of the Library of Congress image. Only readings marked sure in the search notes are kept. The Latin is as read from the sheet and may be partial.",
+ "rec": "M047",
+ "size": [
+  6279,
+  4758
+ ],
+ "pins": [
+  {
+   "id": "muscovy",
+   "on_map": "DVCIS MOSCOVIAE CONFINIA.",
+   "xy": [
+    1480,
+    1080
+   ],
+   "kind": "label"
+  },
+  {
+   "id": "volga-bulgaria",
+   "on_map": "Bulgar",
+   "xy": [
+    1202,
+    1192
+   ],
+   "kind": "town"
+  },
+  {
+   "id": "kazan",
+   "on_map": "Casan",
+   "xy": [
+    1300,
+    1230
+   ],
+   "kind": "town"
+  },
+  {
+   "id": "volga",
+   "on_map": "Volga, et Edel, ol: Rha fl.",
+   "xy": [
+    1030,
+    1330
+   ],
+   "kind": "label"
+  },
+  {
+   "id": "siberia",
+   "on_map": "Sibir",
+   "xy": [
+    2062,
+    1202
+   ],
+   "kind": "town"
+  },
+  {
+   "id": "ob",
+   "on_map": "Obÿ fl.",
+   "xy": [
+    2165,
+    1180
+   ],
+   "kind": "label"
+  },
+  {
+   "id": "bashkiria",
+   "on_map": "Baschirdorum horda.",
+   "xy": [
+    1940,
+    1545
+   ],
+   "kind": "label"
+  },
+  {
+   "id": "tartary",
+   "on_map": "TARTARIA",
+   "xy": [
+    1865,
+    1650
+   ],
+   "kind": "label"
+  },
+  {
+   "id": "astrakhan",
+   "on_map": "Astracan",
+   "xy": [
+    1062,
+    1675
+   ],
+   "kind": "town"
+  },
+  {
+   "id": "caspian",
+   "on_map": "Mar de Bachu, olim Mare Caspium, et Hyrcanum.",
+   "xy": [
+    950,
+    1950
+   ],
+   "kind": "label"
+  },
+  {
+   "id": "tabriz",
+   "on_map": "Tauris ol: Ecbatana",
+   "xy": [
+    598,
+    2150
+   ],
+   "kind": "town"
+  },
+  {
+   "id": "turkestan",
+   "on_map": "TVRCHESTAN Regio",
+   "xy": [
+    1575,
+    1945
+   ],
+   "kind": "label"
+  },
+  {
+   "id": "transoxiana",
+   "on_map": "MAVRENAHER.",
+   "xy": [
+    1790,
+    2165
+   ],
+   "kind": "label"
+  },
+  {
+   "id": "samarkand",
+   "on_map": "Samarchand. magni Tamber: quondā sedes.",
+   "xy": [
+    1442,
+    2386
+   ],
+   "kind": "town"
+  },
+  {
+   "id": "khotan",
+   "on_map": "Cotan",
+   "xy": [
+    1890,
+    2410
+   ],
+   "kind": "town"
+  },
+  {
+   "id": "kashgar",
+   "on_map": "Cascar.",
+   "xy": [
+    1847,
+    2500
+   ],
+   "kind": "town"
+  },
+  {
+   "id": "karakorum",
+   "on_map": "Caracoran.",
+   "xy": [
+    2335,
+    2560
+   ],
+   "kind": "town"
+  },
+  {
+   "id": "altai",
+   "on_map": "Mons Althaÿ",
+   "xy": [
+    2720,
+    2470
+   ],
+   "kind": "label"
+  },
+  {
+   "id": "western-xia",
+   "on_map": "TANGVT.",
+   "xy": [
+    2440,
+    2840
+   ],
+   "kind": "label"
+  },
+  {
+   "id": "beijing",
+   "on_map": "Cambalu Cataie metropolis, habet 28. mill: in circuitu.",
+   "xy": [
+    2850,
+    2985
+   ],
+   "kind": "town"
+  },
+  {
+   "id": "hami",
+   "on_map": "Camul.",
+   "xy": [
+    2270,
+    3235
+   ],
+   "kind": "town"
+  },
+  {
+   "id": "persia",
+   "on_map": "REGNI PERSIAE CONFINIA.",
+   "xy": [
+    780,
+    3070
+   ],
+   "kind": "label"
+  },
+  {
+   "id": "north-china",
+   "on_map": "CATAIO.",
+   "xy": [
+    2960,
+    3485
+   ],
+   "kind": "label"
+  },
+  {
+   "id": "tibet",
+   "on_map": "THEBET",
+   "xy": [
+    2625,
+    3625
+   ],
+   "kind": "label"
+  },
+  {
+   "id": "nanjing",
+   "on_map": "Nanqui.",
+   "xy": [
+    3485,
+    3560
+   ],
+   "kind": "town"
+  },
+  {
+   "id": "zhejiang",
+   "on_map": "CHEQVAN.",
+   "xy": [
+    3470,
+    3920
+   ],
+   "kind": "label"
+  },
+  {
+   "id": "china",
+   "on_map": "CHINA.",
+   "xy": [
+    3200,
+    4175
+   ],
+   "kind": "label"
+  },
+  {
+   "id": "india",
+   "on_map": "INDIAE PARS",
+   "xy": [
+    1910,
+    4040
+   ],
+   "kind": "label"
+  }
+ ],
+ "sights": [
+  {
+   "title": "The Duke of Muscovy's tent",
+   "xy": [
+    1290,
+    800
+   ],
+   "what": "A large tent with an armed ruler at its door, beside the words 'borders of the Duke of Muscovy'.",
+   "latin": "DVCIS MOSCOVIAE CONFINIA."
+  },
+  {
+   "title": "The Great Khan's camp",
+   "xy": [
+    2170,
+    2240
+   ],
+   "what": "Tents with the ruler seated at the door. The caption says Great Khan means emperor in the Tartar tongue, and calls him the greatest prince of Asia.",
+   "latin": "Magnus Cham, (quod lingua Tartarorum Imperatorem sonat) maximus Asie princeps."
+  },
+  {
+   "title": "What the map claims to show",
+   "xy": [
+    1270,
+    3750
+   ],
+   "what": "The map's own summary, held up by two figures: all Tartary and the rest of eastern Asia that obeys the Great Khan, bounded by the Ob, the Volga, the Caspian, Tibet, the Caromoran river and the ocean.",
+   "latin": "Continet hec tabula oem Tartariam, cum reliqua Asie Orientalioris usq3 Oceanu Eoum parte, Magno Chamo obediente: Cuius imperium Obij fl: Kataia lacu; Volga fl: Mari Caspio, Chesel flu: Ussonte monte, Thebet regione, Caromoram fluuio, & Oceano terminatur."
+  },
+  {
+   "title": "The ten lost tribes",
+   "xy": [
+    3450,
+    2380
+   ],
+   "what": "The land of Arsareth. The note says the ten tribes of Israel withdrew here and took the place of the Scythians as Totars or Tartars, and ties the name Cathay to them.",
+   "latin": "ARSARETH. Hic 10 Tribus secessere, et Totatoru sive Tartarorum loco Scythice substituerunt. Vnde Gauthe seu Gauthay a summa Dei gloria asserenda ibi dicti sunt, et hinc Cathay clariss: Regnum."
+  },
+  {
+   "title": "A horde named for a tribe of Israel",
+   "xy": [
+    2850,
+    940
+   ],
+   "what": "A horde in the far north is lettered as the Nephthalites, and the note says they are named after Naphtali, one of the ten tribes of Israel.",
+   "latin": "Nepthalitarum horda, Nepthalite a 10 Tribuum Israelis nomine Neptali dicti sunt"
+  },
+  {
+   "title": "The king of Tabor",
+   "xy": [
+    2580,
+    2080
+   ],
+   "what": "A note on Tabor or Tybur, which it calls the navel of the Tartars' country. It says their king came to France in 1540, to King Francis I, and was later burned at Mantua under Charles V.",
+   "latin": "Tabor seu Tybur, umbilicarius Tatarorum regio, ubi licet olim libros sacros perdidissent, sunt tamen uniti sub uno rege, qui 1540 in Galliam usq3 ad regem Franciscum illius nominis primum venit, et postea a Carolo V. Mantue igne sue infidelitatis poenas luit"
+  },
+  {
+   "title": "Prester John's kingdom",
+   "xy": [
+    3420,
+    2600
+   ],
+   "what": "A note on Argon: once, it says, the Christian kingdom of Prester John in Asia, founded by Saint Thomas.",
+   "latin": "ARGON. Christianorum olim regnu noie Presbiteri Iois in Asia erat, a D. Thoma ibi institutum, ut Romane corresponderet ecclesie"
+  },
+  {
+   "title": "Printing, a thousand years early",
+   "xy": [
+    2520,
+    2885
+   ],
+   "what": "A note beside Tangut: people here, it is said, had the art of printing a thousand years ago.",
+   "latin": "Hic arte imprimendi ante mille, ut ferunt, annos habuerunt."
+  },
+  {
+   "title": "The Strait of Anian",
+   "xy": [
+    4250,
+    2790
+   ],
+   "what": "The Strait of Anian, the imagined sea passage separating Asia from America.",
+   "latin": "STRETTO DI ANIAN"
+  },
+  {
+   "title": "Japan, attacked in vain",
+   "xy": [
+    4670,
+    3850
+   ],
+   "what": "A note below Japan: this is the island Marco Polo called Zipangri, which the Great Khan once attacked in war, in vain.",
+   "latin": "Iapan insula, a M. Paulo Veneto Zipangri dicta, olim Chryse, a Magno Cham olim bello petita sed frustra."
+  },
+  {
+   "title": "America, across the strait",
+   "xy": [
+    5000,
+    2090
+   ],
+   "what": "The west coast of North America, lettered 'part of America or the New World', with Sierra Nevada and California further south.",
+   "latin": "AMERICAE VEL NOVI ORBIS PARS"
+  }
+ ]
+}

@@ -1,0 +1,473 @@
+{
+  "about": "Lettering and ornaments cut from the catalogued maps. Boxes are full-resolution pixels on the Library of Congress image. generator/fetch_cuts.py turns each into an ink-only picture in static/cuts/ and writes the sizes back here. wordmark: true puts a label in the header rotation.",
+  "labels": [
+    {
+      "key": "ortelius-1570",
+      "rec": "M047",
+      "box": [
+        1375,
+        1600,
+        935,
+        100
+      ],
+      "reads": "TARTARIA",
+      "by": "Abraham Ortelius",
+      "year": "1570",
+      "wordmark": true,
+      "lo": 0.3,
+      "hi": 0.62,
+      "size": [
+        1234,
+        132
+      ]
+    },
+    {
+      "key": "waldseemuller-1507",
+      "rec": "M003",
+      "box": [
+        9298,
+        4164,
+        250,
+        46
+      ],
+      "reads": "TARTARIA",
+      "by": "Martin Waldseemüller",
+      "year": "1507",
+      "wordmark": true,
+      "size": [
+        717,
+        132
+      ]
+    },
+    {
+      "key": "waldseemuller-1516",
+      "rec": "M044",
+      "box": [
+        5470,
+        2825,
+        600,
+        102
+      ],
+      "reads": "TARTARIA",
+      "by": "Martin Waldseemüller",
+      "year": "1516",
+      "wordmark": true,
+      "size": [
+        776,
+        132
+      ]
+    },
+    {
+      "key": "blaeu-1635",
+      "rec": "M005",
+      "box": [
+        7095,
+        1172,
+        710,
+        108
+      ],
+      "reads": "TARTARIA",
+      "by": "Willem Blaeu",
+      "year": "1635",
+      "wordmark": true,
+      "lo": 0.2,
+      "hi": 0.6,
+      "size": [
+        827,
+        132
+      ]
+    },
+    {
+      "key": "verbiest-1674",
+      "rec": "M102",
+      "box": [
+        4254,
+        6279,
+        112,
+        237
+      ],
+      "reads": "韃而靼",
+      "say": "Da'erda",
+      "by": "Ferdinand Verbiest",
+      "year": "1674",
+      "wordmark": false,
+      "vertical": true,
+      "size": [
+        132,
+        279
+      ]
+    },
+    {
+      "key": "dewit-1680",
+      "rec": "M048",
+      "box": [
+        6880,
+        940,
+        1290,
+        125
+      ],
+      "reads": "TARTARIÆ",
+      "by": "Frederick de Wit",
+      "year": "about 1680",
+      "wordmark": true,
+      "size": [
+        1328,
+        132
+      ]
+    },
+    {
+      "key": "delisle-1737",
+      "rec": "M009",
+      "box": [
+        3600,
+        3545,
+        550,
+        100
+      ],
+      "reads": "TARTARYE",
+      "by": "Covens and Mortier, after Delisle",
+      "year": "1737",
+      "wordmark": true,
+      "size": [
+        705,
+        132
+      ]
+    },
+    {
+      "key": "bellin-1749",
+      "rec": "M012",
+      "box": [
+        5500,
+        4085,
+        400,
+        125
+      ],
+      "reads": "Tartarey",
+      "by": "Jacques Nicolas Bellin",
+      "year": "about 1749",
+      "wordmark": true,
+      "size": [
+        422,
+        132
+      ]
+    },
+    {
+      "key": "danville-1751",
+      "rec": "M013",
+      "box": [
+        5195,
+        7322,
+        600,
+        120
+      ],
+      "reads": "TARTARIE",
+      "by": "Jean-Baptiste d'Anville",
+      "year": "1751",
+      "wordmark": true,
+      "size": [
+        603,
+        132
+      ]
+    },
+    {
+      "key": "delisle-1757",
+      "rec": "M014",
+      "box": [
+        2950,
+        265,
+        1470,
+        230
+      ],
+      "reads": "TARTARIÆ",
+      "by": "Covens and Mortier, after Delisle",
+      "year": "1757",
+      "wordmark": true,
+      "size": [
+        902,
+        132
+      ]
+    },
+    {
+      "key": "bonne-1779",
+      "rec": "M015",
+      "box": [
+        9020,
+        6340,
+        520,
+        105
+      ],
+      "reads": "TARTARIE",
+      "by": "Rigobert Bonne",
+      "year": "1779",
+      "wordmark": true,
+      "size": [
+        720,
+        132
+      ]
+    },
+    {
+      "key": "friend-1834",
+      "rec": "M019",
+      "box": [
+        4705,
+        628,
+        745,
+        108
+      ],
+      "reads": "CHINESE-TARTARY",
+      "by": "Stodart and Currier, New York",
+      "year": "1834",
+      "wordmark": false,
+      "size": [
+        1175,
+        132
+      ]
+    },
+    {
+      "key": "bradford-1835",
+      "rec": "M020",
+      "box": [
+        508,
+        1094,
+        392,
+        70
+      ],
+      "reads": "TARTARY",
+      "by": "Thomas G. Bradford",
+      "year": "1835",
+      "wordmark": true,
+      "size": [
+        766,
+        132
+      ]
+    }
+  ],
+  "ornaments": [
+    {
+      "key": "compass-star",
+      "rec": "M114",
+      "what": "An engraved compass star with many points",
+      "by": "Takahashi Kageyasu",
+      "year": "about 1810",
+      "box": [
+        3570,
+        4340,
+        300,
+        300
+      ],
+      "size": [
+        300,
+        300
+      ],
+      "lo": 0.2
+    },
+    {
+      "key": "compass-wheel",
+      "rec": "M008",
+      "what": "A small compass wheel with a fleur-de-lis pointing north",
+      "by": "Johann Baptist Homann",
+      "year": "about 1720",
+      "box": [
+        1603,
+        4597,
+        297,
+        332
+      ],
+      "size": [
+        295,
+        331
+      ]
+    },
+    {
+      "key": "ship",
+      "rec": "M005",
+      "what": "A three-masted ship under sail",
+      "by": "Willem Blaeu",
+      "year": "1635",
+      "box": [
+        4960,
+        5360,
+        420,
+        390
+      ],
+      "size": [
+        420,
+        390
+      ],
+      "lo": 0.18
+    },
+    {
+      "key": "tents",
+      "rec": "M044",
+      "what": "A cluster of round Tartar tents",
+      "by": "Martin Waldseemüller",
+      "year": "1516",
+      "box": [
+        4880,
+        2200,
+        400,
+        300
+      ],
+      "size": [
+        400,
+        300
+      ]
+    },
+    {
+      "key": "khan",
+      "rec": "M044",
+      "what": "A crowned khan seated in an open tent",
+      "by": "Martin Waldseemüller",
+      "year": "1516",
+      "box": [
+        2650,
+        2010,
+        500,
+        470
+      ],
+      "size": [
+        500,
+        470
+      ]
+    },
+    {
+      "key": "archer",
+      "rec": "M014",
+      "what": "A standing man in a fur cap holding a bow",
+      "by": "Covens and Mortier, after Delisle",
+      "year": "1757",
+      "box": [
+        1560,
+        4830,
+        520,
+        730
+      ],
+      "size": [
+        399,
+        560
+      ]
+    },
+    {
+      "key": "rider",
+      "rec": "M014",
+      "what": "A mounted archer seen from behind",
+      "by": "Covens and Mortier, after Delisle",
+      "year": "1757",
+      "box": [
+        220,
+        4850,
+        430,
+        920
+      ],
+      "size": [
+        262,
+        560
+      ]
+    },
+    {
+      "key": "elephant",
+      "rec": "M003",
+      "what": "An elephant standing in profile",
+      "by": "Martin Waldseemüller",
+      "year": "1507",
+      "box": [
+        6950,
+        8560,
+        720,
+        520
+      ],
+      "size": [
+        560,
+        404
+      ]
+    },
+    {
+      "key": "wind",
+      "rec": "M044",
+      "what": "A wind head in profile, blowing, beside a scroll naming the wind",
+      "by": "Martin Waldseemüller",
+      "year": "1516",
+      "box": [
+        2620,
+        390,
+        1030,
+        570
+      ],
+      "size": [
+        560,
+        310
+      ]
+    },
+    {
+      "key": "merfolk",
+      "rec": "M102",
+      "what": "A merman and a mermaid in the waves",
+      "by": "Ferdinand Verbiest",
+      "year": "1674",
+      "box": [
+        8060,
+        14300,
+        1680,
+        700
+      ],
+      "size": [
+        560,
+        233
+      ],
+      "lo": 0.14
+    },
+    {
+      "key": "giraffe",
+      "rec": "M102",
+      "what": "A tall giraffe led by a handler",
+      "by": "Ferdinand Verbiest",
+      "year": "1674",
+      "box": [
+        7030,
+        15440,
+        1200,
+        1950
+      ],
+      "size": [
+        344,
+        560
+      ]
+    },
+    {
+      "key": "reindeer",
+      "rec": "M010",
+      "what": "A reindeer head with branching antlers",
+      "by": "Homann Heirs",
+      "year": "1739",
+      "box": [
+        420,
+        345,
+        240,
+        155
+      ],
+      "size": [
+        240,
+        146
+      ],
+      "lo": 0.34,
+      "hi": 0.7
+    },
+    {
+      "key": "scholar",
+      "rec": "M013",
+      "what": "A bearded man in a turban at prayer beside a smoking altar",
+      "by": "Jean-Baptiste d'Anville, drawn by Gravelot",
+      "year": "1751",
+      "box": [
+        3940,
+        7020,
+        760,
+        1000
+      ],
+      "size": [
+        426,
+        560
+      ]
+    }
+  ]
+}

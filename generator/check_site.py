@@ -77,6 +77,18 @@ check(len(feat['p']) >= 60 and max(per.values()) <= 2 and all(q['r'] in feat['sr
 m81 = (D/'m/M081/index.html').read_text()
 check('data-zoom="' in m81 and 'Keep exploring' in m81, 'map page: the picture opens a closer look, and the page ends with the neighbouring maps')
 check(kz.count('data-basis') == kz.count('<article class="psg"'), 'every passage card has a pressable label for how the author knew')
+# 3e. the front door map, the lettering in the header and the ornaments
+fmap = feat.get('map') or {}
+pin_ids = {q['i'] for q in fmap.get('pins', [])}
+check(len(pin_ids) >= 20 and all(q['i'] in P for q in fmap['pins']) and all(0 < q['x'] < 1 and 0 < q['y'] < 1 for q in fmap['pins'] + fmap['sights']),
+      f"front map: {len(pin_ids)} pinned places, all in the gazetteer and all on the sheet, and {len(fmap.get('sights', []))} notes")
+check(all(q['pn'] in pin_ids for q in feat['p'] if 'pn' in q) and all(any(q.get('pn') == i for q in feat['p']) for i in pin_ids), 'front map: every pin has a passage to show, and every placed passage has its pin')
+check('data-osd' in front and 'openseadragon' in front and 'class="front-still"' in front, 'front page: the map viewer is loaded and the still picture stands in until it is')
+cuts = json.load(open(ROOT/'data/cuts.json'))
+gone = [c['key'] for c in cuts['labels'] if not (D/'assets/cuts/labels'/(c['key'] + '.png')).exists()] + [c['key'] for c in cuts['ornaments'] if not (D/'assets/cuts/ornaments'/(c['key'] + '.png')).exists()]
+check(not gone, f"every cut in data/cuts.json has its picture in the site ({gone[:5]})")
+check('data-wordmarks=' in w43 and 'mask-image:url(../../assets/cuts/labels/' in w43, 'header: the name is set in lettering cut from a map, addressed from the page')
+check(front.count('class="orn-rule"') >= 4 and 'One name, many hands' in front, 'front page: the many hands strip and the ornament rules are there')
 # 4. em dashes
 em_titles = [str(f.relative_to(D)) for f in D.rglob('*.html') if '—' in re.search(r'<title>(.*?)</title>', f.read_text(), re.S).group(1)]
 check(not em_titles, f'no em dash in any page title ({len(list(D.rglob("*.html")))} pages)')

@@ -434,12 +434,45 @@
     });
   };
 
-  /* The passage on the front page. A different one opens on every visit, "Show me another" draws the next
-     from a fresh shuffle, and a reader who comes Back finds the passage they left. */
+  /* The name in the header, set in lettering cut from the maps. One map lends its hand for the whole visit;
+     the next visit draws another, never the one seen last time. */
+  TA.wordmark = function () {
+    var box = document.querySelector('[data-wordmarks]');
+    if (!box) return;
+    var name = box.querySelector('[data-wm-name]'), credit = box.querySelector('[data-wm-credit]');
+    var list = [];
+    try { list = JSON.parse(box.getAttribute('data-wordmarks')); } catch (e) { /* keep the lettering already there */ }
+    if (!list.length) { name.setAttribute('data-set', ''); return; }
+    var KEY = 'ta:wordmark', now = null, last = null;
+    try { now = window.sessionStorage.getItem(KEY); } catch (e) { /* storage is off: a new hand on every page */ }
+    var pick = list.filter(function (c) { return c.k === now; })[0];
+    if (!pick) {
+      try { last = window.localStorage.getItem(KEY); } catch (e) { /* as above */ }
+      var pool = list.filter(function (c) { return c.k !== last; });
+      if (!pool.length) pool = list;
+      pick = pool[Math.floor(Math.random() * pool.length)];
+      try { window.sessionStorage.setItem(KEY, pick.k); window.localStorage.setItem(KEY, pick.k); } catch (e) { /* as above */ }
+    }
+    var cut = name.querySelector('.cut');
+    var src = 'url(' + TA.asset('cuts/labels/' + pick.k + '.png') + ')';
+    cut.style.webkitMaskImage = src;
+    cut.style.maskImage = src;
+    cut.style.aspectRatio = pick.w + ' / ' + pick.h;
+    name.setAttribute('data-set', '');
+    if (credit) { credit.textContent = 'lettered by ' + pick.c; credit.setAttribute('href', TA.href('m/' + pick.m)); }
+  };
+
+  /* The front door: Ortelius's map with the passage beside it. A different passage opens on every visit,
+     "Draw another" takes the next from a fresh shuffle, and a reader who comes Back finds the passage they left.
+     When the passage is about a place Ortelius lettered, the map travels there. A dot on the map is a place the
+     sources wrote about; a diamond is something the mapmaker wrote on the sheet. Without the map viewer the
+     still picture stays and the passages work as before. */
   TA.modules.feature = function (el) {
     var D = JSON.parse(el.querySelector('script[type="application/json"]').textContent);
-    var slot = el.querySelector('[data-slot]'), btn = el.querySelector('[data-next]');
-    var LAST = 'ta:feature-last', queue = [], cur = null;
+    var slot = el.querySelector('[data-slot]'), btn = el.querySelector('[data-next]'), at = el.querySelector('[data-at]');
+    var LAST = 'ta:feature-last', queue = [], cur = null, curPin = null;
+    var M = D.map, pinById = {};
+    if (M) M.pins.forEach(function (pin) { pinById[pin.i] = pin; });
     D.p.forEach(function (p) { TA.srcMeta(p, D.src); });
     function lastSeen() { try { return window.localStorage.getItem(LAST); } catch (e) { return null; } }
     function draw(p, moved) {
@@ -453,6 +486,14 @@
         card.classList.add('dealt');
         setTimeout(function () { card.classList.remove('dealt'); }, 400);
       }
+      curPin = p.pn && pinById[p.pn] ? p.pn : null;
+      if (at) {
+        if (curPin) {
+          at.innerHTML = 'On the map: <em>' + esc(pinById[curPin].m) + '</em>';
+          at.hidden = false;
+        } else at.hidden = true;
+      }
+      travel(!moved);
     }
     function next() {
       if (!queue.length) {
@@ -463,11 +504,147 @@
       }
       return queue.shift();
     }
+
+    /* ---- the map */
+    var stage = el.querySelector('[data-stage]'), viewer = null, open = false, roaming = false, marks = {};
+    var slip = el.querySelector('[data-slip]');
+    function pt(x, y) { return new window.OpenSeadragon.Point(x, y * M.ar); }
+    function travel(now) {
+      if (!open) return;
+      var vp = viewer.viewport, still = !!now || reduced();
+      Object.keys(marks).forEach(function (k) { marks[k].classList.toggle('on', k === curPin); });
+      if (!curPin) {
+        vp.zoomTo(vp.getHomeZoom(), null, still);
+        vp.panTo(pt(0.42, 0.4), still);
+        vp.applyConstraints(still);
+        return;
+      }
+      var pin = pinById[curPin], size = viewer.container.getBoundingClientRect();
+      var wide = size.width > 900 && !roaming;
+      var zoom = Math.max(vp.getHomeZoom(), Math.min(vp.getMaxZoom(), M.w / (size.width * (size.width > 700 ? 1.5 : 2.7))));
+      // on a wide screen the passage card covers the lower right, so the place is held left of centre and high
+      var dx = wide ? 0.16 : 0, dy = roaming ? 0 : 0.1;
+      vp.zoomTo(zoom, null, still);
+      vp.panTo(new window.OpenSeadragon.Point(pin.x + dx / zoom, pin.y * M.ar + dy * (size.height / size.width) / zoom), still);
+      vp.applyConstraints(still);
+    }
+    function closeSlip() { if (slip) { slip.hidden = true; slip.innerHTML = ''; } }
+    function openSlip(html) {
+      slip.innerHTML = '<button type="button" class="slip-x" data-slip-x aria-label="Close this note">×</button>' + html;
+      slip.hidden = false;
+    }
+    function fromPin(id) {
+      var here = D.p.filter(function (p) { return p.pn === id && p.i !== cur; });
+      if (!here.length) here = D.p.filter(function (p) { return p.pn === id; });
+      return here.length ? here[Math.floor(Math.random() * here.length)] : null;
+    }
+    function pickPin(pin) {
+      closeSlip();
+      if (roaming) {
+        openSlip('<p class="slip-k">' + (pin.k === 'town' ? 'A town' : 'A name') + ' on the map</p><h3><em>' + esc(pin.m) + '</em></h3>' +
+          '<p>' + esc(pin.n) + '. ' + numText(pin.c) + ' passage' + (pin.c === 1 ? '' : 's') + ' in the atlas.</p>' +
+          '<p class="slip-go"><button type="button" class="btn primary" data-read="' + esc(pin.i) + '">Read one</button>' +
+          '<a class="btn" href="' + TA.href('place/' + pin.i) + '">Open ' + esc(pin.n) + '</a></p>');
+        curPin = pin.i;
+        Object.keys(marks).forEach(function (k) { marks[k].classList.toggle('on', k === curPin); });
+        return;
+      }
+      var p = fromPin(pin.i);
+      if (p) draw(p, true);
+    }
+    function pickSight(s) {
+      openSlip('<p class="slip-k">Written on the map</p><h3>' + esc(s.t) + '</h3><p>' + esc(s.w) + '</p>' +
+        (s.l ? '<p class="orig" lang="la">' + esc(s.l) + '</p><p class="slip-note">The Latin as read from the sheet. It may be partial.</p>' : ''));
+    }
+    function mark(cls, label, x, y, fn) {
+      var OSD = window.OpenSeadragon, b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'fpin ' + cls;
+      b.setAttribute('aria-label', label);
+      b.innerHTML = '<span>' + esc(label) + '</span>';
+      // The viewer reads the pointer itself, so a press on a mark is caught by a tracker of its own.
+      var tr = new OSD.MouseTracker({ element: b, clickHandler: function (e) { if (e.quick !== false) fn(); } });
+      b.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fn(); } });
+      viewer.addOverlay({ element: b, location: pt(x, y), placement: OSD.Placement.CENTER, checkResize: false });
+      TA.cleanups.push(function () { tr.destroy(); });
+      return b;
+    }
+    function setRoam(on) {
+      roaming = on;
+      stage.classList.toggle('roam', on);
+      document.documentElement.classList.toggle('roaming', on);
+      var t = viewer.gestureSettingsTouch, m = viewer.gestureSettingsMouse, p = viewer.gestureSettingsPen;
+      m.scrollToZoom = on;
+      [t, p].forEach(function (g) { g.dragToPan = on; g.pinchToZoom = on; g.flickEnabled = on; });
+      viewer.canvas.style.touchAction = on ? 'none' : 'pan-y';
+      stage.querySelector('[data-roam]').hidden = on;
+      stage.querySelector('[data-close]').hidden = !on;
+      closeSlip();
+      setTimeout(function () { viewer.forceResize(); travel(true); }, 60);
+      if (on) stage.querySelector('[data-close]').focus();
+    }
+    function startMap() {
+      var OSD = window.OpenSeadragon;
+      if (!M || !OSD || !stage) return;
+      var quiet = { dragToPan: false, pinchToZoom: false, flickEnabled: false, clickToZoom: false, dblClickToZoom: false, scrollToZoom: false };
+      viewer = OSD({
+        element: stage.querySelector('[data-osd]'),
+        tileSources: M.tiled ? M.src : { type: 'image', url: M.src },
+        showNavigationControl: false, homeFillsViewer: true, visibilityRatio: 1, constrainDuringPan: true,
+        minZoomImageRatio: 1, maxZoomPixelRatio: 2, animationTime: 1.6, springStiffness: 6.5, minScrollDeltaTime: 0,
+        gestureSettingsMouse: { scrollToZoom: false, clickToZoom: false, dblClickToZoom: true },
+        gestureSettingsTouch: quiet, gestureSettingsPen: JSON.parse(JSON.stringify(quiet))
+      });
+      viewer.addHandler('open', function () {
+        open = true;
+        viewer.canvas.style.touchAction = 'pan-y';
+        M.pins.forEach(function (pin) {
+          marks[pin.i] = mark(pin.k === 'town' ? 'town' : 'name', pin.n + ', lettered ' + pin.m, pin.x, pin.y, function () { pickPin(pin); });
+        });
+        M.sights.forEach(function (s) { mark('sight', s.t, s.x, s.y, function () { pickSight(s); }); });
+        stage.querySelector('[data-tools]').hidden = false;
+        var how = el.querySelector('[data-how]');
+        if (how) how.hidden = false;
+        travel(true);
+        var still = stage.querySelector('[data-still]');
+        var lift = function () { if (still) still.classList.add('gone'); };
+        viewer.addOnceHandler('tile-drawn', function () { setTimeout(lift, 120); });
+        setTimeout(lift, 2500);
+      });
+      // The wheel scrolls the page past the map, and zooms the map only while roaming.
+      viewer.addHandler('canvas-scroll', function (e) { e.preventDefault = roaming; });
+      viewer.addHandler('open-failed', function () { try { viewer.destroy(); } catch (e) { /* the still picture stays */ } viewer = null; });
+      stage.addEventListener('click', function (e) {
+        var b = e.target.closest ? e.target.closest('button') : null;
+        if (!b || !viewer) return;
+        var vp = viewer.viewport;
+        if (b.hasAttribute('data-zoom-in')) { vp.zoomBy(1.6); vp.applyConstraints(); }
+        else if (b.hasAttribute('data-zoom-out')) { vp.zoomBy(1 / 1.6); vp.applyConstraints(); }
+        else if (b.hasAttribute('data-roam')) setRoam(true);
+        else if (b.hasAttribute('data-close')) setRoam(false);
+        else if (b.hasAttribute('data-slip-x')) closeSlip();
+        else if (b.hasAttribute('data-read')) {
+          var p = fromPin(b.getAttribute('data-read'));
+          setRoam(false);
+          if (p) { draw(p, true); slot.scrollIntoView({ block: 'center', behavior: reduced() ? 'auto' : 'smooth' }); }
+        }
+      });
+      var key = function (e) { if (e.key === 'Escape') { if (slip && !slip.hidden) closeSlip(); else if (roaming) setRoam(false); } };
+      document.addEventListener('keydown', key);
+      TA.cleanups.push(function () {
+        document.removeEventListener('keydown', key);
+        document.documentElement.classList.remove('roaming');
+        open = false;
+        try { if (viewer) viewer.destroy(); } catch (e) { /* already gone */ }
+      });
+    }
+    try { startMap(); } catch (e) { console.error('[TA] front map', e); }
+
     if (!D.p.length) { slot.setAttribute('data-ready', ''); return; }
     var back = TA.restoring ? TA.mem.get('feature') : null;
     var kept = back && D.p.filter(function (p) { return p.i === back; })[0];
     draw(kept || next());
-    btn.addEventListener('click', function () { draw(next(), true); });
+    btn.addEventListener('click', function () { closeSlip(); draw(next(), true); });
   };
 
   /* "Surprise me": open one source at random. */
@@ -1074,6 +1251,7 @@
     });
     try { history.scrollRestoration = 'manual'; } catch (e) { /* the page still works; Back may land at the top */ }
     window.addEventListener('hashchange', show);
+    TA.wordmark();
     show();
   } else {
     var start = function () {
@@ -1083,6 +1261,7 @@
       } catch (e) { /* older browsers: nothing to restore */ }
       if (TA.restoring && TA.mem.get('y')) holdScroll(TA.mem.get('y'));
       navReveal();
+      TA.wordmark();
       TA.init(document);
       toTop();
     };

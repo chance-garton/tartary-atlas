@@ -17,7 +17,10 @@ Planned address: `https://tartary.innerversepodcast.com`
 | `data/map_images.json` | Pixel sizes of the map pictures, written by `generator/fetch_map_images.py`. |
 | `generator/fetch_map_images.py` | Fetches a small and a large picture of every map with a working IIIF route, and the named pictures, into `_cache/` (not committed). Only the preview uses the copies. |
 | `generator/prepare_basemap.sh` | Rebuilds the self-hosted basemap from Natural Earth. |
-| `static/` | Stylesheet, page script, MapLibre stylesheet, and the basemap GeoJSON. |
+| `data/cuts.json` | The lettering and ornaments cut from the maps: map, box in full-resolution pixels, reading, mapmaker and year. `wordmark: true` puts a label in the header rotation. |
+| `data/front_map.json` | The front door: places and mapmaker's notes pinned on Ortelius's map (M047), in full-resolution pixels. |
+| `generator/fetch_cuts.py` | Fetches each cut from the Library of Congress, removes the paper and keeps the ink (`static/cuts/`, committed), and fetches the preview's large copy of the front map (`_cache/pics/front.jpg`). Needs Pillow, numpy and OpenCV. |
+| `static/` | Stylesheet, page script, MapLibre stylesheet, the basemap GeoJSON, and `cuts/` (the ink-only lettering and ornaments). |
 | `docs/` | The generated site, one HTML file per page. GitHub Pages serves this folder. |
 | `preview/` | A single-file preview of the same pages (not committed). |
 
@@ -25,6 +28,7 @@ Planned address: `https://tartary.innerversepodcast.com`
 
 ```
 python3 generator/fetch_map_images.py # once, and after data/iiif.json or data/pictures.json change: fills _cache/ for the preview
+python3 generator/fetch_cuts.py       # only after data/cuts.json changes, or once in a fresh clone for the preview's front map
 python3 generator/build.py            # writes docs/ and preview/
 python3 generator/build.py --static   # docs/ only
 ```
@@ -39,7 +43,7 @@ Site-wide settings (name, address, repository link, researcher, podcast link) si
 
 ## Pages
 
-* `/` the front door: the question, one passage from the record beside it (first thing on the page, with a Draw another button), a period map, five question trails, a strip of old maps, twelve places, six witnesses, and the vault. No counts strip and no progress report. The passage is drawn at random on every visit from a pool of about a hundred (`FEATURE_PER_TRAIL`, `FEATURE_PER_SOURCE` in the generator), never the one seen last time; "Draw another" walks a fresh shuffle; Back returns to the passage that was showing. `FIRST_FEATURE` is what shows when the page script does not run.
+* `/` the front door: Ortelius's map of Tartary across the whole page (OpenSeadragon 4.1.0 from cdnjs; the static site reads the Library of Congress tiles, the preview its own copy). Places he lettered that the sources write about are pinned on it (a dot for a town, a ring for a wider name); a diamond is a note the mapmaker wrote on the sheet and opens a slip with plain words and the Latin. The question sits on the map like a cartouche and "One passage from the record" rises from its lower edge. The passage is drawn at random on every visit (`FEATURE_PER_TRAIL`, `FEATURE_PER_SOURCE`, plus `FRONT_PER_PIN` passages for every pin); when it is about a pinned place the map travels there. Pressing a pin draws a passage from that place. "Roam the map" gives the map the whole window (wheel and pinch zoom only there, so the page scrolls past the map otherwise). Without the viewer the still picture stays and the passages work as before. Below: One name, many hands (the lettering strip), five question trails, a strip of old maps, twelve places, six witnesses and the vault, with an ornament set into the rule between each.
 * `/passages/` and `/passages/<trail>/` the passage explorer (cities, architecture, customs, names, outliers): search with the found words marked, how the author knew, century, order, shuffle, a count of what matches and a Clear filters button. Each menu shows how many passages every choice would give. Reads `assets/passages-<trail>.json`.
 * `/sources/` every source that has been read, in plain words.
 * `/maps/` the old maps: a picture gallery of every map with a working image route, by century, with a search box.
@@ -61,6 +65,8 @@ Controls shared across pages (all in `static/js/site.js`):
 * The label that says how the author knew ("Saw it", "Heard it") is a button on a card: pressing it spells the label out, for phones.
 * Source pages open with "Read the N passages" and "Open the original book", and end with Keep exploring: the witness before, the witness after (by the years described) and Surprise me (`onward_section`, `TA.modules.lucky`). Map pages end with the maps drawn just before and after. The sources list has Surprise me too.
 * A map picture opens a closer look in the page (`TA.zoom`): zoom with the buttons, the wheel or a tap, drag to move, Esc or Close to leave. The link to the full image at the library stays.
+* The name in the header is lettering cut from one of the maps (`wordmark` in the generator, `TA.wordmark` in the script). One map lends its hand for a whole visit; the next visit draws another. The line under it names the mapmaker and links to the map.
+* A cut (`cut`, `orn`, `orn_rule` in the generator; `.cut` in the stylesheet) is a picture of ink alone, painted in the text colour through a CSS mask, so it works on both themes. The picture's address is written in the element's own style, because an address inside a stylesheet variable is read from the stylesheet's folder.
 * A rounded, outlined pill is always something to press. Labels that only say something are flat tags (`span.chip`). The labels on the sources list and the catalogue table are buttons that filter the list.
 * Coming back with Back or Forward puts the filters, the number of cards open and the scroll position back (`TA.mem`, `TA.restoring`).
 
@@ -78,7 +84,9 @@ Also written: `sitemap.xml`, `robots.txt`, `404.html`, `.nojekyll`.
 
 * Basemap: Natural Earth 1:50m land, lakes and rivers, public domain. The Aral Sea is shown at its modern extent.
 * Map library: MapLibre GL JS 4.7.1 (BSD-3-Clause), loaded from cdnjs.
-* Map images load from each holding library's IIIF server; nothing is copied into this repository or the static site. The private preview artifact carries its own small copies, because an artifact cannot load images from other sites. Check each library's terms before copying pictures anywhere public (David Rumsey: CC BY-NC-SA; Bodleian: CC BY-NC; the Vatican Library reserves rights).
+* The lettering and ornaments in `static/cuts/` are cut from Library of Congress pictures only, which the Library offers without known restrictions for these maps; confirm each item's rights statement before going public. The About page credits every piece.
+* Map viewer on the front page: OpenSeadragon 4.1.0 (BSD-3-Clause), loaded from cdnjs.
+* Map images load from each holding library's IIIF server; apart from the cuts above, nothing is copied into this repository or the static site. The private preview artifact carries its own small copies, because an artifact cannot load images from other sites. Check each library's terms before copying pictures anywhere public (David Rumsey: CC BY-NC-SA; Bodleian: CC BY-NC; the Vatican Library reserves rights).
 * The vegetable lamb engraving is from Henry Lee, The Vegetable Lamb of Tartary (1887), via Wikimedia Commons, public domain.
 * Fonts: Newsreader, Public Sans, IBM Plex Mono, and IM Fell English SC (Igino Marini) for the wordmark, from Google Fonts.
 

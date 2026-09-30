@@ -32,6 +32,7 @@ CONFIG = {
     "podcast_name": "InnerVerse Podcast",
     "podcast_url": "https://innerversepodcast.com",
     "maplibre_js": "https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/4.7.1/maplibre-gl.js",
+    "osd_js": "https://cdnjs.cloudflare.com/ajax/libs/openseadragon/4.1.0/openseadragon.min.js",
     "fonts": "https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400..500&family=IBM+Plex+Mono:wght@400;500&family=Public+Sans:wght@400..700&display=swap",
 }
 
@@ -210,6 +211,8 @@ PSG_PARTIAL = "The scan is too rough to double-check this quote by machine. Comp
 FIRST_FEATURE = "W043-05"     # what the front page shows when the page script does not run
 FEATURE_PER_TRAIL = 20
 FEATURE_PER_SOURCE = 2
+FRONT_PREVIEW_PX = 4200  # width of the preview's own copy of the front map (_cache/pics/front.jpg)
+FRONT_PER_PIN = 4       # passages each pin on the front map brings into the pool
 PAGE_SIZE = 10
 
 EM_DASH = "—"
@@ -368,6 +371,10 @@ class Site:
         self.meta = json.loads((DATA / "meta.json").read_text())
         self.map_img = self.optional("map_images.json")
         self.pics = {k: v for k, v in self.optional("pictures.json").items() if v.get("size")}
+        cuts = self.optional("cuts.json")
+        self.labels = [c for c in cuts.get("labels", []) if c.get("size")]
+        self.orn = {c["key"]: c for c in cuts.get("ornaments", []) if c.get("size")}
+        self.front = self.optional("front_map.json")
         corr_path = DATA / "corrections.json"
         self.corrections = json.loads(corr_path.read_text()) if corr_path.exists() else []
         self.apply_corrections()
@@ -616,10 +623,45 @@ def basis_dot(g):
     return f'<span class="basis-dot {g}" aria-hidden="true"></span>'
 
 
-def page_head(eyebrow, title, lede=None, extra=""):
+def cut_credit(site, c):
+    return f'{c["by"]}, {c["year"]}'
+
+
+def cut_style(url, w, h):
+    """The picture is named in the element's own style, so its address is read from the page, not from the stylesheet."""
+    return f"-webkit-mask-image:url({url});mask-image:url({url});aspect-ratio:{w}/{h}"
+
+
+def cut(site, ctx, c, sub, cls="", label=None):
+    """A piece cut from one of the maps: lettering or an ornament, kept as ink only and painted in the page's
+    own text colour (see generator/fetch_cuts.py). `label` is what a screen reader says; None hides it."""
+    w, h = c["size"]
+    aria = f' role="img" aria-label="{esc(label)}"' if label else ' aria-hidden="true"'
+    return (f'<span class="cut{(" " + cls) if cls else ""}"{aria} '
+            f'style="{cut_style(ctx.asset("cuts/" + sub + "/" + c["key"] + ".png"), w, h)}"></span>')
+
+
+def orn(site, ctx, key, cls=""):
+    """An ornament from the maps, with its credit as a tooltip. Nothing if the cut is missing."""
+    c = site.orn.get(key)
+    if not c:
+        return ""
+    tip = f'{c["what"]}. From a map by {cut_credit(site, c)}.'
+    return (f'<span class="orn{(" " + cls) if cls else ""}" title="{esc(tip)}">'
+            f'{cut(site, ctx, c, "ornaments", label=tip)}</span>')
+
+
+def orn_rule(site, ctx, key):
+    """A rule between two parts of a page with one ornament set into it."""
+    o = orn(site, ctx, key)
+    return f'<div class="orn-rule">{o}</div>' if o else ""
+
+
+def page_head(eyebrow, title, lede=None, extra="", ornament=""):
     lede_html = f'<p class="lede">{lede}</p>' if lede else ""
     long = ' class="long"' if len(html.unescape(title)) > 60 else ""
-    return f'<header class="page-head"><div class="eyebrow">{eyebrow}</div><h1{long}>{title}</h1>{lede_html}{extra}</header>'
+    head = f'<header class="page-head"><div class="eyebrow">{eyebrow}</div><h1{long}>{title}</h1>{lede_html}{extra}</header>'
+    return f'<div class="page-top">{head}{ornament}</div>' if ornament else head
 
 
 # ---------------------------------------------------------------- pictures
@@ -878,27 +920,90 @@ def page_home(site, ctx):
     first = site.psg.get(FIRST_FEATURE) or (pool[0] if pool else None)
     if first and first not in pool:
         pool.append(first)
+    # The front door is Ortelius's map. Places he lettered that the sources also write about are pinned on it,
+    # and each pin brings its own passages into the pool, so drawing a passage can carry the reader to its place.
+    fm = site.front or {}
+    fw, fh = fm.get("size", [1, 1])
+    per = collections.Counter((p["theme"], p["rec"]) for p in pool)
+    in_pool = {p["id"] for p in pool}
+    pin_of = {}
+    pins = []
+    for pin in fm.get("pins", []):
+        pid = pin["id"]
+        ps = site.psg_by_place.get(pid, [])
+        if pid not in site.place or not ps:
+            continue
+        got = 0
+        for p in ps:
+            if p["id"] in in_pool:
+                pin_of.setdefault(p["id"], pid)
+                got += 1
+        for p in ps:
+            if got >= FRONT_PER_PIN:
+                break
+            if p["id"] in in_pool or p["check"] != "page" or per[(p["theme"], p["rec"])] >= FEATURE_PER_SOURCE:
+                continue
+            per[(p["theme"], p["rec"])] += 1
+            in_pool.add(p["id"])
+            pool.append(p)
+            pin_of[p["id"]] = pid
+            got += 1
+        pins.append({"i": pid, "n": site.place[pid]["name"], "m": pin["on_map"], "x": round(pin["xy"][0] / fw, 5),
+                     "y": round(pin["xy"][1] / fh, 5), "k": pin["kind"], "c": len(ps)})
+    sights = [{"t": s["title"], "x": round(s["xy"][0] / fw, 5), "y": round(s["xy"][1] / fh, 5), "w": s["what"], "l": s.get("latin") or ""}
+              for s in fm.get("sights", [])]
     pool.sort(key=lambda p: p["x"])
+    front_map = None
+    if fm and site.iiif_base(fm["rec"]):
+        front_map = {"rec": fm["rec"], "ar": round(fh / fw, 6), "w": fw,
+                     "src": (ctx.asset("pics/front.jpg") if ctx.mode == "preview" else site.iiif_base(fm["rec"]) + "/info.json"),
+                     "tiled": ctx.mode != "preview", "pins": pins, "sights": sights}
     feat_json = json.dumps({"src": {p["rec"]: tale_meta(site, p["rec"]) for p in pool},
-                            "p": [dict(psg_compact(site, p), r=p["rec"]) for p in pool]},
+                            "p": [dict(psg_compact(site, p), r=p["rec"], **({"pn": pin_of[p["id"]]} if p["id"] in pin_of else {})) for p in pool],
+                            "map": front_map},
                            ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
     n_pictured = len(site.map_img)
-    hero_fig = ""
+    still = ""
     if "hero" in site.pics:
-        hero_fig = (f'<figure class="hero-fig"><a href="{pic_link(site, ctx, "hero")}">{pic_tag(site, ctx, "hero", eager=True)}</a>'
-                    f'<figcaption>{esc(site.pics["hero"]["caption"])}</figcaption></figure>')
+        still = f'<div class="front-still" data-still>{pic_tag(site, ctx, "hero", eager=True)}</div>'
+    front_rec = site.rec.get(fm.get("rec", ""), None)
+    credit = ""
+    if front_rec:
+        credit = (f'<p class="front-credit"><a href="{ctx.link(site.rkey(front_rec))}">Abraham Ortelius, Tartary, or the kingdom of the Great Khan, 1570</a>. '
+                  f'{esc(site.holder(front_rec["id"]))}.</p>')
+    tools = ('<div class="front-tools" data-tools hidden>'
+             '<button type="button" class="btn" data-roam>Roam the map</button>'
+             '<span class="front-zoom"><button type="button" class="btn icon" data-zoom-out aria-label="Zoom out">−</button>'
+             '<button type="button" class="btn icon" data-zoom-in aria-label="Zoom in">+</button></span>'
+             '<button type="button" class="btn primary" data-close hidden>Close the map</button></div>')
+    slip = '<div class="front-slip" data-slip hidden aria-live="polite"></div>'
+    stage = (f'<div class="front-stage" data-stage>{still}<div class="front-osd"><div data-osd></div></div>{tools}{slip}</div>')
     # The passage leads the page: it is the first thing a visitor meets, beside the question it answers.
     card = ""
     if first:
         card = (f'<div class="hero-card"><div class="hero-card-head"><h2>One passage from the record</h2>'
                 f'<button type="button" class="btn primary" data-next>Draw another</button></div>'
+                f'<p class="front-at" data-at hidden></p>'
                 f'<div class="feature-slot" data-slot aria-live="polite">{psg_card(site, ctx, first, cls="big")}</div></div>')
-    hero = (f'<section class="hero" data-module="feature"><script type="application/json">{feat_json}</script>'
-            f'<div class="hero-text"><div class="eyebrow">Tartary in the historical record</div>'
+    hero = (f'<section class="front" data-module="feature"><script type="application/json">{feat_json}</script>'
+            f'{stage}<div class="front-body"><div class="front-plate"><div class="eyebrow">Tartary in the historical record</div>'
             f'<h1>What did the people who went there write down?</h1>'
             f'<p class="lede">Travellers, envoys, captives and monks, in their own words. '
-            f'<a href="{ctx.link("passages")}">Read all {num(n_psg)} passages</a>.</p></div>'
-            f'{card}{hero_fig}</section>')
+            f'<a href="{ctx.link("passages")}">Read all {num(n_psg)} passages</a>.</p>'
+            f'<p class="front-how" data-how hidden>Every dot on the map is a place they wrote about. Every diamond is something odd the mapmaker wrote on it.</p>'
+            f'{credit}</div>'
+            f'{card}</div></section>')
+
+    # One name, many hands: the word as the mapmakers themselves lettered it.
+    names = ""
+    if site.labels:
+        items = "".join(
+            f'<li><a href="{ctx.link(site.rkey(c["rec"]))}" title="{esc(c["reads"])}, as lettered by {esc(cut_credit(site, c))}">'
+            f'{cut(site, ctx, c, "labels", "tall" if c.get("vertical") else "", label=c["reads"] + (" (" + c["say"] + ")" if c.get("say") else ""))}'
+            f'<span class="hand-by">{esc(c["by"].split(",")[0])}, {esc(c["year"])}</span></a></li>' for c in site.labels)
+        names = (f'<section class="band hands"><div class="band-head row"><div><h2>One name, many hands</h2>'
+                 f'<p>The word as the mapmakers lettered it, cut from their own maps.</p></div>'
+                 f'<a class="btn" href="{ctx.link("labels")}">See the many Tartarys</a></div><ul class="hand-list">{items}</ul></section>')
 
     trails = (f'<section class="band"><div class="band-head"><h2>Follow a question</h2></div>{trail_cards(site, ctx)}</section>')
 
@@ -934,11 +1039,12 @@ def page_home(site, ctx):
               f'<li><a href="{ctx.link("records")}">Every book and map</a><span>All {len(site.records)}, with dates and links.</span></li>'
               f'<li><a href="{ctx.link("archive")}">The rest of the vault</a><span>Places, peoples, and how the atlas was made.</span></li></ul></section>')
 
-    body = f'<div class="page home">{hero}{trails}{maps_band}{places}{witnesses}{deeper}</div>'
+    body = (f'{hero}<div class="page home">{names}{orn_rule(site, ctx, "tents")}{trails}{orn_rule(site, ctx, "compass-star")}{maps_band}'
+            f'{orn_rule(site, ctx, "rider")}{places}{orn_rule(site, ctx, "archer")}{witnesses}{orn_rule(site, ctx, "ship")}{deeper}</div>')
     desc = (f"What {n_written} historical texts and {n_maps} maps say about Tartary (Tartaria): {num(n_psg)} quoted passages on cities, "
             f"buildings, daily life and legends, each linked to its page.")
     return dict(title="The Tartary Atlas: Tartary and Tartaria in the historical record", description=desc, body=body,
-                nav="", modules=["feature"], bare_title=True)
+                nav="", modules=["feature"], bare_title=True, osd=True)
 
 
 def page_passages(site, ctx, theme=None):
@@ -954,7 +1060,7 @@ def page_passages(site, ctx, theme=None):
         title, desc = m["q"], f'{m["blurb"]} {num(len(plist))} quoted passages from {n_src} historical sources on Tartary.'
     else:
         head = page_head("In their words", "What the sources say",
-                         f'{num(len(plist))} passages from {n_src} sources. Follow a question, or search them all.')
+                         f'{num(len(plist))} passages from {n_src} sources. Follow a question, or search them all.', ornament=orn(site, ctx, "scholar", "head"))
         title, desc = "Passages: what the sources say about Tartary", f'{num(len(plist))} quoted passages about the Tartars and Tartary from {n_src} historical sources, searchable by place, people and date.'
     basis_opts = "".join(f'<option value="{k}">{esc(v[0])}</option>' for k, v in PBASIS.items())
     when_opts = ('<option value="0">Before 1200</option>'
@@ -995,7 +1101,7 @@ def page_sources(site, ctx):
     hk_opts = "".join(f'<option value="{esc(k)}">{esc(v)}</option>' for k, v in HOW_KNEW.items()
                       if any(p["how_they_knew"] == k for p in site.profiles.values()))
     head = page_head(f"{n_read + n_profile_only} sources", "The witnesses",
-                     "Who wrote it, how they knew, and what to watch out for. The richest come first.")
+                     "Who wrote it, how they knew, and what to watch out for. The richest come first.", ornament=orn(site, ctx, "archer", "head"))
     body = (f'<div class="page">{head}<div data-module="slist">'
             f'<div class="filterbar"><label for="sl-q">Search<input type="search" id="sl-q" placeholder="Rubruck, Crimea, Chinese, 1253…"></label>'
             f'<label for="sl-hk">How they knew<select id="sl-hk"><option value="">Any</option>{hk_opts}</select></label>'
@@ -1023,7 +1129,7 @@ def page_maps(site, ctx):
     holders = collections.Counter(site.holder(r["id"]).split(" (")[0] for r in shown)
     credit = "; ".join(f"{h} ({n})" for h, n in holders.most_common())
     head = page_head("Map room", "Tartary on the old maps",
-                     f'{len(shown)} maps, oldest first. Open one and look closer.')
+                     f'{len(shown)} maps, oldest first. Open one and look closer.', ornament=orn(site, ctx, "ship", "head"))
     rest_html = ""
     if rest:
         rest_html = (f'<section class="section"><h2>{len(rest)} more maps, no picture yet</h2>'
@@ -1056,7 +1162,7 @@ def page_archive(site, ctx):
     ]
     lis = "".join(f'<li><a href="{ctx.link(k)}">{esc(t)}</a><span>{esc(d)}</span></li>' for k, t, d in items)
     head = page_head("Everything behind the passages", "The vault",
-                     "Check a date, trace a map, or see it all at once.")
+                     "Check a date, trace a map, or see it all at once.", ornament=orn(site, ctx, "khan", "head"))
     return dict(title="The vault", description="The Tartary Atlas catalogue and research tools: records, places, peoples, label timelines, map lineage, method and corrections.",
                 body=f'<div class="page">{head}<ul class="deeper wide">{lis}</ul></div>', nav="archive")
 
@@ -1115,7 +1221,7 @@ def onward_section(site, ctx, r):
         cards.append(f'<div class="onward-slot"><div class="eyebrow">The witness before</div>{source_card(site, ctx, order[i - 1])}</div>')
     if i < len(order) - 1:
         cards.append(f'<div class="onward-slot"><div class="eyebrow">The witness after</div>{source_card(site, ctx, order[i + 1])}</div>')
-    lucky = surprise_btn(site, '<span class="witness-t">Surprise me</span><span class="witness-one">Open one of the '
+    lucky = surprise_btn(site, orn(site, ctx, "wind", "gust") + '<span class="witness-t">Surprise me</span><span class="witness-one">Open one of the '
                          f'{len(order)} sources at random and see who turns up.</span>', "witness lucky")
     cards.append(f'<div class="onward-slot"><div class="eyebrow">Or take a chance</div>{lucky}</div>')
     return (f'<section class="band onward"><div class="band-head"><h2>Keep exploring</h2></div>'
@@ -1869,6 +1975,10 @@ def page_map(site, ctx):
 
 def page_about(site, ctx):
     c = CONFIG
+    pieces = "".join(
+        f'<li><a href="{ctx.link(site.rkey(o["rec"]))}">{cut(site, ctx, o, "ornaments", label=o["what"])}'
+        f'<span class="hand-by">{esc(cut_credit(site, o))}</span></a></li>' for o in site.orn.values())
+    kit = f'<ul class="kit">{pieces}</ul>' if pieces else ""
     body = f'''<div class="page">{page_head("About", "About the atlas")}
 <div class="prose">
 <p>The Tartary Atlas gathers what the historical record says about Tartary: what the sources describe, where, when, and how each author came to know what they wrote. It covers {len(site.records)} written sources and maps in more than a dozen languages, from Old Turkic inscriptions and Mongol-era travel accounts to nineteenth-century atlases.</p>
@@ -1886,7 +1996,9 @@ def page_about(site, ctx):
 </ul>
 <h2>Spot a mistake?</h2>
 <p>The atlas takes corrections and new sources in public. <a href="{ctx.link("corrections")}">Send one in</a>.</p>
-</div></div>'''
+<h2>The lettering and the ornaments</h2>
+<p>The name at the top of every page is cut from one of the maps, and a different map lends its lettering on each visit. The small drawings between sections are cut from the maps too. Only the ink is kept, so each piece takes the colour of the page. Nothing here was drawn for the atlas.</p>
+</div>{kit}</div>'''
     return dict(title="About the atlas", description="What The Tartary Atlas is, who made it, and how to use it.", body=body, nav="about")
 
 
@@ -1975,18 +2087,34 @@ def page_corrections(site, ctx):
 TO_TOP = '<button type="button" class="totop" data-totop hidden><span aria-hidden="true">↑</span> Top</button>'
 
 
-def header(ctx, nav_key):
+def wordmark(site, ctx):
+    """The name in the header is set in lettering cut from the maps themselves, and the page script picks a
+    different map's lettering on each visit (TA.wordmark). Without the cuts, or without script, it is plain type."""
+    marks = [c for c in site.labels if c.get("wordmark")]
+    if not marks:
+        return f'<a class="wordmark" href="{ctx.link("")}"><span>The</span> Tartary Atlas</a>'
+    first = marks[0]
+    data = [{"k": c["key"], "r": c["reads"], "c": cut_credit(site, c), "m": c["rec"], "w": c["size"][0], "h": c["size"][1]} for c in marks]
+    data_json = esc(json.dumps(data, ensure_ascii=False, separators=(",", ":")))
+    return (f'<div class="wm" data-wordmarks="{data_json}">'
+            f'<a class="wordmark" href="{ctx.link("")}" aria-label="The Tartary Atlas, front page"><span aria-hidden="true">The</span>'
+            f'<span class="wm-name" data-wm-name>{cut(site, ctx, first, "labels")}</span><span aria-hidden="true">Atlas</span></a>'
+            f'<a class="wm-credit" data-wm-credit href="{ctx.link(site.rkey(first["rec"]))}">'
+            f'lettered by {esc(cut_credit(site, first))}</a></div>')
+
+
+def header(site, ctx, nav_key):
     cur = ' aria-current="page"'
     items = "".join(
         f'<a href="{ctx.link(k)}" data-nav="{k}"{cur if k == nav_group(nav_key) else ""}>{esc(label)}</a>' for k, label in NAV)
     return (f'<a class="skip" href="#main">Skip to content</a><header class="site-header"><div class="bar">'
-            f'<a class="wordmark" href="{ctx.link("")}"><span>The</span> Tartary Atlas</a>'
+            f'{wordmark(site, ctx)}'
             f'<nav class="site-nav" aria-label="Main">{items}</nav></div></header>')
 
 
 def footer(site, ctx):
     c = CONFIG
-    return (f'<footer class="site-footer"><div class="inner"><span>The Tartary Atlas, a research project by {esc(c["researcher"])}</span>'
+    return (f'<footer class="site-footer">{orn(site, ctx, "compass-wheel", "foot")}<div class="inner"><span>The Tartary Atlas, a research project by {esc(c["researcher"])}</span>'
             f'<a href="{esc(c["podcast_url"])}" rel="noopener">Discussed on the {esc(c["podcast_name"])}</a>'
             f'<a href="{ctx.link("archive")}">The vault</a><a href="{ctx.link("method")}">How it was made</a><a href="{ctx.link("corrections")}">Spot a mistake?</a>'
             f'</div></footer>')
@@ -2017,12 +2145,14 @@ def static_page(site, key, pg):
     if pg.get("maplibre"):
         head.append(f'<link rel="stylesheet" href="{ctx.asset("maplibre-gl.css")}">')
         head.append(f'<script src="{CONFIG["maplibre_js"]}" defer></script>')
+    if pg.get("osd"):
+        head.append(f'<script src="{CONFIG["osd_js"]}" defer></script>')
     head.append('<script>document.documentElement.className += " js";</script>')
     head.append(f'<script src="{ctx.asset("site.js")}" defer></script>')
     if pg.get("jsonld"):
         head.append('<script type="application/ld+json">' + json.dumps({k: v for k, v in pg["jsonld"].items() if v is not None}, ensure_ascii=False).replace("</", "<\\/") + "</script>")
     head.append("</head>")
-    body = f'<body data-root="{ctx.root}">{header(ctx, pg["nav"])}<main id="main" tabindex="-1">{pg["body"]}</main>{footer(site, ctx)}{TO_TOP}</body></html>'
+    body = f'<body data-root="{ctx.root}">{header(site, ctx, pg["nav"])}<main id="main" tabindex="-1">{pg["body"]}</main>{footer(site, ctx)}{TO_TOP}</body></html>'
     return "".join(head) + body
 
 
@@ -2061,6 +2191,8 @@ def write_static(site):
     shutil.copy(STATIC / "css" / "site.css", OUT / "assets" / "site.css")
     shutil.copy(STATIC / "js" / "site.js", OUT / "assets" / "site.js")
     shutil.copy(STATIC / "vendor" / "maplibre-gl.css", OUT / "assets" / "maplibre-gl.css")
+    if (STATIC / "cuts").exists():
+        shutil.copytree(STATIC / "cuts", OUT / "assets" / "cuts")
     write_basemap(OUT / "assets" / "basemap.json")
     write_passage_assets(site, OUT / "assets")
     (OUT / "assets" / "eurasia.svg").write_text(f'<svg xmlns="http://www.w3.org/2000/svg">{build_land_svg()}</svg>')
@@ -2071,7 +2203,8 @@ def write_static(site):
     (OUT / "404.html").write_text(
         '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">'
         f'<title>Page not found · {CONFIG["site_name"]}</title><link rel="stylesheet" href="/assets/site.css"></head>'
-        '<body><main class="page"><h1>Off the edge of the map</h1><p class="lede">That page is not in the atlas. <a href="/">Back to the front door</a>, or <a href="/passages/">read the passages</a>.</p></main></body></html>')
+        f'<body><main class="page lost">{orn(site, Ctx("static", ""), "merfolk").replace("./assets/", "/assets/")}'
+        '<h1>Off the edge of the map</h1><p class="lede">That page is not in the atlas. <a href="/">Back to the front door</a>, or <a href="/passages/">read the passages</a>.</p></main></body></html>')
     return keys
 
 
@@ -2095,14 +2228,17 @@ def write_preview(site):
            f'<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
            f'<link rel="stylesheet" href="{CONFIG["fonts"]}">'
            f'<style>{css}</style>'
-           f'<script src="{CONFIG["maplibre_js"]}"></script>'
+           f'<script src="{CONFIG["maplibre_js"]}"></script><script src="{CONFIG["osd_js"]}"></script>'
            f'<svg width="0" height="0" style="position:absolute" aria-hidden="true">{build_land_svg()}</svg>'
-           f'{header(ctx, "")}<main id="main" tabindex="-1"></main>{footer(site, ctx)}{TO_TOP}'
+           f'{header(site, ctx, "")}<main id="main" tabindex="-1"></main>{footer(site, ctx)}{TO_TOP}'
            f'<script type="application/json" id="ta-pages">{pages_json}</script>'
            f'<script>window.TA_PREVIEW=true;</script><script>{js}</script>')
     (PREVIEW / "index.html").write_text(doc)
     # A Claude artifact cannot load pictures from other sites, so the preview carries its own copies.
-    for sub, names in [("maps", [f"{rid}-{k}.jpg" for rid in site.map_img for k in MAP_PX]), ("pics", [f"{k}.jpg" for k in site.pics])]:
+    if (STATIC / "cuts").exists():
+        shutil.copytree(STATIC / "cuts", PREVIEW / "assets" / "cuts")
+    front = ["front.jpg"] if site.front else []
+    for sub, names in [("maps", [f"{rid}-{k}.jpg" for rid in site.map_img for k in MAP_PX]), ("pics", [f"{k}.jpg" for k in site.pics] + front)]:
         (PREVIEW / "assets" / sub).mkdir()
         for name in names:
             src = ROOT / "_cache" / sub / name

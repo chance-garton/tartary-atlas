@@ -35,6 +35,12 @@
   --map-approx: #9f2a45;
   --map-halo: #ffffff;
   --icon-filter: none;
+  --pin: #0d554f;
+  --pin-sight: #9f2a45;
+  --pin-halo: #fffdf6;
+  --pin-tip: #131b1e;
+  --pin-tip-ink: #f5f6f3;
+  --stage-shade: rgba(19, 27, 30, 0.34);
   --font-display: "Newsreader", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
   --font-mark: "IM Fell English SC", "Newsreader", "Palatino Linotype", Palatino, Georgia, serif;
   --font-body: "Public Sans", "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
@@ -744,3 +750,132 @@ h2.divider { font-size: 0.8125rem; text-transform: uppercase; letter-spacing: 0.
 
 #what-it-says { scroll-margin-top: calc(var(--header-h) + 16px); }
 #what-it-says:focus { outline: none; }
+
+
+/* ------------------------------------------------------------------
+   Inked in its own sources: lettering and ornaments cut from the maps (generator/fetch_cuts.py).
+   A cut is a picture of ink alone; the page paints it in the colour of the text around it. */
+.cut {
+  display: inline-block; height: 1em; max-width: 100%; vertical-align: middle; flex: none;
+  background-color: currentColor;
+  -webkit-mask-position: center; mask-position: center; -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+}
+.orn { display: inline-flex; color: var(--ink-2); }
+
+/* The name in the header */
+.wm { display: grid; gap: 0; min-width: 0; justify-items: start; padding-block: 6px; }
+.wm .wordmark { padding-block: 2px 0; }
+.wordmark { display: inline-flex; align-items: center; gap: 0.6em; }
+.wordmark > span { letter-spacing: 0.12em; color: var(--ink-3); }
+.wordmark .wm-name { display: inline-flex; color: var(--ink); min-width: 0; }
+.wordmark .wm-name .cut { height: 27px; max-width: 46vw; }
+.js .wm-name:not([data-set]) { visibility: hidden; animation: ta-reveal 0s 2s forwards; }
+.wm-credit { font-family: var(--font-display); font-style: italic; font-size: 0.8125rem; line-height: 1.2; color: var(--ink-3); text-decoration: none; white-space: nowrap; }
+.wm-credit:hover { color: var(--verdigris); text-decoration: underline; }
+
+/* A rule with one ornament set into it */
+.orn-rule { display: flex; align-items: center; gap: 28px; margin-top: 72px; }
+.orn-rule::before, .orn-rule::after { content: ""; flex: 1; height: 1px; background: var(--rule); }
+.orn-rule .cut { height: 92px; }
+.orn-rule + .band { margin-top: 40px; }
+.page-top { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px 48px; align-items: end; margin-bottom: 32px; }
+.page-top .page-head { margin-bottom: 0; }
+.orn.head .cut { height: 168px; max-width: 300px; }
+.orn.foot { display: flex; justify-content: center; margin-bottom: 16px; color: var(--ink-3); }
+.orn.foot .cut { height: 58px; }
+.orn.gust { color: var(--gamboge); }
+.orn.gust .cut { height: 66px; }
+.page.lost { text-align: center; display: grid; gap: 18px; justify-items: center; padding-block: 72px; }
+.page.lost .cut { height: 130px; }
+.page.lost > * { margin: 0; }
+.kit { list-style: none; margin: 40px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 32px 40px; align-items: end; }
+.kit a, .hand-list a { display: grid; gap: 8px; justify-items: start; text-decoration: none; color: var(--ink); }
+.kit .cut { height: 120px; max-width: 240px; }
+.kit a:hover, .hand-list a:hover { color: var(--verdigris); }
+.hand-by { font-size: 0.8125rem; color: var(--ink-3); }
+
+/* One name, many hands */
+.band.hands { margin-top: 56px; }
+.hand-list { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 30px 46px; align-items: end; }
+.hand-list .cut { height: 40px; }
+.hand-list .cut.tall { height: 104px; }
+
+/* The front door: Ortelius's map across the whole page, the question set on it like a cartouche,
+   and the passage rising out of its lower edge. */
+.front { position: relative; }
+.front-stage { position: relative; height: clamp(380px, 64vh, 680px); background: var(--frame); overflow: hidden; border-bottom: 1px solid var(--rule); }
+.front-still, .front-osd { position: absolute; inset: 0; }
+.front-still { z-index: 2; transition: opacity 0.7s ease; }
+.front-still img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 32% 30%; }
+.front-still.gone { opacity: 0; pointer-events: none; }
+.front-osd { z-index: 1; }
+.front-osd > div { position: relative; width: 100%; height: 100%; }
+.front-stage::after { content: ""; position: absolute; inset: auto 0 0 0; height: 140px; z-index: 2; pointer-events: none;
+  background: linear-gradient(to top, var(--stage-shade), transparent); }
+.front-stage.roam::after { display: none; }
+.front-tools { position: absolute; z-index: 4; top: 14px; right: var(--gutter); display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+.front-tools .btn { box-shadow: var(--shadow); }
+.front-zoom { display: inline-flex; gap: 4px; }
+.btn.icon { min-width: 44px; padding-inline: 0; justify-content: center; font-size: 1.25rem; line-height: 1; }
+.front-body { position: relative; z-index: 5; max-width: 1200px; margin-inline: auto; padding-inline: var(--gutter);
+  display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 24px 56px; align-items: start; margin-top: -132px; pointer-events: none; }
+.front-body > * { pointer-events: auto; }
+.front-plate { background: var(--panel); border: 3px double var(--ink); padding: 26px 28px 22px; display: grid; gap: 14px; box-shadow: var(--shadow); }
+.front-plate h1 { font-size: var(--step-5); line-height: 1.04; letter-spacing: -0.02em; text-wrap: balance; }
+.front-how, .front-credit { font-size: var(--step--1); color: var(--ink-3); }
+.front-how { padding-top: 12px; border-top: 1px solid var(--rule); }
+.front-credit a { color: var(--ink-2); }
+.front .hero-card { grid-area: auto; background: var(--paper); padding: 14px 16px 0; margin-inline: -16px; border-radius: var(--radius-l) var(--radius-l) 0 0; }
+.front-at { font-family: var(--font-display); font-size: 1.0625rem; color: var(--ink-2); }
+.front-at em { color: var(--ink); }
+
+/* Marks on the map. A dot is a town the sources wrote about, a ring is a wider name, a diamond is a note the
+   mapmaker wrote on the sheet. */
+.fpin { position: relative; width: 34px; height: 34px; padding: 0; border: 0; background: none; cursor: pointer; border-radius: 50%; }
+.fpin::before { content: ""; position: absolute; inset: 11px; border-radius: 50%; background: var(--pin); box-shadow: 0 0 0 2.5px var(--pin-halo), 0 1px 5px rgba(0, 0, 0, 0.55); transition: transform 0.15s ease; }
+.fpin.name::before { background: var(--pin-halo); box-shadow: 0 0 0 2.5px var(--pin), 0 1px 5px rgba(0, 0, 0, 0.55); inset: 12px; }
+.fpin.sight::before { border-radius: 1px; transform: rotate(45deg); background: var(--pin-sight); inset: 11.5px; }
+.fpin:hover::before, .fpin:focus-visible::before { transform: scale(1.35); }
+.fpin.sight:hover::before, .fpin.sight:focus-visible::before { transform: rotate(45deg) scale(1.35); }
+.fpin:focus-visible { outline: 3px solid var(--pin-halo); outline-offset: -4px; }
+.fpin span { position: absolute; left: 50%; bottom: calc(100% - 4px); transform: translateX(-50%); white-space: nowrap; max-width: 70vw; overflow: hidden; text-overflow: ellipsis;
+  background: var(--pin-tip); color: var(--pin-tip-ink); font-family: var(--font-body); font-size: 0.8125rem; font-weight: 550; padding: 4px 9px; border-radius: 6px; opacity: 0; pointer-events: none; }
+.fpin:hover span, .fpin:focus-visible span, .fpin.on span { opacity: 1; }
+.fpin:hover, .fpin:focus-visible, .fpin.on { z-index: 3; }
+.fpin.on::after { content: ""; position: absolute; inset: 4px; border-radius: 50%; border: 2.5px solid var(--pin-halo); box-shadow: 0 0 0 1.5px var(--pin); animation: ta-ping 2.2s ease-out infinite; }
+@keyframes ta-ping { 0% { transform: scale(0.6); opacity: 1; } 70%, 100% { transform: scale(1.7); opacity: 0; } }
+
+/* A note that opens on the map */
+.front-slip { position: absolute; z-index: 6; left: var(--gutter); top: 14px; width: min(400px, calc(100% - 2 * var(--gutter)));
+  background: var(--panel); color: var(--ink); border: 3px double var(--ink); padding: 18px 20px; display: grid; gap: 10px; box-shadow: var(--shadow); max-height: calc(100% - 28px); overflow: auto; }
+.front-slip h3 { font-family: var(--font-display); font-size: var(--step-2); font-weight: 500; line-height: 1.15; padding-right: 36px; }
+.slip-k { font-size: 0.8125rem; font-weight: 650; color: var(--carmine); }
+.front-slip .orig { font-family: var(--font-display); font-style: italic; color: var(--ink-2); }
+.slip-note { font-size: 0.8125rem; color: var(--ink-3); }
+.slip-go { display: flex; flex-wrap: wrap; gap: 8px; }
+.slip-x { position: absolute; top: 6px; right: 6px; width: 44px; height: 44px; border: 0; background: none; color: var(--ink-2); font-size: 1.6rem; line-height: 1; cursor: pointer; border-radius: 50%; }
+.slip-x:hover { background: var(--sunk); color: var(--ink); }
+
+/* Roaming: the map takes the whole window */
+.front-stage.roam { position: fixed; inset: 0; height: auto; z-index: 60; border: 0; }
+.front-stage.roam .front-tools { top: calc(14px + env(safe-area-inset-top, 0px)); }
+.roaming, .roaming body { overflow: hidden; }
+
+@media (max-width: 900px) {
+  .front-stage { height: clamp(300px, 48vh, 460px); }
+  .front-body { grid-template-columns: minmax(0, 1fr); margin-top: -44px; gap: 22px; }
+  .front-plate { padding: 20px 20px 18px; }
+  .front .hero-card { margin-inline: 0; padding: 0; background: none; }
+  .page-top { grid-template-columns: minmax(0, 1fr); }
+  .orn.head { display: none; }
+  .orn-rule { margin-top: 52px; gap: 18px; }
+  .orn-rule .cut { height: 70px; }
+  .hand-list { gap: 24px 30px; }
+  .hand-list .cut { height: 30px; }
+  .hand-list .cut.tall { height: 80px; }
+  .front-stage::after { height: 70px; }
+}
+@media (max-width: 700px) {
+  .wm-credit { display: none; }
+  .wordmark .wm-name .cut { height: 22px; max-width: 52vw; }
+}
