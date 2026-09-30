@@ -40,7 +40,7 @@ Site-wide settings (name, address, repository link, researcher, podcast link) si
 ## Pages
 
 * `/` the front door: a period map, five question trails with pictures, a strip of old maps, one featured passage with a "Show me another" button, twelve places, six witnesses, and links down into the archive.
-* `/passages/` and `/passages/<trail>/` the passage explorer (cities, architecture, customs, names, outliers): search, how the author knew, century, order, shuffle. Reads `assets/passages-<trail>.json`.
+* `/passages/` and `/passages/<trail>/` the passage explorer (cities, architecture, customs, names, outliers): search with the found words marked, how the author knew, century, order, shuffle, a count of what matches and a Clear filters button. Each menu shows how many passages every choice would give. Reads `assets/passages-<trail>.json`.
 * `/sources/` every source that has been read, in plain words.
 * `/maps/` the old maps: a picture gallery of every map with a working image route, by century, with a search box.
 * `/map/` the places map: MapLibre GL JS with a self-hosted Natural Earth basemap, a date range, and filters for kind, evidence class and language tradition.
@@ -52,6 +52,13 @@ Site-wide settings (name, address, repository link, researcher, podcast link) si
 * `/meanings/` what "Tartar" meant, source by source (card-level and provisional until the passage layer exists).
 * `/lineage/` which maps copied, reissued or corrected which.
 * `/about/`, `/method/`, `/corrections/`.
+
+Controls shared across pages (all in `static/js/site.js`):
+
+* A set of passages on a source or place page (`psg_block` in the generator, `TA.modules.pset` in the script) has trail pills that filter it, an As chosen / Oldest first switch, and opens ten more at a time.
+* Every passage card has a Copy quote button: the quote, who said it, the page and the link.
+* A rounded, outlined pill is always something to press. Labels that only say something are flat tags (`span.chip`). The labels on the sources list and the catalogue table are buttons that filter the list.
+* Coming back with Back or Forward puts the filters, the number of cards open and the scroll position back (`TA.mem`, `TA.restoring`).
 
 Also written: `sitemap.xml`, `robots.txt`, `404.html`, `.nojekyll`.
 

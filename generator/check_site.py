@@ -62,6 +62,10 @@ kz = (D/'place/kazan/index.html').read_text()
 check(kz.count('<article class="psg"') == sum(1 for p in psg if 'kazan' in p['place_ids']), 'kazan place page carries every Kazan passage')
 front = (D/'index.html').read_text()
 check('Follow a question' in front and front.count('class="trail"') == 5 and 'data-module="feature"' in front, 'front page has the five trails and a featured passage')
+# 3c. the pills above a set of passages are buttons that filter it
+w43 = (D/'w/W043/index.html').read_text()
+check('data-module="pset"' in w43 and w43.count('class="pill" data-f=') >= 3 and 'data-copy' in w43, 'source page: trail pills are filter buttons, cards carry a copy button')
+check(kz.count('data-th="') == kz.count('<article class="psg"'), 'every passage card says which trail it belongs to')
 # 4. em dashes
 em_titles = [str(f.relative_to(D)) for f in D.rglob('*.html') if '—' in re.search(r'<title>(.*?)</title>', f.read_text(), re.S).group(1)]
 check(not em_titles, f'no em dash in any page title ({len(list(D.rglob("*.html")))} pages)')

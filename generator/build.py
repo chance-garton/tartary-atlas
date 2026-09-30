@@ -205,6 +205,7 @@ HOME_MAPS = ["M002", "M081", "M049", "M007", "M080", "M072"]
 ERAS = [("e0", "Before 1500", None, 1499), ("e1", "1500s", 1500, 1599), ("e2", "1600s", 1600, 1699),
         ("e3", "1700s", 1700, 1799), ("e4", "1800s", 1800, None)]
 
+COPY_BTN = '<button type="button" class="psg-copy" data-copy>Copy quote</button>'
 PSG_PARTIAL = "The scan's machine-read text is too damaged to confirm this quote automatically. Check it against the page."
 FIRST_FEATURE = "W043-05"
 PAGE_SIZE = 10
@@ -587,8 +588,12 @@ def kind_badge(r):
     return '<span class="kind" title="Written source">W</span>'
 
 
-def ev_chip(ev):
+def ev_chip(ev, button=False):
+    """How the author knew, as a label. With button=True it is a control that filters the list it sits in."""
     cls = {"claimed or disputed": " ev-claimed", "firsthand": " ev-firsthand"}.get(ev, "")
+    if button:
+        return (f'<button type="button" class="chip{cls}" data-set="{esc(ev)}" '
+                f'title="{esc(EVIDENCE.get(ev, ""))} Click to show only these.">{esc(ev)}</button>')
     return f'<span class="chip{cls}" title="{esc(EVIDENCE.get(ev, ""))}">{esc(ev)}</span>'
 
 
@@ -725,7 +730,9 @@ def psg_card(site, ctx, p, theme_tag=True, source=True, cls=""):
     links = [f'<a href="{esc(p["url"])}" rel="noopener">{page}</a>']
     if source:
         links.append(f'<a href="{ctx.link(site.rkey(p["rec"]))}">About this source</a>')
-    return (f'<article class="psg{(" " + cls) if cls else ""}" id="p-{p["id"]}">'
+    links.append(COPY_BTN)
+    y = p.get("year")
+    return (f'<article class="psg{(" " + cls) if cls else ""}" id="p-{p["id"]}" data-th="{p["theme"]}" data-b="{p["basis"]}" data-y="{"" if y is None else y}">'
             f'<div class="psg-meta">{"".join(meta)}</div>'
             f'<h3>{esc(p["headline"])}</h3>'
             f'<p class="gloss">{esc(p["gloss"])}</p>{quote}'
@@ -755,22 +762,36 @@ def psg_compact(site, p):
 
 
 def psg_block(site, ctx, plist, limit, theme_tag=True, source=True):
-    """A list of passages that opens with `limit` cards and offers the rest on request.
-    The static site carries every card in the page. The single-file preview carries only the
-    IDs and lets the page script draw the cards from the passage data files, to stay small."""
+    """A set of passages: trail pills that filter it, an order switch, `limit` cards to begin with and the rest on request.
+    The static site carries every card in the page, so it reads without the page script. The single-file preview
+    carries only the IDs and lets the page script draw the cards from the passage data files, to stay small.
+    Either way the page script (TA.modules.pset) takes over the pills and the paging."""
     rest = plist[limit:]
-    label = f"Show {plural(len(rest), 'more passage')}"
+    counts = collections.Counter(p["theme"] for p in plist)
+    pills = ""
+    if len(counts) > 1:
+        btns = [f'<button type="button" class="pill" data-f="" aria-pressed="true">All <span class="n">{len(plist)}</span></button>']
+        btns += [f'<button type="button" class="pill" data-f="{t}" aria-pressed="false">{esc(THEMES[t]["label"])} <span class="n">{counts[t]}</span></button>'
+                 for t in THEMES if counts[t]]
+        pills = f'<div class="pills" role="group" aria-label="Show one trail">{"".join(btns)}</div>'
+    order = ""
+    if len(plist) >= 6 and len({p.get("year") for p in plist if p.get("year") is not None}) > 1:
+        order = ('<div class="seg" role="group" aria-label="Order"><button type="button" data-ord="best" aria-pressed="true">As chosen</button>'
+                 '<button type="button" data-ord="old" aria-pressed="false">Oldest first</button></div>')
+    bar = f'<div class="pset-bar" data-bar hidden>{pills}{order}</div>' if pills or order else ""
+    foot = ('<p class="small muted pset-count" data-count aria-live="polite" hidden></p>'
+            '<p class="px-more" data-more-row hidden><button type="button" class="btn" data-more>Show more</button>'
+            '<button type="button" class="btn quiet" data-all>Show all</button></p>')
     if ctx.mode == "preview":
         opts = ("1" if theme_tag else "0") + ("1" if source else "0")
-        return (f'<div data-module="pmore" data-ids="{",".join(p["id"] for p in plist)}" data-opts="{opts}" data-first="{limit}">'
-                f'<div class="psg-list" data-list><p class="muted">Loading the passages…</p></div>'
-                + (f'<p class="px-more"><button type="button" class="btn" data-more>{label}</button></p>' if rest else "") + "</div>")
+        return (f'<div class="pset" data-module="pset" data-ids="{",".join(p["id"] for p in plist)}" data-opts="{opts}" data-first="{limit}">{bar}'
+                f'<div class="psg-list" data-list><p class="muted">Loading the passages…</p></div>{foot}</div>')
     first = "".join(psg_card(site, ctx, p, theme_tag, source) for p in plist[:limit])
     more = ""
     if rest:
         cards = "".join(psg_card(site, ctx, p, theme_tag, source) for p in rest)
-        more = f'<details class="more"><summary class="btn">{label}</summary><div class="psg-list">{cards}</div></details>'
-    return f'<div class="psg-list">{first}</div>{more}'
+        more = f'<details class="more"><summary class="btn">Show {plural(len(rest), "more passage")}</summary><div class="psg-list">{cards}</div></details>'
+    return f'<div class="pset" data-module="pset" data-first="{limit}">{bar}<div class="psg-list" data-list>{first}</div>{more}{foot}</div>'
 
 
 def write_passage_assets(site, outdir):
@@ -784,10 +805,10 @@ def write_passage_assets(site, outdir):
 
 def trail_tabs(site, ctx, current):
     cur_all = ' aria-current="page"' if current is None else ""
-    items = [f'<a href="{ctx.link("passages")}"{cur_all}>All</a>']
+    items = [f'<a href="{ctx.link("passages")}"{cur_all}>All <span class="n">{num(len(site.passages))}</span></a>']
     for t, m in THEMES.items():
         cur = ' aria-current="page"' if t == current else ""
-        items.append(f'<a href="{ctx.link("passages/" + t)}"{cur}>{esc(m["label"])}</a>')
+        items.append(f'<a href="{ctx.link("passages/" + t)}"{cur}>{esc(m["label"])} <span class="n">{num(len(site.psg_by_theme[t]))}</span></a>')
     return f'<nav class="trailtabs" aria-label="Trails">{"".join(items)}</nav>'
 
 
@@ -938,14 +959,16 @@ def page_passages(site, ctx, theme=None):
     legend = "".join(f'<span>{basis_chip(k)} {esc(v[1])}</span>' for k, v in list(PBASIS.items())[:4])
     cards = "".join(psg_card(site, ctx, p, theme_tag=theme is None) for p in plist[:PAGE_SIZE])
     body = (f'<div class="page">{head}{trail_tabs(site, ctx, theme)}'
-            f'<div class="px-layout" data-module="pexplore" data-theme="{theme or ""}" data-total="{len(plist)}">'
+            f'<div class="px-layout" data-module="pexplore" data-trail="{theme or ""}" data-total="{len(plist)}">'
             f'<aside class="px-side" aria-label="Narrow the passages"><div class="filterbar stack"><label for="px-q">Find<input type="search" id="px-q" placeholder="Karakorum, felt, mosque…"></label>'
+            f'<details class="px-filters" data-filters open><summary>Filters<span class="n" data-nf></span></summary><div class="px-filters-body">'
             f'<label for="px-b">How the author knew<select id="px-b"><option value="">Any</option>{basis_opts}</select></label>'
             f'<label for="px-w">When<select id="px-w"><option value="">Any time</option>{when_opts}</select></label>'
             f'<label for="px-o">Order<select id="px-o"><option value="best">A mix of the best</option><option value="old">Oldest first</option><option value="new">Newest first</option></select></label>'
-            f'<button type="button" class="btn" data-shuffle>Shuffle</button></div>'
+            f'<button type="button" class="btn" data-shuffle>Shuffle</button></div></details></div>'
             f'<details class="basis-legend"><summary>What the labels mean</summary>{legend}</details></aside>'
-            f'<div class="px-main"><p class="small muted px-count" aria-live="polite"><span data-count>{num(len(plist))}</span> passages</p>'
+            f'<div class="px-main" data-main><p class="small muted px-count" aria-live="polite"><span data-count>{num(len(plist))}</span><span data-of hidden> of {num(len(plist))}</span> passages'
+            f'<button type="button" class="linkbtn" data-clear hidden>Clear filters</button></p>'
             f'<div class="psg-list" data-list>{cards}</div>'
             f'<p class="px-more"><button type="button" class="btn" data-more>Show {PAGE_SIZE} more</button></p></div></div></div>')
     return dict(title=title, description=desc, body=body, nav="passages", modules=["pexplore"])
@@ -964,7 +987,7 @@ def page_sources(site, ctx):
         rows.append(
             f'<li data-h="{esc(hay)}" data-hk="{esc(pr["how_they_knew"])}" data-y="{"" if y is None else y}" data-n="{n}"{" hidden" if i >= 30 else ""}>'
             f'<div class="yr">{esc(source_when(r))}</div><div class="body"><a class="t" href="{ctx.link(site.rkey(r))}">{esc(pr["plain_title"])}</a>'
-            f'<p class="one">{esc(pr["one_line"])}</p><div class="meta"><span class="chip">{esc(HOW_KNEW.get(pr["how_they_knew"], pr["how_they_knew"]))}</span>'
+            f'<p class="one">{esc(pr["one_line"])}</p><div class="meta"><button type="button" class="chip" data-set="{esc(pr["how_they_knew"])}" title="Click to show only these">{esc(HOW_KNEW.get(pr["how_they_knew"], pr["how_they_knew"]))}</button>'
             f'<span>{plural(n, "passage") if n or pr.get("read_quality") != "none" else "profile only"}</span><span class="rid">{rid}</span></div></div></li>')
     hk_opts = "".join(f'<option value="{esc(k)}">{esc(v)}</option>' for k, v in HOW_KNEW.items()
                       if any(p["how_they_knew"] == k for p in site.profiles.values()))
@@ -975,8 +998,10 @@ def page_sources(site, ctx):
             f'<div class="filterbar"><label for="sl-q">Find<input type="search" id="sl-q" placeholder="Rubruck, Crimea, Chinese, 1253…"></label>'
             f'<label for="sl-hk">How they knew<select id="sl-hk"><option value="">Any</option>{hk_opts}</select></label>'
             f'<label for="sl-o">Order<select id="sl-o"><option value="n">Most passages</option><option value="old">Oldest first</option><option value="new">Newest first</option></select></label>'
-            f'<p class="small muted" aria-live="polite"><span data-count>{len(rows)}</span> sources</p></div>'
+            f'<p class="small muted list-count" aria-live="polite"><span data-count>{len(rows)}</span><span data-of hidden> of {len(rows)}</span> sources'
+            f'<button type="button" class="linkbtn" data-clear hidden>Clear filters</button></p></div>'
             f'<ol class="rlist slist" data-rows>{"".join(rows)}</ol>'
+            f'<p class="muted" data-empty hidden>No source matches. Try a shorter word, or clear the filters.</p>'
             f'<p class="px-more"><button type="button" class="btn" data-all>Show all {len(rows)} sources</button></p></div>'
             f'<p class="progress">The last {n_profile_only} sources in the list have a profile only: the atlas does not hold their text, or the stored scan could not be searched. '
             f'The {n_maps} maps are not read for passages; they are all in <a href="{ctx.link("records")}">the full catalogue</a>{", with " + str(n_written - n_read - n_profile_only) + " written sources still unread" if n_written - n_read - n_profile_only else ""}.</p></div>')
@@ -1004,7 +1029,8 @@ def page_maps(site, ctx):
     body = (f'<div class="page">{head}<div data-module="gallery">'
             f'<div class="gallery-bar"><div class="pills" role="group" aria-label="Century">{"".join(btns)}</div>'
             f'<label class="gallery-find" for="gl-q"><span class="sr">Find a map</span><input type="search" id="gl-q" placeholder="Find a map: Ortelius, Siberia, 1706…"></label></div>'
-            f'<p class="small muted px-count" aria-live="polite"><span data-count>{len(shown)}</span> maps</p>'
+            f'<p class="small muted px-count" aria-live="polite"><span data-count>{len(shown)}</span><span data-of hidden> of {len(shown)}</span> maps'
+            f'<button type="button" class="linkbtn" data-clear hidden>Clear filters</button></p>'
             f'<div class="gallery" data-grid>{"".join(map_card(site, ctx, r) for r in shown)}</div>'
             f'<p class="muted" data-empty hidden>No map matches. Try a shorter word, or choose All.</p></div>'
             f'{rest_html}'
@@ -1050,9 +1076,7 @@ def profile_section(site, ctx, r):
     if ps:
         order = {t: i for i, t in enumerate(THEMES)}
         ps = sorted(ps, key=lambda p: (order[p["theme"]], -p["strength"], p["id"]))
-        counts = collections.Counter(p["theme"] for p in ps)
-        chips = "".join(f'<li><span class="chip">{esc(THEMES[t]["label"])} <span class="mono muted">{counts[t]}</span></span></li>' for t in THEMES if counts[t])
-        out.append(f'<section class="section"><h2>What it says: {plural(len(ps), "passage")}</h2><ul class="tags">{chips}</ul>'
+        out.append(f'<section class="section"><h2>What it says: {plural(len(ps), "passage")}</h2>'
                    f'{psg_block(site, ctx, ps, 4, theme_tag=True, source=False)}</section>')
     else:
         why = ("No passages are quoted from this source yet: the atlas does not hold its text, or the stored scan could not be searched. The summary above says which."
@@ -1231,7 +1255,7 @@ def page_record(site, ctx, r):
     if r.get("primary_access"):
         jsonld["sameAs"] = r["primary_access"]
     return dict(title=title, description=desc, body=body, nav="sources" if prof else ("maps" if is_map else "records"), jsonld=jsonld,
-                modules=["pmore"] if prof else [])
+                modules=["pset"] if prof else [])
 
 
 def thumbnail(site, r):
@@ -1325,7 +1349,7 @@ def page_place(site, ctx, p):
         jsonld["geo"] = {"@type": "GeoCoordinates", "latitude": p["lat"], "longitude": p["lon"]}
     if p.get("wikidata"):
         jsonld["sameAs"] = f'https://www.wikidata.org/wiki/{p["wikidata"]}'
-    return dict(title=f'{p["name"]} in the sources', description=desc, body=body, nav="map", jsonld=jsonld, modules=["pmore"])
+    return dict(title=f'{p["name"]} in the sources', description=desc, body=body, nav="map", jsonld=jsonld, modules=["pset"])
 
 
 def page_people(site, ctx, p):
@@ -1355,7 +1379,7 @@ def page_records(site, ctx):
             f'<tr data-k="{r["kind"]}" data-ev="{esc(r["evidence_class"])}" data-y="{"" if s is None else s}" data-h="{esc(hay)}">'
             f'<td class="num">{esc(made_label(r))}</td><td>{kind_badge(r)}</td>'
             f'<td><a href="{ctx.link(site.rkey(r))}">{esc(short_title(r["title"], 90))}</a><div class="small muted">{esc(short_creator(r["creator"]))}</div></td>'
-            f'<td>{ev_chip(r["evidence_class"])}</td><td class="rid">{r["id"]}</td></tr>')
+            f'<td>{ev_chip(r["evidence_class"], button=True)}</td><td class="rid">{r["id"]}</td></tr>')
     ev_opts = "".join(f'<option value="{esc(e)}">{esc(e)}</option>' for e in EVIDENCE_ORDER)
     counts = collections.Counter(r["kind"] for r in site.records)
     head = page_head("Archive · Catalogue", "The full catalogue",
@@ -1364,7 +1388,9 @@ def page_records(site, ctx):
             f'<div class="filterbar"><label for="rt-q">Find<input type="search" id="rt-q" placeholder="Witsen, Tobolsk, Tartaria, W122…"></label>'
             f'<label for="rt-k">Kind<select id="rt-k"><option value="">All</option><option value="written">Written sources</option><option value="map">Maps</option></select></label>'
             f'<label for="rt-ev">How the author knew<select id="rt-ev"><option value="">Any</option>{ev_opts}</select></label>'
-            f'<p class="small muted" aria-live="polite"><span data-count>{len(site.records)}</span> shown</p></div>'
+            f'<p class="small muted list-count" aria-live="polite"><span data-count>{len(site.records)}</span><span data-of hidden> of {len(site.records)}</span> records'
+            f'<button type="button" class="linkbtn" data-clear hidden>Clear filters</button></p></div>'
+            f'<p class="muted" data-empty hidden>No record matches. Try a shorter word, or clear the filters.</p>'
             f'<div class="table-wrap"><table class="data"><thead><tr><th class="num">Date</th><th>Kind</th><th>Title and creator</th><th>Evidence</th><th>ID</th></tr></thead>'
             f'<tbody>{"".join(rows)}</tbody></table></div></div></div>')
     return dict(title="Records", description=f"All {len(site.records)} written sources and maps in the Tartary Atlas, in date order, searchable by name, place and ID.", body=body, nav="records", modules=["rtable"])
@@ -1773,7 +1799,7 @@ def page_map(site, ctx):
     legend = "".join(f'<div>{basis_dot(g)}<span>{esc(BASIS[g][0])}</span></div>' for g in ["exact", "river", "capital", "approx", "anchor"])
     body = f'''<div class="explorer" data-module="explorer">
 <script type="application/json">{js}</script>
-<div class="mapwrap"><div id="map" role="region" aria-label="Map of places named in the sources"></div>
+<div class="mapwrap"><div id="ta-map" role="region" aria-label="Map of places named in the sources"></div>
 <div class="map-note">Modern coastlines and rivers, Natural Earth. Aral Sea at its modern extent.</div></div>
 <div class="side">
 <div class="side-sec intro"><h1>The places map</h1>
@@ -1910,6 +1936,9 @@ def page_corrections(site, ctx):
 
 # ---------------------------------------------------------------- layout
 
+TO_TOP = '<button type="button" class="totop" data-totop hidden><span aria-hidden="true">↑</span> Top</button>'
+
+
 def header(ctx, nav_key):
     cur = ' aria-current="page"'
     items = "".join(
@@ -1956,7 +1985,7 @@ def static_page(site, key, pg):
     if pg.get("jsonld"):
         head.append('<script type="application/ld+json">' + json.dumps({k: v for k, v in pg["jsonld"].items() if v is not None}, ensure_ascii=False).replace("</", "<\\/") + "</script>")
     head.append("</head>")
-    body = f'<body data-root="{ctx.root}">{header(ctx, pg["nav"])}<main id="main">{pg["body"]}</main>{footer(site, ctx)}</body></html>'
+    body = f'<body data-root="{ctx.root}">{header(ctx, pg["nav"])}<main id="main" tabindex="-1">{pg["body"]}</main>{footer(site, ctx)}{TO_TOP}</body></html>'
     return "".join(head) + body
 
 
@@ -2031,7 +2060,7 @@ def write_preview(site):
            f'<style>{css}</style>'
            f'<script src="{CONFIG["maplibre_js"]}"></script>'
            f'<svg width="0" height="0" style="position:absolute" aria-hidden="true">{build_land_svg()}</svg>'
-           f'{header(ctx, "")}<main id="main"></main>{footer(site, ctx)}'
+           f'{header(ctx, "")}<main id="main" tabindex="-1"></main>{footer(site, ctx)}{TO_TOP}'
            f'<script type="application/json" id="ta-pages">{pages_json}</script>'
            f'<script>window.TA_PREVIEW=true;</script><script>{js}</script>')
     (PREVIEW / "index.html").write_text(doc)
