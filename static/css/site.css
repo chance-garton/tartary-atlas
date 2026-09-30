@@ -610,6 +610,71 @@ figcaption a { color: var(--ink-2); font-weight: 600; }
 .psg-copy { font: inherit; font-weight: 600; color: var(--ink-2); background: none; border: 0; padding: 0; margin-left: auto; cursor: pointer; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 2px; }
 .psg-copy:hover { color: var(--verdigris); text-decoration-thickness: 2px; }
 
+/* The label that says how the author knew is a button: pressing it spells the label out. */
+button.basis { font-family: inherit; line-height: inherit; cursor: pointer; }
+button.basis:hover, button.basis[aria-expanded="true"] { box-shadow: 0 0 0 3px var(--verdigris-soft); }
+.basis-tip { font-size: var(--step--1); color: var(--ink-2); padding-left: 14px; border-left: 2px solid var(--verdigris); margin-top: -4px; }
+
+/* The way from one passage into the whole source: a door, not a footnote. */
+.psg-tale {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 3px 16px; align-items: center;
+  padding: 14px 18px; margin-top: 2px; background: var(--verdigris-soft); border: 1px solid transparent; border-radius: var(--radius);
+  color: var(--ink); text-decoration: none; transition: border-color 0.18s, box-shadow 0.18s;
+}
+.psg-tale::after {
+  content: "\2192"; grid-column: 2; grid-row: 1 / span 3; display: grid; place-items: center; width: 2.25rem; height: 2.25rem;
+  border-radius: 50%; background: var(--verdigris); color: var(--panel); font-size: 1.1rem; transition: transform 0.18s;
+}
+.psg-tale > span { grid-column: 1; min-width: 0; }
+.psg-tale-k { font-size: var(--step-0); font-weight: 700; color: var(--verdigris); }
+.psg-tale-t { font-family: var(--font-display); font-weight: 500; font-size: 1.18rem; line-height: 1.22; text-wrap: balance; }
+.psg-tale-n { font-size: var(--step--1); color: var(--ink-2); }
+.psg-tale:hover { border-color: var(--verdigris); box-shadow: var(--shadow); }
+.psg-tale:hover .psg-tale-t { color: var(--verdigris); }
+.psg-tale:hover::after { transform: translateX(3px); }
+
+/* The front page passage: held back for a moment on the static site so the random draw is the first one seen. */
+.feature-slot { min-width: 0; }
+.js .feature-slot:not([data-ready]) { visibility: hidden; animation: ta-reveal 0s 2.5s forwards; }
+@keyframes ta-reveal { to { visibility: visible; } }
+.psg.dealt { animation: ta-deal 0.32s ease-out; }
+@keyframes ta-deal { from { opacity: 0; transform: translateY(8px); } }
+
+/* Where to go next from a source or a map. */
+.onward { border-top: 2px solid var(--ink); padding-top: 28px; }
+.onward-slot { display: grid; gap: 10px; align-content: start; grid-template-rows: auto 1fr; min-width: 0; }
+button.witness { font: inherit; text-align: left; cursor: pointer; width: 100%; }
+.witness.lucky { background: var(--gamboge-soft); border-style: dashed; border-color: var(--gamboge); }
+.witness.lucky:hover { border-style: solid; border-color: var(--gamboge); }
+.witness.lucky:hover .witness-t { color: var(--gamboge); }
+
+/* A closer look at a map picture. */
+.mapfig a[data-zoom] { position: relative; cursor: zoom-in; }
+.zoom-hint {
+  position: absolute; right: 14px; top: 14px; padding: 7px 14px; border-radius: 999px; background: var(--ink); color: var(--panel);
+  font-size: var(--step--1); font-weight: 600; box-shadow: var(--shadow); pointer-events: none;
+}
+dialog.zoom {
+  width: 100vw; height: 100dvh; max-width: none; max-height: none; margin: 0; padding: 0; border: 0;
+  background: #10171a; color: #f2f4f1; display: none; grid-template-rows: auto minmax(0, 1fr);
+}
+dialog.zoom[open] { display: grid; }
+dialog.zoom::backdrop { background: #10171a; }
+.zoom-bar { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; justify-content: space-between; padding: 10px var(--gutter); border-bottom: 1px solid rgba(255, 255, 255, 0.14); }
+.zoom-title { font-family: var(--font-display); font-size: var(--step-1); min-width: 0; }
+.zoom-tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: var(--step--1); }
+.zoom-tools button, .zoom-tools a {
+  font: inherit; font-weight: 600; color: inherit; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 999px; padding: 7px 14px; min-width: 2.5rem; cursor: pointer; text-decoration: none;
+}
+.zoom-tools button:hover:not(:disabled), .zoom-tools a:hover { background: rgba(255, 255, 255, 0.18); }
+.zoom-tools button:disabled { opacity: 0.4; cursor: default; }
+.zoom-tools button:focus-visible, .zoom-tools a:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.zoom-pan { overflow: auto; display: grid; place-items: safe center; min-height: 0; overscroll-behavior: contain; }
+.zoom-pan img { display: block; max-width: none; height: auto; cursor: zoom-in; user-select: none; -webkit-user-drag: none; touch-action: pan-x pan-y; }
+.zoom-pan.zoomed img { cursor: grab; }
+.zoom-pan.zoomed img:active { cursor: grabbing; }
+
 /* A set of passages on a source or place page: pills to pick a trail, a switch for the order. */
 .pset { display: grid; gap: 16px; min-width: 0; }
 .pset-bar { display: flex; flex-wrap: wrap; gap: 10px 20px; align-items: center; justify-content: space-between; max-width: 46rem; }
@@ -666,6 +731,10 @@ h2.divider { font-size: 0.8125rem; text-transform: uppercase; letter-spacing: 0.
   .deeper { grid-template-columns: minmax(0, 1fr); }
   .readcard { grid-template-columns: minmax(0, 1fr); }
   .psg { padding: 20px 18px 18px; }
+  .psg-tale { padding: 12px 14px; }
+  .psg-tale-t { font-size: 1.1rem; }
+  .zoom-title { font-size: var(--step-0); }
+  .zoom-hint { right: 10px; top: 10px; }
   .psg blockquote { padding: 14px 16px; }
   .psg h3, .psg.big h3 { font-size: 1.4rem; }
   .psg blockquote p, .psg.big blockquote p { font-size: 1.14rem; }
@@ -674,3 +743,6 @@ h2.divider { font-size: 0.8125rem; text-transform: uppercase; letter-spacing: 0.
   .gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 14px; }
   .hero-stats { gap: 8px 24px; }
 }
+
+#what-it-says { scroll-margin-top: calc(var(--header-h) + 16px); }
+#what-it-says:focus { outline: none; }

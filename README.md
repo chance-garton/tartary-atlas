@@ -39,7 +39,7 @@ Site-wide settings (name, address, repository link, researcher, podcast link) si
 
 ## Pages
 
-* `/` the front door: a period map, five question trails with pictures, a strip of old maps, one featured passage with a "Show me another" button, twelve places, six witnesses, and links down into the archive.
+* `/` the front door: a period map, five question trails with pictures, a strip of old maps, one featured passage, twelve places, six witnesses, and links down into the archive. The featured passage is drawn at random on every visit from a pool of about a hundred (`FEATURE_PER_TRAIL`, `FEATURE_PER_SOURCE` in the generator), never the one seen last time; "Show me another" walks a fresh shuffle; Back returns to the passage that was showing. `FIRST_FEATURE` is what shows when the page script does not run.
 * `/passages/` and `/passages/<trail>/` the passage explorer (cities, architecture, customs, names, outliers): search with the found words marked, how the author knew, century, order, shuffle, a count of what matches and a Clear filters button. Each menu shows how many passages every choice would give. Reads `assets/passages-<trail>.json`.
 * `/sources/` every source that has been read, in plain words.
 * `/maps/` the old maps: a picture gallery of every map with a working image route, by century, with a search box.
@@ -57,6 +57,10 @@ Controls shared across pages (all in `static/js/site.js`):
 
 * A set of passages on a source or place page (`psg_block` in the generator, `TA.modules.pset` in the script) has trail pills that filter it, an As chosen / Oldest first switch, and opens ten more at a time.
 * Every passage card has a Copy quote button: the quote, who said it, the page and the link.
+* Every passage card away from its own source page ends with a door into that source, "Explore this Tartaria tale": the plain title, the years, and how many passages wait there (`tale_link` in the generator, mirrored in `TA.card`). The passage data files carry `[title, passages, years]` per source for it.
+* The label that says how the author knew ("Saw it", "Heard it") is a button on a card: pressing it spells the label out, for phones.
+* Source pages open with "Read the N passages" and "Open the original book", and end with Keep exploring: the witness before, the witness after (by the years described) and Surprise me (`onward_section`, `TA.modules.lucky`). Map pages end with the maps drawn just before and after. The sources list has Surprise me too.
+* A map picture opens a closer look in the page (`TA.zoom`): zoom with the buttons, the wheel or a tap, drag to move, Esc or Close to leave. The link to the full image at the library stays.
 * A rounded, outlined pill is always something to press. Labels that only say something are flat tags (`span.chip`). The labels on the sources list and the catalogue table are buttons that filter the list.
 * Coming back with Back or Forward puts the filters, the number of cards open and the scroll position back (`TA.mem`, `TA.restoring`).
 

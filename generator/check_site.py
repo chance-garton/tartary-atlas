@@ -66,6 +66,16 @@ check('Follow a question' in front and front.count('class="trail"') == 5 and 'da
 w43 = (D/'w/W043/index.html').read_text()
 check('data-module="pset"' in w43 and w43.count('class="pill" data-f=') >= 3 and 'data-copy' in w43, 'source page: trail pills are filter buttons, cards carry a copy button')
 check(kz.count('data-th="') == kz.count('<article class="psg"'), 'every passage card says which trail it belongs to')
+# 3d. the ways onward: the door from a passage into its source, a random front page passage, no dead ends
+check(kz.count('class="psg-tale"') == kz.count('<article class="psg"') and 'About this source' not in kz, 'place page: every passage card opens onto its source with the Explore door')
+check('class="psg-tale"' not in w43 and 'Keep exploring' in w43 and 'data-module="lucky"' in w43, 'source page: no door to itself, and it ends with the witness before, the witness after and Surprise me')
+feat = json.loads(re.search(r'data-module="feature"><script type="application/json">(.*?)</script>', front, re.S).group(1).replace('<\\/', '</'))
+per = {}
+for q in feat['p']: per[(q['th'], q['r'])] = per.get((q['th'], q['r']), 0) + 1
+check(len(feat['p']) >= 60 and max(per.values()) <= 2 and all(q['r'] in feat['src'] for q in feat['p']), f"front page draws its passage from a pool of {len(feat['p'])}, at most two per source in a trail")
+m81 = (D/'m/M081/index.html').read_text()
+check('data-zoom="' in m81 and 'Keep exploring' in m81, 'map page: the picture opens a closer look, and the page ends with the neighbouring maps')
+check(kz.count('data-basis') == kz.count('<article class="psg"'), 'every passage card has a pressable label for how the author knew')
 # 4. em dashes
 em_titles = [str(f.relative_to(D)) for f in D.rglob('*.html') if '—' in re.search(r'<title>(.*?)</title>', f.read_text(), re.S).group(1)]
 check(not em_titles, f'no em dash in any page title ({len(list(D.rglob("*.html")))} pages)')

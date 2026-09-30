@@ -118,8 +118,24 @@
     return out;
   };
   document.addEventListener('click', function (e) {
-    var t = e.target.closest ? e.target.closest('[data-copy], [data-totop]') : null;
+    var t = e.target.closest ? e.target.closest('[data-copy], [data-totop], [data-basis], [data-zoom]') : null;
     if (!t) return;
+    if (t.hasAttribute('data-zoom')) {
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.button) return;      // a new tab still goes to the library
+      if (TA.zoom(t)) e.preventDefault();
+      return;
+    }
+    if (t.hasAttribute('data-basis')) {
+      // "Saw it", "Heard it": pressing the label spells it out, since a phone has no hover.
+      var foot = t.closest('.psg-foot'), tip = foot && foot.nextElementSibling;
+      if (tip && tip.classList.contains('basis-tip')) { tip.remove(); t.setAttribute('aria-expanded', 'false'); return; }
+      tip = document.createElement('p');
+      tip.className = 'basis-tip';
+      tip.textContent = t.getAttribute('title');
+      foot.parentNode.insertBefore(tip, foot.nextSibling);
+      t.setAttribute('aria-expanded', 'true');
+      return;
+    }
     if (t.hasAttribute('data-totop')) {
       window.scrollTo({ top: 0, behavior: reduced() ? 'auto' : 'smooth' });
       var m = document.getElementById('main');
@@ -148,6 +164,11 @@
     record: ['Official record', 'An official document or a record made at the time.'],
     mixed: ['Mixed', 'Part seen, part heard or read.']
   };
+  // Each data file names its sources once: [plain title, passages from it, the years it describes].
+  TA.srcMeta = function (p, src) {
+    var m = src[p.r] || [];
+    p.sr = m[0] || ''; p.sn = m[1] || 0; p.sw = m[2] || '';
+  };
   var themeCache = {};
   // Load one trail's passages (cached). Resolves to an array; each passage keeps its source title in .sr.
   TA.loadTheme = function (t) {
@@ -156,7 +177,7 @@
         if (!r.ok) throw new Error('passages ' + r.status);
         return r.json();
       }).then(function (d) {
-        d.p.forEach(function (p) { p.sr = d.src[p.r]; });
+        d.p.forEach(function (p) { TA.srcMeta(p, d.src); });
         return d.p;
       });
       themeCache[t].catch(function () { delete themeCache[t]; });
@@ -182,13 +203,18 @@
     if (notes) notes = '<details class="psg-notes"><summary>' + (p.c ? 'Keep in mind' : 'A note on this quote') + '</summary>' + notes + '</details>';
     var b = BASIS[p.b] || [p.b, ''];
     var links = '<a href="' + esc(p.u) + '" rel="noopener">Read the page' + (p.p ? ' (p. ' + esc(p.p) + ')' : '') + '</a>';
-    if (o.source !== false) links += '<a href="' + TA.href('w/' + p.r) + '">About this source</a>';
     links += '<button type="button" class="psg-copy" data-copy>Copy quote</button>';
+    var tale = '';
+    if (o.source !== false) {
+      tale = '<a class="psg-tale" href="' + TA.href('w/' + p.r) + '"><span class="psg-tale-k">Explore this Tartaria tale</span>' +
+        '<span class="psg-tale-t">' + esc(p.sr) + '</span><span class="psg-tale-n">' + esc(p.sw) + ' · ' + numText(p.sn) + ' passage' + (p.sn === 1 ? '' : 's') +
+        ' · who wrote it, how they knew, what to watch out for</span></a>';
+    }
     return '<article class="psg' + (o.cls ? ' ' + o.cls : '') + '" id="p-' + esc(p.i) + '" data-th="' + esc(p.th) + '" data-b="' + esc(p.b) + '" data-y="' + (p.y == null ? '' : p.y) + '">' +
       '<div class="psg-meta">' + meta + '</div><h3>' + esc(p.h) + '</h3><p class="gloss">' + esc(p.g) + '</p>' + quote +
-      '<div class="psg-foot"><span class="basis ' + esc(p.b) + '" title="' + esc(b[1]) + '">' + esc(b[0]) + '</span><span class="who">' + esc(p.s) + '</span></div>' +
+      '<div class="psg-foot"><button type="button" class="basis ' + esc(p.b) + '" data-basis aria-expanded="false" title="' + esc(b[1]) + '">' + esc(b[0]) + '</button><span class="who">' + esc(p.s) + '</span></div>' +
       (p.pe ? '<p class="psg-people"><span>About</span> ' + esc(p.pe) + '</p>' : '') +
-      notes + '<div class="psg-links">' + links + '</div></article>';
+      notes + tale + '<div class="psg-links">' + links + '</div></article>';
   };
   function bestOrder(a, b) { return (b.st - a.st) || (a.x - b.x) || (a.i < b.i ? -1 : 1); }
   function shuffled(list) {
@@ -409,18 +435,131 @@
     });
   };
 
-  /* The passage on the front page: "Show me another". */
+  /* The passage on the front page. A different one opens on every visit, "Show me another" draws the next
+     from a fresh shuffle, and a reader who comes Back finds the passage they left. */
   TA.modules.feature = function (el) {
     var D = JSON.parse(el.querySelector('script[type="application/json"]').textContent);
     var slot = el.querySelector('[data-slot]'), btn = el.querySelector('[data-next]');
-    var pool = shuffled(D.p), i = 0;
-    btn.addEventListener('click', function () {
-      if (!pool.length) return;
-      var p = pool[i % pool.length];
-      i++;
-      p.sr = D.src[p.r];
+    var LAST = 'ta:feature-last', queue = [], cur = null;
+    D.p.forEach(function (p) { TA.srcMeta(p, D.src); });
+    function lastSeen() { try { return window.localStorage.getItem(LAST); } catch (e) { return null; } }
+    function draw(p, moved) {
+      cur = p.i;
       slot.innerHTML = TA.card(p, { cls: 'big' });
+      slot.setAttribute('data-ready', '');
+      TA.mem.set('feature', p.i);
+      try { window.localStorage.setItem(LAST, p.i); } catch (e) { /* storage is off: still random, may repeat */ }
+      if (moved && !reduced()) {
+        var card = slot.firstChild;
+        card.classList.add('dealt');
+        setTimeout(function () { card.classList.remove('dealt'); }, 400);
+      }
+    }
+    function next() {
+      if (!queue.length) {
+        queue = shuffled(D.p);
+        // never the passage on show, nor the one this reader saw last time
+        var avoid = cur || lastSeen();
+        if (queue.length > 1 && queue[0].i === avoid) queue.push(queue.shift());
+      }
+      return queue.shift();
+    }
+    if (!D.p.length) { slot.setAttribute('data-ready', ''); return; }
+    var back = TA.restoring ? TA.mem.get('feature') : null;
+    var kept = back && D.p.filter(function (p) { return p.i === back; })[0];
+    draw(kept || next());
+    btn.addEventListener('click', function () { draw(next(), true); });
+  };
+
+  /* "Surprise me": open one source at random. */
+  TA.modules.lucky = function (el) {
+    var pool = (el.getAttribute('data-pool') || '').split(',').filter(Boolean);
+    var here = (PREVIEW ? location.hash : location.pathname).match(/W\d{3}/);
+    if (here) pool = pool.filter(function (id) { return id !== here[0]; });
+    el.addEventListener('click', function () {
+      if (pool.length) location.href = TA.href('w/' + pool[Math.floor(Math.random() * pool.length)]);
     });
+  };
+
+  /* A closer look at a map picture, without leaving the page: fit to the screen, then zoom and drag. */
+  TA.zoom = function (a) {
+    var src = a.getAttribute('data-zoom');
+    if (!src || !window.HTMLDialogElement) return false;
+    var dlg = document.createElement('dialog');
+    dlg.className = 'zoom';
+    dlg.setAttribute('aria-label', 'A closer look: ' + (a.getAttribute('data-zoom-title') || 'map'));
+    dlg.innerHTML = '<div class="zoom-bar"><span class="zoom-title">' + esc(a.getAttribute('data-zoom-title') || '') + '</span>' +
+      '<span class="zoom-tools"><button type="button" data-z="out" aria-label="Zoom out">−</button>' +
+      '<button type="button" data-z="in" aria-label="Zoom in">+</button>' +
+      '<a href="' + esc(a.getAttribute('href')) + '" rel="noopener">Full image at the library</a>' +
+      '<button type="button" data-z="close">Close</button></span></div>' +
+      '<div class="zoom-pan"><img alt="' + esc((a.querySelector('img') || a).getAttribute('alt') || '') + '" src="' + esc(src) + '" draggable="false"></div>';
+    document.body.appendChild(dlg);
+    var pan = dlg.querySelector('.zoom-pan'), img = pan.querySelector('img');
+    var k = 1, MAX = 4, fitW = 0, started = false, centred = false;
+    function fit() {
+      var nw = img.naturalWidth || 1400, nh = img.naturalHeight || 1000;
+      fitW = Math.min(pan.clientWidth, pan.clientHeight * nw / nh);
+      // a wide map on an upright phone would open as a thin strip, so it opens filling most of the height
+      if (!started) { started = true; k = Math.min(2.5, Math.max(1, pan.clientHeight * 0.8 / (fitW * nh / nw))); if (k < 1.15) k = 1; }
+      apply();
+      if (k > 1 && !centred) { centred = true; pan.scrollLeft = (pan.scrollWidth - pan.clientWidth) / 2; pan.scrollTop = (pan.scrollHeight - pan.clientHeight) / 2; }
+    }
+    function apply(cx, cy) {
+      // keep the point under the pointer (or the centre) where it is while the picture grows
+      var r = img.getBoundingClientRect(), pr = pan.getBoundingClientRect();
+      if (cx == null) { cx = pr.left + pr.width / 2; cy = pr.top + pr.height / 2; }
+      var fx = r.width ? (cx - r.left) / r.width : 0.5, fy = r.height ? (cy - r.top) / r.height : 0.5;
+      img.style.width = Math.round(fitW * k) + 'px';
+      var r2 = img.getBoundingClientRect();
+      pan.scrollLeft += (r2.left + fx * r2.width) - cx;
+      pan.scrollTop += (r2.top + fy * r2.height) - cy;
+      pan.classList.toggle('zoomed', k > 1);
+      dlg.querySelector('[data-z="out"]').disabled = k <= 1;
+      dlg.querySelector('[data-z="in"]').disabled = k >= MAX;
+    }
+    function step(d, cx, cy) { k = Math.max(1, Math.min(MAX, +(k * (d > 0 ? 1.5 : 1 / 1.5)).toFixed(3))); if (k < 1.05) k = 1; apply(cx, cy); }
+    if (img.complete) setTimeout(fit, 0); else img.addEventListener('load', fit);
+    window.addEventListener('resize', fit);
+    dlg.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-z]');
+      if (b) {
+        var z = b.getAttribute('data-z');
+        if (z === 'close') dlg.close(); else step(z === 'in' ? 1 : -1);
+      } else if (e.target === dlg || e.target === pan) dlg.close();
+    });
+    pan.addEventListener('wheel', function (e) { e.preventDefault(); step(e.deltaY < 0 ? 1 : -1, e.clientX, e.clientY); }, { passive: false });
+    // drag to move; a press without a drag zooms in (or back out at the limit)
+    var drag = null;
+    img.addEventListener('pointerdown', function (e) {
+      if (e.pointerType === 'touch') return;          // fingers scroll the picture natively
+      drag = { x: e.clientX, y: e.clientY, l: pan.scrollLeft, t: pan.scrollTop, moved: false };
+      img.setPointerCapture(e.pointerId);
+    });
+    img.addEventListener('pointermove', function (e) {
+      if (!drag) return;
+      var dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+      if (Math.abs(dx) + Math.abs(dy) > 4) drag.moved = true;
+      pan.scrollLeft = drag.l - dx; pan.scrollTop = drag.t - dy;
+    });
+    img.addEventListener('pointerup', function (e) {
+      var d = drag; drag = null;
+      if (d && !d.moved) { if (k >= MAX) { k = 1; apply(); } else step(1, e.clientX, e.clientY); }
+    });
+    // a tap on a touch screen: zoom in where the finger was
+    img.addEventListener('touchend', function (e) {
+      if (e.changedTouches.length !== 1 || img.__moved) { img.__moved = false; return; }
+      var t = e.changedTouches[0];
+      if (k >= MAX) { k = 1; apply(); } else step(1, t.clientX, t.clientY);
+    });
+    img.addEventListener('touchmove', function () { img.__moved = true; }, { passive: true });
+    dlg.addEventListener('close', function () {
+      window.removeEventListener('resize', fit);
+      dlg.remove();
+      a.focus({ preventScroll: true });
+    });
+    dlg.showModal();
+    return true;
   };
 
   /* The gallery of old maps: century buttons and a search box. */

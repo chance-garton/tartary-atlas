@@ -207,7 +207,9 @@ ERAS = [("e0", "Before 1500", None, 1499), ("e1", "1500s", 1500, 1599), ("e2", "
 
 COPY_BTN = '<button type="button" class="psg-copy" data-copy>Copy quote</button>'
 PSG_PARTIAL = "The scan's machine-read text is too damaged to confirm this quote automatically. Check it against the page."
-FIRST_FEATURE = "W043-05"
+FIRST_FEATURE = "W043-05"     # what the front page shows when the page script does not run
+FEATURE_PER_TRAIL = 20
+FEATURE_PER_SOURCE = 2
 PAGE_SIZE = 10
 
 EM_DASH = "—"
@@ -695,9 +697,24 @@ def plural(n, word):
     return f"{num(n)} {word}{'' if n == 1 else 's'}"
 
 
-def basis_chip(b):
+def basis_chip(b, button=False):
+    """How the author knew this passage. On a card it is a button: pressing it spells the label out (phones have no hover)."""
     label, tip = PBASIS[b]
+    if button:
+        return f'<button type="button" class="basis {b}" data-basis aria-expanded="false" title="{esc(tip)}">{esc(label)}</button>'
     return f'<span class="basis {b}" title="{esc(tip)}">{esc(label)}</span>'
+
+
+def tale_meta(site, rid):
+    """What waits on a source's page, for the way in from a passage card: (plain title, passages, when)."""
+    return [site.profiles[rid]["plain_title"], len(site.psg_by_rec.get(rid, [])), source_when(site.rec[rid])]
+
+
+def tale_link(href, title, n, when):
+    """The way from one passage into its source's whole page. The page script builds the same markup in TA.card."""
+    return (f'<a class="psg-tale" href="{href}"><span class="psg-tale-k">Explore this Tartaria tale</span>'
+            f'<span class="psg-tale-t">{esc(title)}</span>'
+            f'<span class="psg-tale-n">{esc(when)} · {plural(n, "passage")} · who wrote it, how they knew, what to watch out for</span></a>')
 
 
 def psg_card(site, ctx, p, theme_tag=True, source=True, cls=""):
@@ -727,17 +744,15 @@ def psg_card(site, ctx, p, theme_tag=True, source=True, cls=""):
     notes_html = f'<details class="psg-notes"><summary>{notes_label}</summary>{"".join(notes)}</details>' if notes else ""
     people = f'<p class="psg-people"><span>About</span> {esc(p["people"])}</p>' if p.get("people") else ""
     page = "Read the page" + (f' (p. {esc(p["p"])})' if p.get("p") else "")
-    links = [f'<a href="{esc(p["url"])}" rel="noopener">{page}</a>']
-    if source:
-        links.append(f'<a href="{ctx.link(site.rkey(p["rec"]))}">About this source</a>')
-    links.append(COPY_BTN)
+    links = [f'<a href="{esc(p["url"])}" rel="noopener">{page}</a>', COPY_BTN]
+    tale = tale_link(ctx.link(site.rkey(p["rec"])), *tale_meta(site, p["rec"])) if source else ""
     y = p.get("year")
     return (f'<article class="psg{(" " + cls) if cls else ""}" id="p-{p["id"]}" data-th="{p["theme"]}" data-b="{p["basis"]}" data-y="{"" if y is None else y}">'
             f'<div class="psg-meta">{"".join(meta)}</div>'
             f'<h3>{esc(p["headline"])}</h3>'
             f'<p class="gloss">{esc(p["gloss"])}</p>{quote}'
-            f'<div class="psg-foot">{basis_chip(p["basis"])}<span class="who">{esc(p["speaker"])}</span></div>'
-            f'{people}{notes_html}<div class="psg-links">{"".join(links)}</div></article>')
+            f'<div class="psg-foot">{basis_chip(p["basis"], button=True)}<span class="who">{esc(p["speaker"])}</span></div>'
+            f'{people}{notes_html}{tale}<div class="psg-links">{"".join(links)}</div></article>')
 
 
 def psg_note(p):
@@ -798,7 +813,7 @@ def write_passage_assets(site, outdir):
     """One data file per trail, read by the passage explorer."""
     for t in THEMES:
         ps = site.psg_by_theme[t]
-        src = {rid: site.profiles[rid]["plain_title"] for rid in sorted({p["rec"] for p in ps})}
+        src = {rid: tale_meta(site, rid) for rid in sorted({p["rec"] for p in ps})}
         out = {"src": src, "p": [dict(psg_compact(site, p), r=p["rec"]) for p in ps]}
         (outdir / f"passages-{t}.json").write_text(json.dumps(out, ensure_ascii=False, separators=(",", ":")))
 
@@ -849,24 +864,32 @@ def page_home(site, ctx):
     n_maps = sum(1 for r in site.records if r["kind"] == "map")
 
     # The passage on the front page, and the pool the "another" button draws from.
+    # The pool is the strongest page-checked passages, no more than FEATURE_PER_SOURCE from any one source in a
+    # trail, so a reader who keeps pressing the button meets many witnesses. The page script opens on a random one.
     pool = []
     for t in THEMES:
-        good = [p for p in site.psg_by_theme[t] if p["strength"] == 3 and p["check"] == "page"
-                and (p["basis"] == "saw" or t in ("outliers", "names"))]
-        pool += good[:12]
+        seen, good = collections.Counter(), []
+        for p in site.psg_by_theme[t]:
+            if (p["strength"] == 3 and p["check"] == "page" and (p["basis"] == "saw" or t in ("outliers", "names"))
+                    and seen[p["rec"]] < FEATURE_PER_SOURCE):
+                seen[p["rec"]] += 1
+                good.append(p)
+        pool += good[:FEATURE_PER_TRAIL]
     first = site.psg.get(FIRST_FEATURE) or (pool[0] if pool else None)
-    pool = [p for p in pool if p is not first]
+    if first and first not in pool:
+        pool.append(first)
     pool.sort(key=lambda p: p["x"])
-    feat_json = json.dumps({"src": {p["rec"]: site.profiles[p["rec"]]["plain_title"] for p in pool + ([first] if first else [])},
+    feat_json = json.dumps({"src": {p["rec"]: tale_meta(site, p["rec"]) for p in pool},
                             "p": [dict(psg_compact(site, p), r=p["rec"]) for p in pool]},
                            ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
     feature = ""
     if first:
         feature = (f'<section class="band"><div class="feature" data-module="feature"><script type="application/json">{feat_json}</script>'
                    f'<div class="feature-head"><h2>One passage from the record</h2>'
-                   f'<p>Every passage quotes the source, says how the author knew, and links to the page it comes from.</p>'
+                   f'<p>Every passage quotes the source, says how the author knew, and links to the page it comes from. '
+                   f'A different one is drawn each visit, from {len(pool)} of the strongest.</p>'
                    f'<button type="button" class="btn" data-next>Show me another</button></div>'
-                   f'<div data-slot>{psg_card(site, ctx, first, cls="big")}</div></div></section>')
+                   f'<div class="feature-slot" data-slot aria-live="polite">{psg_card(site, ctx, first, cls="big")}</div></div></section>')
 
     n_pictured = len(site.map_img)
     hero_fig = ""
@@ -998,6 +1021,7 @@ def page_sources(site, ctx):
             f'<div class="filterbar"><label for="sl-q">Find<input type="search" id="sl-q" placeholder="Rubruck, Crimea, Chinese, 1253…"></label>'
             f'<label for="sl-hk">How they knew<select id="sl-hk"><option value="">Any</option>{hk_opts}</select></label>'
             f'<label for="sl-o">Order<select id="sl-o"><option value="n">Most passages</option><option value="old">Oldest first</option><option value="new">Newest first</option></select></label>'
+            f'{surprise_btn(site)}'
             f'<p class="small muted list-count" aria-live="polite"><span data-count>{len(rows)}</span><span data-of hidden> of {len(rows)}</span> sources'
             f'<button type="button" class="linkbtn" data-clear hidden>Clear filters</button></p></div>'
             f'<ol class="rlist slist" data-rows>{"".join(rows)}</ol>'
@@ -1076,13 +1100,52 @@ def profile_section(site, ctx, r):
     if ps:
         order = {t: i for i, t in enumerate(THEMES)}
         ps = sorted(ps, key=lambda p: (order[p["theme"]], -p["strength"], p["id"]))
-        out.append(f'<section class="section"><h2>What it says: {plural(len(ps), "passage")}</h2>'
+        out.append(f'<section class="section" id="what-it-says" tabindex="-1"><h2>What it says: {plural(len(ps), "passage")}</h2>'
                    f'{psg_block(site, ctx, ps, 4, theme_tag=True, source=False)}</section>')
     else:
         why = ("No passages are quoted from this source yet: the atlas does not hold its text, or the stored scan could not be searched. The summary above says which."
                if pr.get("read_quality") == "none" else "The reader found no passage in this source that says something specific about the Tartars.")
         out.append(f'<section class="section"><h2>What it says</h2><p class="muted">{why}</p></section>')
     return "".join(out)
+
+
+def surprise_btn(site, label="Surprise me", cls="btn"):
+    """A button that opens a source picked at random from those with passages. TA.modules.lucky reads the pool."""
+    pool = ",".join(rid for rid in sorted(site.profiles) if site.psg_by_rec.get(rid))
+    return f'<button type="button" class="{cls}" data-module="lucky" data-pool="{pool}">{label}</button>'
+
+
+def onward_section(site, ctx, r):
+    """Where to go next from a record page, so no page is a dead end: the neighbours in time, and a lucky dip."""
+    if r["kind"] == "map":
+        if r["id"] not in site.map_img:
+            return ""
+        maps = [m for m in pictured_maps(site) if m["id"] not in NOT_MAP_VIEW or m["id"] == r["id"]]
+        maps.sort(key=sort_key)
+        i = next(k for k, m in enumerate(maps) if m["id"] == r["id"])
+        near = maps[max(0, i - 2):i] + maps[i + 1:i + 3]
+        if not near:
+            return ""
+        return (f'<section class="band onward"><div class="band-head row"><div><h2>Keep exploring</h2>'
+                f'<p>The maps drawn just before and just after this one.</p></div>'
+                f'<a class="btn" href="{ctx.link("maps")}">All {len(site.map_img)} map pictures</a></div>'
+                f'<div class="mapstrip small">{"".join(map_card(site, ctx, m) for m in near)}</div></section>')
+    if r["id"] not in site.profiles or not site.psg_by_rec.get(r["id"]):
+        return ""
+    order = sorted((rid for rid in site.profiles if site.psg_by_rec.get(rid)),
+                   key=lambda rid: (source_year(site.rec[rid]) is None, source_year(site.rec[rid]) or 0, rid))
+    i = order.index(r["id"])
+    cards = []
+    if i > 0:
+        cards.append(f'<div class="onward-slot"><div class="eyebrow">The witness before</div>{source_card(site, ctx, order[i - 1])}</div>')
+    if i < len(order) - 1:
+        cards.append(f'<div class="onward-slot"><div class="eyebrow">The witness after</div>{source_card(site, ctx, order[i + 1])}</div>')
+    lucky = surprise_btn(site, '<span class="witness-t">Surprise me</span><span class="witness-one">Open one of the '
+                         f'{len(order)} sources at random and see who turns up.</span>', "witness lucky")
+    cards.append(f'<div class="onward-slot"><div class="eyebrow">Or take a chance</div>{lucky}</div>')
+    return (f'<section class="band onward"><div class="band-head"><h2>Keep exploring</h2>'
+            f'<p>The sources run in the order of the years they describe. Step to the next witness, or let the atlas pick.</p></div>'
+            f'<div class="witnesses">{"".join(cards)}</div></section>')
 
 
 # ---------------------------------------------------------------- pages
@@ -1104,6 +1167,14 @@ def page_record(site, ctx, r):
         if r.get("original_script_title"):
             extra += f'<p class="muted" lang="und">{esc(r["original_script_title"])}</p>'
         extra += f'<p class="muted">{esc(no_em(r["creator"]))}</p>'
+        n_here = len(site.psg_by_rec.get(r["id"], []))
+        acts = []
+        if n_here:
+            acts.append(f'<a class="btn primary" href="#what-it-says">Read the {plural(n_here, "passage")}</a>')
+        if r.get("primary_access"):
+            acts.append(f'<a class="btn" href="{esc(r["primary_access"])}" rel="noopener">Open the original book</a>')
+        if acts:
+            extra += f'<p class="hero-actions">{"".join(acts)}</p>'
         head = page_head(eyebrow, esc(prof["plain_title"]), esc(prof["one_line"]), extra=extra)
     else:
         if r.get("original_script_title"):
@@ -1177,7 +1248,9 @@ def page_record(site, ctx, r):
     if r["id"] in site.map_img:
         note = " This picture shows a page from the volume, not the map itself." if r["id"] in NOT_MAP_VIEW else ""
         target = r.get("primary_access") or site.iiif_base(r["id"])
-        figure = (f'<figure class="mapfig"><a href="{esc(target)}" rel="noopener">{map_img_tag(site, ctx, r, "l", eager=True)}</a>'
+        figure = (f'<figure class="mapfig"><a href="{esc(target)}" rel="noopener" data-zoom="{esc(ctx.map_img(site, r["id"], "l"))}" '
+                  f'data-zoom-title="{esc(map_name(r))}, {esc(made_label(r))}">{map_img_tag(site, ctx, r, "l", eager=True)}'
+                  f'<span class="zoom-hint" aria-hidden="true">Look closer</span></a>'
                   f'<figcaption>Picture: {esc(site.holder(r["id"]))}.{note} '
                   f'<a href="{esc(target)}" rel="noopener">Open the full image at the library</a></figcaption></figure>')
     else:
@@ -1236,7 +1309,7 @@ def page_record(site, ctx, r):
              f'<a href="{ctx.link("maps")}">Old maps</a>' if is_map else f'<a href="{ctx.link("records")}">Catalogue</a>')
     body = (f'<div class="page"><nav class="crumbs" aria-label="Breadcrumb">{crumb} / <span class="mono">{r["id"]}</span></nav>'
             f'{head}{figure}<div class="record-grid"><div style="display:grid;gap:28px">{"".join(sections)}</div>'
-            f'<aside style="display:grid;gap:18px">{"".join(aside)}</aside></div></div>')
+            f'<aside style="display:grid;gap:18px">{"".join(aside)}</aside></div>{onward_section(site, ctx, r)}</div>')
 
     title = f'{smart(short_title(no_em(r["title"]), 60))} ({made_label(r)}) · {r["id"]}'
     desc = first_sentence(no_em(r.get("research_value") or r["title"]))
@@ -1255,7 +1328,7 @@ def page_record(site, ctx, r):
     if r.get("primary_access"):
         jsonld["sameAs"] = r["primary_access"]
     return dict(title=title, description=desc, body=body, nav="sources" if prof else ("maps" if is_map else "records"), jsonld=jsonld,
-                modules=["pset"] if prof else [])
+                modules=["pset", "lucky"] if prof else [])
 
 
 def thumbnail(site, r):
@@ -1981,6 +2054,7 @@ def static_page(site, key, pg):
     if pg.get("maplibre"):
         head.append(f'<link rel="stylesheet" href="{ctx.asset("maplibre-gl.css")}">')
         head.append(f'<script src="{CONFIG["maplibre_js"]}" defer></script>')
+    head.append('<script>document.documentElement.className += " js";</script>')
     head.append(f'<script src="{ctx.asset("site.js")}" defer></script>')
     if pg.get("jsonld"):
         head.append('<script type="application/ld+json">' + json.dumps({k: v for k, v in pg["jsonld"].items() if v is not None}, ensure_ascii=False).replace("</", "<\\/") + "</script>")
