@@ -332,5 +332,189 @@
  "Western Asia": [],
  "Pontic steppe": [
   "pontic-steppe"
+ ],
+ "Cheremshan River (Samara and Ulyanovsk region)": [
+  "volga-kama"
+ ],
+ "Madzhari, Kuma River (Stavropol Krai)": [
+  "kuban"
+ ],
+ "Kasganj (Uttar Pradesh)": [
+  "india"
+ ],
+ "Bear Islands, East Siberian Sea": [
+  "northeastern-siberia"
+ ],
+ "New Siberian Islands": [
+  "northeastern-siberia"
+ ],
+ "Turkmen desert (between the Murghab and the Oxus)": [
+  "turkmen-country"
+ ],
+ "Uzboy channel, Karakum desert": [
+  "turkmen-country"
+ ],
+ "Erzurum": [
+  "anatolia"
+ ],
+ "Malkara, Thrace (Turkey)": [
+  "balkans"
+ ],
+ "Farsala, Thessaly": [
+  "balkans"
+ ],
+ "Larissa, Thessaly": [
+  "balkans"
+ ],
+ "Boeotia, Greece": [
+  "balkans"
+ ],
+ "southern Russian steppe": [
+  "pontic-steppe"
+ ],
+ "Irgana-kon (a legendary enclosed valley)": [
+  "mongolia"
+ ],
+ "Emil River": [
+  "dzungaria"
+ ],
+ "Tash Rabat, Kyrgyzstan": [
+  "tian-shan"
+ ],
+ "Gadöwa, on the Kondoma river, Kemerovo region": [
+  "western-siberia"
+ ],
+ "Hisar (Tajikistan)": [
+  "transoxiana"
+ ],
+ "Chu valley, Kyrgyzstan (probably)": [
+  "semirechye"
+ ],
+ "Wall of Gog and Magog": [
+  "gog-magog"
+ ],
+ "Carpathian Mountains": [
+  "hungary"
+ ],
+ "Camp of the Kalmyk taisha Ablai": [
+  "irtysh"
+ ],
+ "Nura river, central Kazakhstan": [
+  "kazakh-steppe"
+ ],
+ "Ayagoz river, eastern Kazakhstan": [
+  "kazakh-steppe"
+ ],
+ "Alba Iulia (Gyulafehérvár)": [
+  "transylvania"
+ ],
+ "Legnica": [
+  "poland"
+ ],
+ "Kraków": [
+  "poland"
+ ],
+ "Vilnius": [
+  "lithuania"
+ ],
+ "Tbilisi": [
+  "georgia"
+ ],
+ "Shangdu (Xanadu)": [
+  "inner-mongolia"
+ ],
+ "Delhi": [
+  "delhi-sultanate"
+ ],
+ "Bishbalik (near Urumqi)": [
+  "uyghur"
+ ],
+ "Lake Alakol": [
+  "semirechye"
+ ],
+ "Dzungarian Gate": [
+  "dzungaria"
+ ],
+ "Ust-Kamenogorsk": [
+  "irtysh"
+ ],
+ "southern Siberian steppe": [
+  "western-siberia"
+ ],
+ "Udmurtia": [
+  "volga-kama"
+ ],
+ "Edirne (Adrianople)": [
+  "balkans"
+ ],
+ "Yedisan (between the Dniester and the Southern Bug)": [
+  "budjak"
+ ],
+ "Steppe between the Southern Bug and Dniester": [
+  "budjak"
+ ],
+ "Istanbul": [
+  "ottoman-empire"
+ ],
+ "Gorgan (Astarabad)": [
+  "mazandaran"
+ ],
+ "Saraichik": [
+  "ural-river"
+ ],
+ "Izh River, lower Kama": [
+  "volga-kama"
+ ],
+ "Chatyr-Dag, Crimean Mountains": [
+  "crimea"
+ ],
+ "Crimean Mountains and valleys": [
+  "crimea"
+ ],
+ "Kurchum mountains, East Kazakhstan": [
+  "altai"
+ ],
+ "Ilek river basin, Aktobe region, Kazakhstan": [
+  "orenburg"
+ ],
+ "Upper Ilek river, Aktobe region, Kazakhstan": [
+  "orenburg"
+ ],
+ "Ilek river, Aktobe region, Kazakhstan": [
+  "orenburg"
+ ],
+ "Old bed of the Jana Darya, Kyzylorda region, Kazakhstan": [
+  "syr-darya"
+ ],
+ "Mongol steppe (general)": [
+  "mongolia"
+ ],
+ "Konka (Konskaya) river, Zaporizhzhia region": [
+  "dnieper"
+ ],
+ "Steppe between the Kalaus and Yegorlyk rivers, Stavropol region": [
+  "kuban"
+ ],
+ "Yegorlyk river steppe, Stavropol region": [
+  "kuban"
+ ],
+ "Yegorlyk river, Stavropol region": [
+  "kuban"
+ ],
+ "Kizlyar": [
+  "terek"
+ ],
+ "Podolia and Dobruja": [
+  "ukraine",
+  "balkans"
+ ],
+ "Moravia (Czech Republic)": [
+  "bohemia"
+ ],
+ "Kaifeng": [
+  "henan"
+ ],
+ "Jiayuguan": [
+  "great-wall"
  ]
 }

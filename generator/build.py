@@ -713,15 +713,17 @@ def source_card(site, ctx, rid):
 
 
 def reading_progress(site):
+    """(sources read for passages, written sources in the catalogue, sources with a profile only)."""
     written = [r for r in site.records if r["kind"] == "written"]
-    read = [r for r in written if r["id"] in site.profiles]
-    return len(read), len(written)
+    profiled = [r for r in written if r["id"] in site.profiles]
+    read = [r for r in profiled if site.profiles[r["id"]].get("read_quality") != "none"]
+    return len(read), len(written), len(profiled) - len(read)
 
 
 # ---------------------------------------------------------------- discovery pages
 
 def page_home(site, ctx):
-    n_read, n_written = reading_progress(site)
+    n_read, n_written, n_profile_only = reading_progress(site)
     n_psg = len(site.passages)
     n_maps = sum(1 for r in site.records if r["kind"] == "map")
 
@@ -780,10 +782,16 @@ def page_home(site, ctx):
               f'<li><a href="{ctx.link("records")}">The full catalogue</a><span>All {len(site.records)} written sources and maps, with dates, cautions and links.</span></li>'
               f'<li><a href="{ctx.link("archive")}">Everything in the archive</a><span>Places, peoples, method and corrections.</span></li></ul></section>')
 
-    left = n_written - n_read
-    progress = (f'<p class="progress"><strong>Reading in progress.</strong> {n_read} of {n_written} written sources have been read so far. '
-                f'The other {left} are catalogued and waiting their turn, so a passage missing here may only mean its source has not been read yet. '
-                f'<a href="{ctx.link("method")}">How the passages were chosen and checked</a>.</p>')
+    left = n_written - n_read - n_profile_only
+    if left > 0:
+        progress = (f'<p class="progress"><strong>Reading in progress.</strong> {n_read} of {n_written} written sources have been read so far. '
+                    f'The other {left} are catalogued and waiting their turn, so a passage missing here may only mean its source has not been read yet. '
+                    f'<a href="{ctx.link("method")}">How the passages were chosen and checked</a>.</p>')
+    else:
+        progress = (f'<p class="progress"><strong>What has been read.</strong> Every written source whose text the atlas holds has been read for passages: {n_read} sources, {num(n_psg)} passages. '
+                    f'The other {n_profile_only} have a plain-words profile but no quotes yet, because their text is not held here (a modern edition, a manuscript, a catalogue entry) or the stored scan could not be searched. '
+                    f'The quotes are machine-checked against their pages; the summaries and translations have not yet been reviewed line by line by a person. '
+                    f'<a href="{ctx.link("method")}">How the passages were chosen and checked</a>.</p>')
 
     body = f'<div class="page home">{hero}{trails}{places}{witnesses}{deeper}{progress}</div>'
     desc = (f"What {n_written} historical texts and {n_maps} maps say about Tartary (Tartaria): {num(n_psg)} quoted passages on cities, "
@@ -824,7 +832,7 @@ def page_passages(site, ctx, theme=None):
 
 
 def page_sources(site, ctx):
-    n_read, n_written = reading_progress(site)
+    n_read, n_written, n_profile_only = reading_progress(site)
     n_maps = sum(1 for r in site.records if r["kind"] == "map")
     rows = []
     order = sorted(site.profiles, key=lambda rid: (-len(site.psg_by_rec.get(rid, [])), rid))
@@ -837,12 +845,12 @@ def page_sources(site, ctx):
             f'<li data-h="{esc(hay)}" data-hk="{esc(pr["how_they_knew"])}" data-y="{"" if y is None else y}" data-n="{n}"{" hidden" if i >= 30 else ""}>'
             f'<div class="yr">{esc(source_when(r))}</div><div class="body"><a class="t" href="{ctx.link(site.rkey(r))}">{esc(pr["plain_title"])}</a>'
             f'<p class="one">{esc(pr["one_line"])}</p><div class="meta"><span class="chip">{esc(HOW_KNEW.get(pr["how_they_knew"], pr["how_they_knew"]))}</span>'
-            f'<span>{plural(n, "passage")}</span><span class="rid">{rid}</span></div></div></li>')
+            f'<span>{plural(n, "passage") if n or pr.get("read_quality") != "none" else "profile only"}</span><span class="rid">{rid}</span></div></div></li>')
     hk_opts = "".join(f'<option value="{esc(k)}">{esc(v)}</option>' for k, v in HOW_KNEW.items()
                       if any(p["how_they_knew"] == k for p in site.profiles.values()))
     head = page_head("Sources", "The witnesses",
-                     f'{n_read} written sources read so far, each described in plain words: who wrote it, how they knew, and what to watch out for. '
-                     f'The richest come first.')
+                     f'{n_read + n_profile_only} written sources described in plain words: who wrote each one, how they knew, and what to watch out for. '
+                     f'{n_read} were read for passages, and the richest come first.')
     body = (f'<div class="page">{head}<div data-module="slist">'
             f'<div class="filterbar"><label for="sl-q">Find<input type="search" id="sl-q" placeholder="Rubruck, Crimea, Chinese, 1253…"></label>'
             f'<label for="sl-hk">How they knew<select id="sl-hk"><option value="">Any</option>{hk_opts}</select></label>'
@@ -850,8 +858,8 @@ def page_sources(site, ctx):
             f'<p class="small muted" aria-live="polite"><span data-count>{len(rows)}</span> sources</p></div>'
             f'<ol class="rlist slist" data-rows>{"".join(rows)}</ol>'
             f'<p class="px-more"><button type="button" class="btn" data-all>Show all {len(rows)} sources</button></p></div>'
-            f'<p class="progress">{n_written - n_read} more written sources and {n_maps} maps are catalogued but have not been read for passages yet. '
-            f'They are all in <a href="{ctx.link("records")}">the full catalogue</a>.</p></div>')
+            f'<p class="progress">The last {n_profile_only} sources in the list have a profile only: the atlas does not hold their text, or the stored scan could not be searched. '
+            f'The {n_maps} maps are not read for passages; they are all in <a href="{ctx.link("records")}">the full catalogue</a>{", with " + str(n_written - n_read - n_profile_only) + " written sources still unread" if n_written - n_read - n_profile_only else ""}.</p></div>')
     return dict(title="Sources: the witnesses", description=f"{n_read} historical sources on Tartary described in plain words: who wrote each one, how they knew, and what to watch out for.",
                 body=body, nav="sources", modules=["slist"])
 
@@ -895,7 +903,7 @@ def profile_section(site, ctx, r):
         out.append(f'<section class="section"><h2>What it says: {plural(len(ps), "passage")}</h2><ul class="tags">{chips}</ul>'
                    f'{psg_block(site, ctx, ps, 4, theme_tag=True, source=False)}</section>')
     else:
-        why = ("The atlas does not hold the text of this source, so it has a profile but no quoted passages."
+        why = ("No passages are quoted from this source yet: the atlas does not hold its text, or the stored scan could not be searched. The summary above says which."
                if pr.get("read_quality") == "none" else "The reader found no passage in this source that says something specific about the Tartars.")
         out.append(f'<section class="section"><h2>What it says</h2><p class="muted">{why}</p></section>')
     return "".join(out)
@@ -1659,11 +1667,11 @@ def page_method(site, ctx):
     n_approx = sum(1 for p in site.places if basis_group(p["coord_basis"]) in ("approx", "anchor"))
     n_notes = sum(1 for r in site.records if r["date"].get("override"))
     chk = collections.Counter(p["check"] for p in site.passages)
-    n_read, n_written = reading_progress(site)
+    n_read, n_written, n_profile_only = reading_progress(site)
     n_tr = sum(1 for p in site.passages if p.get("translation"))
     basis_rows_p = "".join(f"<li>{basis_chip(k)} {esc(v[1])} <span class='muted'>({num(sum(1 for p in site.passages if p['basis'] == k))} passages)</span></li>" for k, v in PBASIS.items())
     passages_method = f'''<h2>The passages</h2>
-<p>The passages are a reading layer on top of the catalogue. So far {n_read} of the {n_written} written sources have a plain-words profile, and the ones whose text the project holds were read for passages: the scanned pages that mention Tartars or Tartary were read with AI assistance, and the passages that say something specific were kept and sorted into five trails. The richest sources were read closely and the rest lightly, so the passages are a selection, never everything a source says. The remaining sources are waiting to be read.</p>
+<p>The passages are a reading layer on top of the catalogue. {n_read + n_profile_only} of the {n_written} written sources have a plain-words profile, and the {n_read} whose text the project holds were read for passages: the scanned pages that mention Tartars or Tartary were read with AI assistance, and the passages that say something specific were kept and sorted into five trails. The richest sources were read closely and the rest lightly, so the passages are a selection, never everything a source says. The other {n_profile_only} have a profile only, because their text is not held here or the stored scan could not be searched.</p>
 <ul>
 <li><strong>The quote</strong> is copied from the page it cites, in the original language, and kept to 70 words or fewer. Spelling is tidied only where the scan's machine-read text was broken (long s, split words, garbled letters).</li>
 <li><strong>The translation</strong>, where the page is not in English, is a working translation made for this atlas ({num(n_tr)} passages). It is a guide to the original, which is always shown with it.</li>
