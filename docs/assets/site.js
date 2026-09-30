@@ -11,7 +11,7 @@
 
   function rootPrefix() { return (document.body && document.body.getAttribute('data-root')) || './'; }
   TA.href = function (key) {
-    if (PREVIEW) return '#' + (key ? key.replace('/', '-') : 'map');
+    if (PREVIEW) return '#' + (key ? key.replace('/', '-') : 'home');
     return rootPrefix() + (key ? key + '/' : '');
   };
   TA.asset = function (name) { return PREVIEW ? 'assets/' + name : rootPrefix() + 'assets/' + name; };
@@ -38,6 +38,206 @@
     return function () { if (mq && mq.removeEventListener) mq.removeEventListener('change', h); mo.disconnect(); };
   }
   function yearText(y) { return y < 0 ? (-y) + ' BCE' : String(y); }
+  function numText(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+
+  /* ------------------------------------------------------------ passages */
+  var THEMES = [['cities', 'Cities'], ['architecture', 'Buildings'], ['customs', 'Daily life'], ['names', 'The name'], ['outliers', 'Strange tales']];
+  var THEME_LABEL = {};
+  THEMES.forEach(function (t) { THEME_LABEL[t[0]] = t[1]; });
+  var BASIS = {
+    saw: ['Saw it', 'The author describes something they saw themselves.'],
+    heard: ['Heard it', 'The author was told this by someone else.'],
+    read: ['Read it', 'The author took this from an earlier book or document.'],
+    legend: ['Legend or rumour', 'A legend, a rumour, or a tale the author repeats.'],
+    record: ['Official record', 'An official document or a record made at the time.'],
+    mixed: ['Mixed', 'Part seen, part heard or read.']
+  };
+  var themeCache = {};
+  // Load one trail's passages (cached). Resolves to an array; each passage keeps its source title in .sr.
+  TA.loadTheme = function (t) {
+    if (!themeCache[t]) {
+      themeCache[t] = fetch(TA.asset('passages-' + t + '.json')).then(function (r) {
+        if (!r.ok) throw new Error('passages ' + r.status);
+        return r.json();
+      }).then(function (d) {
+        d.p.forEach(function (p) { p.sr = d.src[p.r]; });
+        return d.p;
+      });
+      themeCache[t].catch(function () { delete themeCache[t]; });
+    }
+    return themeCache[t];
+  };
+  TA.loadThemes = function (list) {
+    return Promise.all(list.map(TA.loadTheme)).then(function (parts) { return [].concat.apply([], parts); });
+  };
+  // One passage card. Mirrors psg_card in generator/build.py; keep the two in step.
+  TA.card = function (p, o) {
+    o = o || {};
+    var meta = '';
+    if (o.theme !== false) meta += '<a class="ttag" href="' + TA.href('passages/' + p.th) + '">' + esc(THEME_LABEL[p.th]) + '</a>';
+    if (p.pl) meta += p.pi ? '<a href="' + TA.href('place/' + p.pi) + '">' + esc(p.pl) + '</a>' : '<span>' + esc(p.pl) + '</span>';
+    if (p.w) meta += '<span>' + esc(p.w) + '</span>';
+    var quote = p.t
+      ? '<blockquote><p>' + esc(p.t) + '</p><p class="q-tag">Working translation</p><details><summary>Original wording</summary><p class="orig" dir="auto">' + esc(p.q) + '</p></details></blockquote>'
+      : '<blockquote><p dir="auto">' + esc(p.q) + '</p></blockquote>';
+    var notes = '';
+    if (p.c) notes += '<p><strong>Keep in mind.</strong> ' + esc(p.c) + '</p>';
+    if (p.n) notes += '<p>' + esc(p.n) + '</p>';
+    var b = BASIS[p.b] || [p.b, ''];
+    var links = '<a href="' + esc(p.u) + '" rel="noopener">Read the page' + (p.p ? ' (p. ' + esc(p.p) + ')' : '') + '</a>';
+    if (o.source !== false) links += '<a href="' + TA.href('w/' + p.r) + '">About this source</a>';
+    return '<article class="psg' + (o.cls ? ' ' + o.cls : '') + '" id="p-' + esc(p.i) + '">' +
+      '<div class="psg-meta">' + meta + '</div><h3>' + esc(p.h) + '</h3><p class="gloss">' + esc(p.g) + '</p>' + quote +
+      (p.pe ? '<p class="psg-people"><span>Who</span> ' + esc(p.pe) + '</p>' : '') +
+      '<div class="psg-foot"><span class="basis ' + esc(p.b) + '" title="' + esc(b[1]) + '">' + esc(b[0]) + '</span><span class="who">' + esc(p.s) + '</span></div>' +
+      (notes ? '<div class="psg-notes">' + notes + '</div>' : '') + '<div class="psg-links">' + links + '</div></article>';
+  };
+  function bestOrder(a, b) { return (b.st - a.st) || (a.x - b.x) || (a.i < b.i ? -1 : 1); }
+  function shuffled(arr) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; }
+    return a;
+  }
+
+  /* The passage explorer on /passages/ and each trail page. */
+  TA.modules.pexplore = function (el) {
+    var theme = el.getAttribute('data-theme');
+    var q = el.querySelector('#px-q'), bs = el.querySelector('#px-b'), wh = el.querySelector('#px-w'), od = el.querySelector('#px-o');
+    var list = el.querySelector('[data-list]'), cnt = el.querySelector('[data-count]');
+    var moreBtn = el.querySelector('[data-more]'), moreRow = moreBtn.parentNode;
+    var STEP = 10, shown = STEP, all = null, cur = [], order = null, failed = false;
+    function match() {
+      var words = q.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+      var c = wh.value === '' ? null : +wh.value;
+      cur = all.filter(function (p) {
+        if (bs.value && p.b !== bs.value) return false;
+        if (c !== null) {
+          if (p.y == null) return false;
+          if (c === 0 ? p.y >= 1200 : (p.y < c || p.y > c + 99)) return false;
+        }
+        if (!words.length) return true;
+        if (!p.hay) p.hay = [p.h, p.g, p.pl, p.pe, p.w, p.s, p.sr, p.tg, p.t || p.q].join(' ').toLowerCase();
+        return words.every(function (w) { return p.hay.indexOf(w) >= 0; });
+      });
+      if (order) {
+        var pos = {};
+        order.forEach(function (id, i) { pos[id] = i; });
+        cur.sort(function (a, b) { return pos[a.i] - pos[b.i]; });
+      } else if (od.value === 'old' || od.value === 'new') {
+        var s = od.value === 'old' ? 1 : -1;
+        cur.sort(function (a, b) {
+          if (a.y == null || b.y == null) return (a.y == null) - (b.y == null) || bestOrder(a, b);
+          return s * (a.y - b.y) || bestOrder(a, b);
+        });
+      } else cur.sort(bestOrder);
+    }
+    function draw() {
+      cnt.textContent = numText(cur.length);
+      list.innerHTML = cur.length
+        ? cur.slice(0, shown).map(function (p) { return TA.card(p, { theme: !theme }); }).join('')
+        : '<p class="muted">No passage matches. Try a shorter word, or clear a filter.</p>';
+      var left = cur.length - shown;
+      moreRow.hidden = left <= 0;
+      moreBtn.textContent = 'Show ' + Math.min(STEP, left) + ' more';
+    }
+    function refresh(keep) {
+      if (failed) return;
+      if (!all) return;       // the data is still loading; refresh runs again when it lands
+      if (!keep) shown = STEP;
+      match(); draw();
+    }
+    function load() {
+      return TA.loadThemes(theme ? [theme] : THEMES.map(function (t) { return t[0]; })).then(function (ps) {
+        all = ps.slice();
+        return all;
+      });
+    }
+    var ready = load().then(function () { refresh(true); }).catch(function () {
+      failed = true;
+      moreRow.hidden = true;
+      el.querySelector('.filterbar').insertAdjacentHTML('afterend',
+        '<p class="banner">The full list of passages could not load here, so searching and filtering are off. The first passages are shown below.</p>');
+    });
+    [q, bs, wh].forEach(function (x) { x.addEventListener('input', function () { refresh(); }); });
+    od.addEventListener('input', function () { order = null; refresh(); });
+    el.querySelector('[data-shuffle]').addEventListener('click', function () {
+      ready.then(function () {
+        if (!all) return;
+        order = shuffled(all).map(function (p) { return p.i; });
+        refresh();
+      });
+    });
+    moreBtn.addEventListener('click', function () { shown += STEP; ready.then(function () { refresh(true); }); });
+  };
+
+  /* A list of passages by ID, used on source and place pages in the single-file preview. */
+  TA.modules.pmore = function (el) {
+    var ids = (el.getAttribute('data-ids') || '').split(',').filter(Boolean);
+    var opts = el.getAttribute('data-opts') || '11';
+    var first = +(el.getAttribute('data-first') || 0);
+    var list = el.querySelector('[data-list]'), btn = el.querySelector('[data-more]');
+    var want = {};
+    ids.forEach(function (id) { want[id] = true; });
+    var o = { theme: opts.charAt(0) === '1', source: opts.charAt(1) === '1' };
+    var found = null;
+    var ready = TA.loadThemes(THEMES.map(function (t) { return t[0]; })).then(function (ps) {
+      var by = {};
+      ps.forEach(function (p) { if (want[p.i]) by[p.i] = p; });
+      found = ids.map(function (id) { return by[id]; }).filter(Boolean);
+      draw(first);
+    }).catch(function () {
+      list.innerHTML = '<p class="banner">The passages could not load here. Try again in a moment.</p>';
+      if (btn) btn.parentNode.hidden = true;
+    });
+    function draw(n) { list.innerHTML = found.slice(0, n).map(function (p) { return TA.card(p, o); }).join(''); }
+    if (btn) btn.addEventListener('click', function () {
+      ready.then(function () { if (found) { draw(found.length); btn.parentNode.hidden = true; } });
+    });
+  };
+
+  /* The passage on the front page: "Show me another". */
+  TA.modules.feature = function (el) {
+    var D = JSON.parse(el.querySelector('script[type="application/json"]').textContent);
+    var slot = el.querySelector('[data-slot]'), btn = el.querySelector('[data-next]');
+    var pool = shuffled(D.p), i = 0;
+    btn.addEventListener('click', function () {
+      if (!pool.length) return;
+      var p = pool[i % pool.length];
+      i++;
+      p.sr = D.src[p.r];
+      slot.innerHTML = TA.card(p, { cls: 'big' });
+    });
+  };
+
+  /* The list of sources that have been read. */
+  TA.modules.slist = function (el) {
+    var q = el.querySelector('#sl-q'), hk = el.querySelector('#sl-hk'), od = el.querySelector('#sl-o');
+    var box = el.querySelector('[data-rows]'), cnt = el.querySelector('[data-count]'), allBtn = el.querySelector('[data-all]');
+    var rows = Array.prototype.slice.call(box.children);
+    var LIMIT = 30, showAll = false;
+    function upd() {
+      var words = q.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+      var key = od.value;
+      var sorted = rows.slice().sort(function (a, b) {
+        if (key === 'n') return (+b.getAttribute('data-n')) - (+a.getAttribute('data-n'));
+        var ya = a.getAttribute('data-y'), yb = b.getAttribute('data-y');
+        if (ya === '' || yb === '') return (ya === '') - (yb === '');
+        return key === 'old' ? ya - yb : yb - ya;
+      });
+      var n = 0, filtering = words.length || hk.value;
+      sorted.forEach(function (li) {
+        var ok = (!hk.value || li.getAttribute('data-hk') === hk.value) &&
+          words.every(function (w) { return li.getAttribute('data-h').indexOf(w) >= 0; });
+        if (ok) n++;
+        li.hidden = !ok || (!showAll && !filtering && n > LIMIT);
+        box.appendChild(li);
+      });
+      cnt.textContent = n;
+      allBtn.parentNode.hidden = showAll || filtering || n <= LIMIT;
+    }
+    [q, hk, od].forEach(function (x) { x.addEventListener('input', upd); });
+    allBtn.addEventListener('click', function () { showAll = true; upd(); });
+  };
 
   /* ------------------------------------------------------------ explorer */
   TA.modules.explorer = function (el) {
@@ -46,7 +246,7 @@
       return { id: a[0], m: a[1], s: a[2], d: a[3], ev: a[4], tr: a[5], t: a[6], c: a[7], p: a[8] };
     });
     var P = {};
-    D.places.forEach(function (a) { P[a[0]] = { id: a[0], n: a[1], b: a[2], lon: a[3], lat: a[4], count: 0 }; });
+    D.places.forEach(function (a) { P[a[0]] = { id: a[0], n: a[1], b: a[2], lon: a[3], lat: a[4], psg: a[5] || 0, count: 0 }; });
     var st = {
       kind: 'all', lo: 0, hi: 100, undated: true, sel: null,
       ev: D.evidence.map(function () { return true; }),
@@ -251,7 +451,9 @@
         var sizeLabels = function () {
           var z = map.getZoom();
           var fs = Math.max(10, Math.min(17, 8 + z * 2.4));
-          markers.forEach(function (m) { m.getElement().style.fontSize = fs + 'px'; });
+          // On a narrow map the Tartary labels pile up at the opening zoom, so they wait until the reader zooms in.
+          var crowded = mapEl.clientWidth < 620 && z < 2.2;
+          markers.forEach(function (m) { var e = m.getElement(); e.style.fontSize = fs + 'px'; e.style.visibility = crowded ? 'hidden' : ''; });
         };
         map.on('zoom', sizeLabels);
         sizeLabels();
@@ -325,6 +527,7 @@
         recs.sort(function (a, b) { return (a.s == null) - (b.s == null) || (a.s - b.s) || (a.id < b.id ? -1 : 1); });
         pn.innerHTML = '<div class="eyebrow"><span class="basis-dot ' + p.b + '"></span> ' + esc(D.basis[p.b] || '') + '</div>' +
           '<h2>' + esc(p.n) + '</h2>' +
+          (p.psg ? '<p><a class="btn primary" href="' + TA.href('place/' + p.id) + '">Read ' + p.psg + ' passage' + (p.psg === 1 ? '' : 's') + ' about ' + esc(p.n) + '</a></p>' : '') +
           '<p class="small muted">' + recs.length + ' record' + (recs.length === 1 ? '' : 's') + ' in this selection, in date order. ' +
           '<a href="' + TA.href('place/' + p.id) + '">Open the place page</a></p>' +
           (recs.length ? '<ol class="rlist">' + recs.map(recItem).join('') + '</ol>' : '<p class="muted">No records match the current filters.</p>') +
@@ -338,7 +541,7 @@
       var nopoint = Object.keys(P).map(function (k) { return P[k]; })
         .filter(function (p) { return p.count && p.b === 'none'; })
         .sort(function (a, b) { return b.count - a.count; }).slice(0, 10);
-      pn.innerHTML = '<h2 style="font-family:var(--font-body);font-size:var(--step-0);font-weight:650">Most named in this selection</h2>' +
+      pn.innerHTML = '<h2 style="font-family:var(--font-body);font-size:var(--step-0);font-weight:650">Start with one of these</h2>' +
         '<ul class="tags">' + ranked.map(function (p) {
           return '<li><button type="button" class="chip" data-sel="' + esc(p.id) + '"><span class="basis-dot ' + p.b + '"></span>' + esc(p.n) +
             ' <span class="mono muted">' + p.count + '</span></button></li>';
@@ -422,16 +625,15 @@
   if (PREVIEW) {
     var pages = JSON.parse(document.getElementById('ta-pages').textContent);
     var main = document.getElementById('main');
+    var byHash = {};
+    Object.keys(pages).forEach(function (k) { byHash[k ? k.replace('/', '-') : 'home'] = k; });
     var keyFromHash = function () {
       var h = decodeURIComponent(location.hash.slice(1));
-      if (!h || h === 'map') return '';
-      var m = h.match(/^(w|m|place|peoples)-(.+)$/);
-      return m ? m[1] + '/' + m[2] : h;
+      return Object.prototype.hasOwnProperty.call(byHash, h) ? byHash[h] : '';
     };
     var show = function () {
       var key = keyFromHash();
       var pg = pages[key];
-      if (!pg) { key = ''; pg = pages['']; }
       TA.destroy();
       main.innerHTML = pg.h;
       document.title = pg.t;

@@ -44,11 +44,24 @@ for pid, p in P.items():
     else:
         if 'class="approx"' in svg: bad.append(pid)
 check(not bad, f'mini maps: approximate and anchor points never drawn as surveyed dots ({len(bad)} bad {bad[:5]})')
-home = (D/'index.html').read_text()
+home = (D/'map/index.html').read_text()
 data = json.loads(html.unescape(re.search(r'<script type="application/json">(.*?)</script>', home, re.S).group(1)).replace('<\\/', '</'))
 grp = {a[0]: a[2] for a in data['places']}
 wrong = [pid for pid, p in P.items() if p['coord_basis'] in ('approx', 'centroid', 'anchor') and grp[pid] not in ('approx', 'anchor')]
 check(not wrong, f'explorer: every approximate or anchor place is in an approximate style group ({wrong[:5]})')
+# 3b. passages: every passage is on its source page, its trail file and its place pages
+PS = json.load(open(ROOT/'data/passages.json'))
+psg = PS['passages']
+lost = [p['id'] for p in psg if f'id="p-{p["id"]}"' not in (D/'w'/p['rec']/'index.html').read_text()]
+check(not lost, f'{len(psg)} passages each appear on their source page ({lost[:5]})')
+n_files = sum(len(json.load(open(D/'assets'/f'passages-{t}.json'))['p']) for t in ['cities', 'architecture', 'customs', 'names', 'outliers'])
+check(n_files == len(psg), f'trail data files hold all {len(psg)} passages ({n_files})')
+bad_url = [p['id'] for p in psg if not p['url'].startswith('https://')]
+check(not bad_url, f'every passage links to a page ({bad_url[:5]})')
+kz = (D/'place/kazan/index.html').read_text()
+check(kz.count('<article class="psg"') == sum(1 for p in psg if 'kazan' in p['place_ids']), 'kazan place page carries every Kazan passage')
+front = (D/'index.html').read_text()
+check('Follow a question' in front and front.count('class="trail"') == 5 and 'data-module="feature"' in front, 'front page has the five trails and a featured passage')
 # 4. em dashes
 em_titles = [str(f.relative_to(D)) for f in D.rglob('*.html') if '—' in re.search(r'<title>(.*?)</title>', f.read_text(), re.S).group(1)]
 check(not em_titles, f'no em dash in any page title ({len(list(D.rglob("*.html")))} pages)')

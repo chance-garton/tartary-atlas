@@ -9,6 +9,7 @@ Run:  python3 generator/build.py            (both outputs)
       python3 generator/build.py --static   (docs/ only)
 """
 import collections
+import hashlib
 import html
 import json
 import math
@@ -134,10 +135,59 @@ LINEAGE_SHORT = {
 }
 
 NAV = [
-    ("", "Map"), ("records", "Records"), ("places", "Places"), ("peoples", "Peoples"),
-    ("labels", "Tartary labels"), ("meanings", "What “Tartar” meant"),
-    ("lineage", "Map lineage"), ("about", "About"), ("method", "Method"),
+    ("", "Start"), ("passages", "Passages"), ("map", "Map"), ("sources", "Sources"),
+    ("archive", "Archive"), ("about", "About"),
 ]
+
+# Pages that sit under a main heading in the navigation.
+NAV_GROUP = {
+    "records": "archive", "places": "archive", "peoples": "archive", "labels": "archive",
+    "meanings": "archive", "lineage": "archive", "method": "archive", "corrections": "archive",
+}
+
+# The five trails through the passages. Order is the order shown.
+THEMES = collections.OrderedDict([
+    ("cities", {
+        "label": "Cities", "q": "Did the Tartars have cities?",
+        "blurb": "Capitals, camps that worked as cities, towns taken and towns ruined, and who each source says built them.",
+    }),
+    ("architecture", {
+        "label": "Buildings", "q": "What did they build, and what did they live in?",
+        "blurb": "Felt tents, houses on wagons, timber, brick and stone, mosques, palaces and tombs, and whom each source credits as the builder.",
+    }),
+    ("customs", {
+        "label": "Daily life", "q": "How did they live?",
+        "blurb": "Food and drink, marriage, burial, faith, law, dress, horses, war and trade, as visitors and neighbours wrote them down.",
+    }),
+    ("names", {
+        "label": "The name", "q": "Who were the Tartars, and where did the name come from?",
+        "blurb": "Origin stories, the Tatar tribe and the Mongols, Tartar used for Manchus and for Siberian peoples, the Tartarus pun, and Tartary as a label on maps.",
+    }),
+    ("outliers", {
+        "label": "Strange tales", "q": "What are the strangest things the sources say?",
+        "blurb": "Monsters and marvels, Gog and Magog, Prester John, the vegetable lamb, and rumours the authors themselves doubted, each marked as seen, heard or legend.",
+    }),
+])
+
+# How the author knew what a single passage says.
+PBASIS = collections.OrderedDict([
+    ("saw", ("Saw it", "The author describes something they saw themselves.")),
+    ("heard", ("Heard it", "The author was told this by someone else.")),
+    ("read", ("Read it", "The author took this from an earlier book or document.")),
+    ("legend", ("Legend or rumour", "A legend, a rumour, or a tale the author repeats.")),
+    ("record", ("Official record", "An official document or a record made at the time.")),
+    ("mixed", ("Mixed", "Part seen, part heard or read.")),
+])
+
+# How the author of a whole source knew, from the reading profile.
+HOW_KNEW = {
+    "saw it": "Eyewitness", "mixed": "Part eyewitness", "heard it": "From informants",
+    "compiled": "Compiled from others", "official record": "Official record", "legend collection": "Legends",
+}
+
+PSG_PARTIAL = "The scan's machine-read text is too damaged to confirm this quote automatically. Check it against the page."
+FIRST_FEATURE = "W043-05"
+PAGE_SIZE = 10
 
 EM_DASH = "—"
 
@@ -270,6 +320,18 @@ def no_em(s):
     return (s or "").replace(" — ", ", ").replace(EM_DASH, ", ")
 
 
+def psg_best_key(p):
+    return (-p["strength"], p["x"], p["id"])
+
+
+def nav_group(nav):
+    return NAV_GROUP.get(nav, nav)
+
+
+def num(n):
+    return f"{n:,}"
+
+
 # ---------------------------------------------------------------- data
 
 class Site:
@@ -284,6 +346,7 @@ class Site:
         corr_path = DATA / "corrections.json"
         self.corrections = json.loads(corr_path.read_text()) if corr_path.exists() else []
         self.apply_corrections()
+        self.load_passages()
 
         self.rec = {r["id"]: r for r in self.records}
         self.place = {p["id"]: p for p in self.places}
@@ -296,6 +359,29 @@ class Site:
         for e in self.lineage:
             self.edges_by[e["source"]].append(("out", e))
             self.edges_by[e["target"]].append(("in", e))
+
+    def load_passages(self):
+        """Source profiles and themed passages from the reading pass (data/passages.json)."""
+        path = DATA / "passages.json"
+        d = json.loads(path.read_text()) if path.exists() else {"profiles": {}, "passages": [], "built": None}
+        self.profiles = d["profiles"]
+        self.passages = d["passages"]
+        self.passages_built = d.get("built")
+        self.psg = {}
+        self.psg_by_rec = collections.defaultdict(list)
+        self.psg_by_place = collections.defaultdict(list)
+        self.psg_by_theme = collections.defaultdict(list)
+        for p in self.passages:
+            # A fixed scatter value, so "a mix of the best" is the same on every build and in the page script.
+            p["x"] = int(hashlib.md5(p["id"].encode()).hexdigest()[:6], 16)
+            self.psg[p["id"]] = p
+        best = sorted(self.passages, key=psg_best_key)
+        for p in best:
+            self.psg_by_rec[p["rec"]].append(p)
+            self.psg_by_theme[p["theme"]].append(p)
+            for pid in p["place_ids"]:
+                self.psg_by_place[pid].append(p)
+        self.psg_best = best
 
     def apply_corrections(self):
         rec = {r["id"]: r for r in self.records}
@@ -335,7 +421,7 @@ class Ctx:
 
     def link(self, key):
         if self.mode == "preview":
-            return "#" + (key.replace("/", "-") if key else "map")
+            return "#" + (key.replace("/", "-") if key else "home")
         return self.root + (key + "/" if key else "")
 
     def asset(self, name):
@@ -478,6 +564,343 @@ def page_head(eyebrow, title, lede=None, extra=""):
     return f'<header class="page-head"><div class="eyebrow">{eyebrow}</div><h1>{title}</h1>{lede_html}{extra}</header>'
 
 
+# ---------------------------------------------------------------- passages
+
+def words_span(s, e, p):
+    """A date span in words: no dashes in the discovery pages."""
+    return span_label(s, e, p).replace("–", " to ")
+
+
+def source_when(r):
+    d = r["date"]
+    if d.get("subject_start") is not None:
+        return words_span(d["subject_start"], d["subject_end"], d["subject_precision"])
+    if d["made_start"] is not None:
+        return words_span(d["made_start"], d["made_end"], d["made_precision"])
+    return "Undated"
+
+
+def source_year(r):
+    d = r["date"]
+    y = d.get("subject_start")
+    return y if y is not None else d["made_start"]
+
+
+def plural(n, word):
+    return f"{num(n)} {word}{'' if n == 1 else 's'}"
+
+
+def basis_chip(b):
+    label, tip = PBASIS[b]
+    return f'<span class="basis {b}" title="{esc(tip)}">{esc(label)}</span>'
+
+
+def psg_card(site, ctx, p, theme_tag=True, source=True, cls=""):
+    """One passage. The page script builds the same markup in TA.card; keep the two in step."""
+    meta = []
+    if theme_tag:
+        meta.append(f'<a class="ttag" href="{ctx.link("passages/" + p["theme"])}">{esc(THEMES[p["theme"]]["label"])}</a>')
+    if p.get("place"):
+        if p["place_ids"]:
+            meta.append(f'<a href="{ctx.link("place/" + p["place_ids"][0])}">{esc(p["place"])}</a>')
+        else:
+            meta.append(f'<span>{esc(p["place"])}</span>')
+    if p.get("when"):
+        meta.append(f'<span>{esc(p["when"])}</span>')
+    if p.get("translation"):
+        quote = (f'<blockquote><p>{esc(p["translation"])}</p><p class="q-tag">Working translation</p>'
+                 f'<details><summary>Original wording</summary><p class="orig" dir="auto">{esc(p["quote"])}</p></details></blockquote>')
+    else:
+        quote = f'<blockquote><p dir="auto">{esc(p["quote"])}</p></blockquote>'
+    notes = []
+    if p.get("caution"):
+        notes.append(f'<p><strong>Keep in mind.</strong> {esc(p["caution"])}</p>')
+    qn = psg_note(p)
+    if qn:
+        notes.append(f"<p>{esc(qn)}</p>")
+    notes_html = f'<div class="psg-notes">{"".join(notes)}</div>' if notes else ""
+    people = f'<p class="psg-people"><span>Who</span> {esc(p["people"])}</p>' if p.get("people") else ""
+    page = "Read the page" + (f' (p. {esc(p["p"])})' if p.get("p") else "")
+    links = [f'<a href="{esc(p["url"])}" rel="noopener">{page}</a>']
+    if source:
+        links.append(f'<a href="{ctx.link(site.rkey(p["rec"]))}">About this source</a>')
+    return (f'<article class="psg{(" " + cls) if cls else ""}" id="p-{p["id"]}">'
+            f'<div class="psg-meta">{"".join(meta)}</div>'
+            f'<h3>{esc(p["headline"])}</h3>'
+            f'<p class="gloss">{esc(p["gloss"])}</p>{quote}{people}'
+            f'<div class="psg-foot">{basis_chip(p["basis"])}<span class="who">{esc(p["speaker"])}</span></div>'
+            f'{notes_html}<div class="psg-links">{"".join(links)}</div></article>')
+
+
+def psg_note(p):
+    parts = []
+    qn = (p.get("quote_note") or "").strip()
+    if qn and qn != "OCR normalized":
+        parts.append(qn.rstrip(".") + ".")
+    if p["check"] == "partial":
+        parts.append(PSG_PARTIAL)
+    return " ".join(parts)
+
+
+def psg_compact(site, p):
+    """The passage as the page script reads it. Short keys keep the data files small."""
+    d = {"i": p["id"], "th": p["theme"], "h": p["headline"], "g": p["gloss"], "q": p["quote"],
+         "s": p["speaker"], "u": p["url"], "b": p["basis"], "st": p["strength"], "x": p["x"]}
+    opt = {"pl": p.get("place"), "pi": (p["place_ids"][0] if p["place_ids"] else None), "pe": p.get("people"),
+           "w": p.get("when"), "y": p.get("year"), "t": p.get("translation"), "p": p.get("p"),
+           "c": p.get("caution"), "n": psg_note(p) or None, "tg": " ".join(p.get("tags") or []) or None}
+    d.update({k: v for k, v in opt.items() if v is not None})
+    return d
+
+
+def psg_block(site, ctx, plist, limit, theme_tag=True, source=True):
+    """A list of passages that opens with `limit` cards and offers the rest on request.
+    The static site carries every card in the page. The single-file preview carries only the
+    IDs and lets the page script draw the cards from the passage data files, to stay small."""
+    rest = plist[limit:]
+    label = f"Show {plural(len(rest), 'more passage')}"
+    if ctx.mode == "preview":
+        opts = ("1" if theme_tag else "0") + ("1" if source else "0")
+        return (f'<div data-module="pmore" data-ids="{",".join(p["id"] for p in plist)}" data-opts="{opts}" data-first="{limit}">'
+                f'<div class="psg-list" data-list><p class="muted">Loading the passages…</p></div>'
+                + (f'<p class="px-more"><button type="button" class="btn" data-more>{label}</button></p>' if rest else "") + "</div>")
+    first = "".join(psg_card(site, ctx, p, theme_tag, source) for p in plist[:limit])
+    more = ""
+    if rest:
+        cards = "".join(psg_card(site, ctx, p, theme_tag, source) for p in rest)
+        more = f'<details class="more"><summary class="btn">{label}</summary><div class="psg-list">{cards}</div></details>'
+    return f'<div class="psg-list">{first}</div>{more}'
+
+
+def write_passage_assets(site, outdir):
+    """One data file per trail, read by the passage explorer."""
+    for t in THEMES:
+        ps = site.psg_by_theme[t]
+        src = {rid: site.profiles[rid]["plain_title"] for rid in sorted({p["rec"] for p in ps})}
+        out = {"src": src, "p": [dict(psg_compact(site, p), r=p["rec"]) for p in ps]}
+        (outdir / f"passages-{t}.json").write_text(json.dumps(out, ensure_ascii=False, separators=(",", ":")))
+
+
+def trail_tabs(site, ctx, current):
+    cur_all = ' aria-current="page"' if current is None else ""
+    items = [f'<a href="{ctx.link("passages")}"{cur_all}>All</a>']
+    for t, m in THEMES.items():
+        cur = ' aria-current="page"' if t == current else ""
+        items.append(f'<a href="{ctx.link("passages/" + t)}"{cur}>{esc(m["label"])}</a>')
+    return f'<nav class="trailtabs" aria-label="Trails">{"".join(items)}</nav>'
+
+
+def trail_cards(site, ctx):
+    cards = []
+    for t, m in THEMES.items():
+        ps = site.psg_by_theme[t]
+        peek = [p for p in ps if p["basis"] == "saw" or t in ("outliers", "names")][:2]
+        peek_html = " and ".join(f"“{esc(p['headline'])}”" for p in peek)
+        cards.append(
+            f'<a class="trail" href="{ctx.link("passages/" + t)}"><span class="trail-label">{esc(m["label"])}</span>'
+            f'<span class="trail-q">{esc(m["q"])}</span><span class="trail-blurb">{esc(m["blurb"])}</span>'
+            f'<span class="trail-peek">Inside: {peek_html}</span>'
+            f'<span class="trail-n">{plural(len(ps), "passage")}</span></a>')
+    return f'<div class="trails">{"".join(cards)}</div>'
+
+
+def source_card(site, ctx, rid):
+    r, pr = site.rec[rid], site.profiles[rid]
+    n = len(site.psg_by_rec.get(rid, []))
+    return (f'<a class="witness" href="{ctx.link(site.rkey(r))}"><span class="witness-when">{esc(source_when(r))}</span>'
+            f'<span class="witness-t">{esc(pr["plain_title"])}</span><span class="witness-one">{esc(pr["one_line"])}</span>'
+            f'<span class="witness-n">{esc(HOW_KNEW.get(pr["how_they_knew"], pr["how_they_knew"]))} · {plural(n, "passage")}</span></a>')
+
+
+def reading_progress(site):
+    written = [r for r in site.records if r["kind"] == "written"]
+    read = [r for r in written if r["id"] in site.profiles]
+    return len(read), len(written)
+
+
+# ---------------------------------------------------------------- discovery pages
+
+def page_home(site, ctx):
+    n_read, n_written = reading_progress(site)
+    n_psg = len(site.passages)
+    n_maps = sum(1 for r in site.records if r["kind"] == "map")
+
+    # The passage on the front page, and the pool the "another" button draws from.
+    pool = []
+    for t in THEMES:
+        good = [p for p in site.psg_by_theme[t] if p["strength"] == 3 and p["check"] == "page"
+                and (p["basis"] == "saw" or t in ("outliers", "names"))]
+        pool += good[:12]
+    first = site.psg.get(FIRST_FEATURE) or (pool[0] if pool else None)
+    pool = [p for p in pool if p is not first]
+    pool.sort(key=lambda p: p["x"])
+    feat_json = json.dumps({"src": {p["rec"]: site.profiles[p["rec"]]["plain_title"] for p in pool + ([first] if first else [])},
+                            "p": [dict(psg_compact(site, p), r=p["rec"]) for p in pool]},
+                           ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
+    feature = ""
+    if first:
+        feature = (f'<div class="feature" data-module="feature"><script type="application/json">{feat_json}</script>'
+                   f'<div class="feature-head"><span class="eyebrow">One passage from the record</span>'
+                   f'<button type="button" class="btn" data-next>Show me another</button></div>'
+                   f'<div data-slot>{psg_card(site, ctx, first, cls="big")}</div></div>')
+
+    hero = (f'<section class="hero"><div class="hero-text"><div class="eyebrow">Tartary in the historical record</div>'
+            f'<h1>What did the people who went there write down?</h1>'
+            f'<p class="lede">Travellers, envoys, captives, monks and chroniclers described the lands that European maps called Tartary. '
+            f'This atlas collects their words one passage at a time. Every passage says how the author knew, and links to the page it comes from.</p>'
+            f'<p class="hero-actions"><a class="btn primary" href="{ctx.link("passages")}">Browse the passages</a>'
+            f'<a class="btn" href="{ctx.link("map")}">Open the map</a></p></div>{feature}</section>')
+
+    trails = (f'<section class="band"><div class="band-head"><h2>Follow a question</h2>'
+              f'<p>Five trails through {num(n_psg)} passages. Pick the one you are curious about.</p></div>{trail_cards(site, ctx)}</section>')
+
+    # places with the most passages
+    counts = [(len(v), pid) for pid, v in site.psg_by_place.items()
+              if site.place[pid]["lat"] is not None and site.place[pid]["type"] == "settlement"]
+    top = [pid for _, pid in sorted(counts, reverse=True)[:12]]
+    chips = "".join(
+        f'<li><a href="{ctx.link("place/" + pid)}"><span class="chip big">{esc(site.place[pid]["name"])} '
+        f'<span class="mono muted">{len(site.psg_by_place[pid])}</span></span></a></li>' for pid in top)
+    places = (f'<section class="band"><div class="band-head"><h2>Start from a place</h2>'
+              f'<p>Twelve towns the sources keep returning to. The number is how many passages describe each one.</p></div>'
+              f'<div class="place-start"><div>{minimap(site, ctx, top, caption=False)}</div>'
+              f'<div class="place-start-list"><ul class="tags">{chips}</ul>'
+              f'<p class="small muted">Or see all {len(site.places)} places on <a href="{ctx.link("map")}">the map</a>.</p></div></div></section>')
+
+    picks = [rid for rid in ["W043", "W132", "W073", "W074", "W001", "W053"] if rid in site.profiles]
+    witnesses = (f'<section class="band"><div class="band-head"><h2>Start with a witness</h2>'
+                 f'<p>Six people who were there, from a Flemish friar in 1253 to a French consul at the Crimean court. '
+                 f'<a href="{ctx.link("sources")}">See all {n_read} sources read so far</a>.</p></div>'
+                 f'<div class="witnesses">{"".join(source_card(site, ctx, rid) for rid in picks)}</div></section>')
+
+    deeper = (f'<section class="band"><div class="band-head"><h2>Go deeper</h2>'
+              f'<p>The working tools behind the passages.</p></div><ul class="deeper">'
+              f'<li><a href="{ctx.link("labels")}">Tartary on the map, label by label</a><span>When Great, Little, Chinese and Independent Tartary appear on maps, and when they stop.</span></li>'
+              f'<li><a href="{ctx.link("lineage")}">Which maps copied which</a><span>Family trees for {n_maps} maps, from Jenkinson and Ortelius onward.</span></li>'
+              f'<li><a href="{ctx.link("records")}">The full catalogue</a><span>All {len(site.records)} written sources and maps, with dates, cautions and links.</span></li>'
+              f'<li><a href="{ctx.link("archive")}">Everything in the archive</a><span>Places, peoples, method and corrections.</span></li></ul></section>')
+
+    left = n_written - n_read
+    progress = (f'<p class="progress"><strong>Reading in progress.</strong> {n_read} of {n_written} written sources have been read so far. '
+                f'The other {left} are catalogued and waiting their turn, so a passage missing here may only mean its source has not been read yet. '
+                f'<a href="{ctx.link("method")}">How the passages were chosen and checked</a>.</p>')
+
+    body = f'<div class="page home">{hero}{trails}{places}{witnesses}{deeper}{progress}</div>'
+    desc = (f"What {n_written} historical texts and {n_maps} maps say about Tartary (Tartaria): {num(n_psg)} quoted passages on cities, "
+            f"buildings, daily life and legends, each linked to its page.")
+    return dict(title="The Tartary Atlas: Tartary and Tartaria in the historical record", description=desc, body=body,
+                nav="", modules=["feature"], bare_title=True)
+
+
+def page_passages(site, ctx, theme=None):
+    plist = site.psg_by_theme[theme] if theme else site.psg_best
+    n_src = len({p["rec"] for p in plist})
+    if theme:
+        m = THEMES[theme]
+        head = page_head(f'Trail · {plural(len(plist), "passage")} from {n_src} sources', esc(m["q"]), esc(m["blurb"]))
+        title, desc = m["q"], f'{m["blurb"]} {num(len(plist))} quoted passages from {n_src} historical sources on Tartary.'
+    else:
+        head = page_head("Passages", "What the sources say",
+                         f'{num(len(plist))} passages from {n_src} sources, each quoted from the page and marked by how the author knew. '
+                         f'Follow one of the five questions, or search them all.')
+        title, desc = "Passages: what the sources say about Tartary", f'{num(len(plist))} quoted passages about the Tartars and Tartary from {n_src} historical sources, searchable by place, people and date.'
+    basis_opts = "".join(f'<option value="{k}">{esc(v[0])}</option>' for k, v in PBASIS.items())
+    when_opts = ('<option value="0">Before 1200</option>'
+                 + "".join(f'<option value="{c}">{c}s</option>' for c in range(1200, 1900, 100)))
+    legend = "".join(f'<span>{basis_chip(k)} {esc(v[1])}</span>' for k, v in list(PBASIS.items())[:4])
+    cards = "".join(psg_card(site, ctx, p, theme_tag=theme is None) for p in plist[:PAGE_SIZE])
+    body = (f'<div class="page">{head}{trail_tabs(site, ctx, theme)}'
+            f'<div data-module="pexplore" data-theme="{theme or ""}" data-total="{len(plist)}">'
+            f'<div class="filterbar"><label for="px-q">Find<input type="search" id="px-q" placeholder="Karakorum, felt, mosque, Kalmyk…"></label>'
+            f'<label for="px-b">How the author knew<select id="px-b"><option value="">Any</option>{basis_opts}</select></label>'
+            f'<label for="px-w">When<select id="px-w"><option value="">Any time</option>{when_opts}</select></label>'
+            f'<label for="px-o">Order<select id="px-o"><option value="best">A mix of the best</option><option value="old">Oldest first</option><option value="new">Newest first</option></select></label>'
+            f'<button type="button" class="btn" data-shuffle>Shuffle</button></div>'
+            f'<p class="small muted px-count" aria-live="polite"><span data-count>{num(len(plist))}</span> passages</p>'
+            f'<div class="psg-list" data-list>{cards}</div>'
+            f'<p class="px-more"><button type="button" class="btn" data-more>Show {PAGE_SIZE} more</button></p>'
+            f'<div class="basis-legend">{legend}</div></div></div>')
+    return dict(title=title, description=desc, body=body, nav="passages", modules=["pexplore"])
+
+
+def page_sources(site, ctx):
+    n_read, n_written = reading_progress(site)
+    n_maps = sum(1 for r in site.records if r["kind"] == "map")
+    rows = []
+    order = sorted(site.profiles, key=lambda rid: (-len(site.psg_by_rec.get(rid, [])), rid))
+    for i, rid in enumerate(order):
+        r, pr = site.rec[rid], site.profiles[rid]
+        n = len(site.psg_by_rec.get(rid, []))
+        y = source_year(r)
+        hay = " ".join([rid, pr["plain_title"], pr["one_line"], r["creator"] or "", r["title"], r["language"] or ""]).lower()
+        rows.append(
+            f'<li data-h="{esc(hay)}" data-hk="{esc(pr["how_they_knew"])}" data-y="{"" if y is None else y}" data-n="{n}"{" hidden" if i >= 30 else ""}>'
+            f'<div class="yr">{esc(source_when(r))}</div><div class="body"><a class="t" href="{ctx.link(site.rkey(r))}">{esc(pr["plain_title"])}</a>'
+            f'<p class="one">{esc(pr["one_line"])}</p><div class="meta"><span class="chip">{esc(HOW_KNEW.get(pr["how_they_knew"], pr["how_they_knew"]))}</span>'
+            f'<span>{plural(n, "passage")}</span><span class="rid">{rid}</span></div></div></li>')
+    hk_opts = "".join(f'<option value="{esc(k)}">{esc(v)}</option>' for k, v in HOW_KNEW.items()
+                      if any(p["how_they_knew"] == k for p in site.profiles.values()))
+    head = page_head("Sources", "The witnesses",
+                     f'{n_read} written sources read so far, each described in plain words: who wrote it, how they knew, and what to watch out for. '
+                     f'The richest come first.')
+    body = (f'<div class="page">{head}<div data-module="slist">'
+            f'<div class="filterbar"><label for="sl-q">Find<input type="search" id="sl-q" placeholder="Rubruck, Crimea, Chinese, 1253…"></label>'
+            f'<label for="sl-hk">How they knew<select id="sl-hk"><option value="">Any</option>{hk_opts}</select></label>'
+            f'<label for="sl-o">Order<select id="sl-o"><option value="n">Most passages</option><option value="old">Oldest first</option><option value="new">Newest first</option></select></label>'
+            f'<p class="small muted" aria-live="polite"><span data-count>{len(rows)}</span> sources</p></div>'
+            f'<ol class="rlist slist" data-rows>{"".join(rows)}</ol>'
+            f'<p class="px-more"><button type="button" class="btn" data-all>Show all {len(rows)} sources</button></p></div>'
+            f'<p class="progress">{n_written - n_read} more written sources and {n_maps} maps are catalogued but have not been read for passages yet. '
+            f'They are all in <a href="{ctx.link("records")}">the full catalogue</a>.</p></div>')
+    return dict(title="Sources: the witnesses", description=f"{n_read} historical sources on Tartary described in plain words: who wrote each one, how they knew, and what to watch out for.",
+                body=body, nav="sources", modules=["slist"])
+
+
+def page_archive(site, ctx):
+    n_w = sum(1 for r in site.records if r["kind"] == "written")
+    n_m = len(site.records) - n_w
+    items = [
+        ("records", "The full catalogue", f"All {n_w} written sources and {n_m} maps in date order, with evidence class, cautions and access links. Searchable by name, place and ID."),
+        ("places", "Places", f"A gazetteer of {len(site.places)} places the records name, with how each map point was chosen."),
+        ("peoples", "Peoples and polities", f"{len(site.peoples)} peoples and polities named in the records, grouped into families."),
+        ("labels", "Tartary labels", "A timeline of when Tartary, Great, Little, Chinese, Independent and Muscovite Tartary appear in the records."),
+        ("meanings", "What “Tartar” meant", "Which peoples the word pointed to, source by source and century by century."),
+        ("lineage", "Map lineage", "Which maps copied, reissued or corrected which."),
+        ("method", "Method", "How sources were dated, places plotted, passages chosen and quotes checked, and what the atlas does not claim."),
+        ("corrections", "Corrections", "How to send a correction, and the public log of corrections made."),
+    ]
+    lis = "".join(f'<li><a href="{ctx.link(k)}">{esc(t)}</a><span>{esc(d)}</span></li>' for k, t, d in items)
+    head = page_head("Archive", "The archive",
+                     "The catalogue and the working tools behind the passages. Come here when you want to check a date, trace a map, or see everything at once.")
+    return dict(title="The archive", description="The Tartary Atlas catalogue and research tools: records, places, peoples, label timelines, map lineage, method and corrections.",
+                body=f'<div class="page">{head}<ul class="deeper wide">{lis}</ul></div>', nav="archive")
+
+
+def profile_section(site, ctx, r):
+    """The plain-words reading card for a source that has been read."""
+    pr = site.profiles[r["id"]]
+    ps = site.psg_by_rec.get(r["id"], [])
+    cells = [("How they knew", f'<span class="chip ev-firsthand">{esc(HOW_KNEW.get(pr["how_they_knew"], pr["how_they_knew"]))}</span>'
+              if pr["how_they_knew"] == "saw it" else f'<span class="chip">{esc(HOW_KNEW.get(pr["how_they_knew"], pr["how_they_knew"]))}</span>'),
+             ("Who “Tartar” means here", esc(pr["tartar_means"])),
+             ("Why read it", esc(pr["why_read"])),
+             ("Watch out", esc(pr["watch_out"]))]
+    grid = "".join(f'<div><dt>{k}</dt><dd>{v}</dd></div>' for k, v in cells)
+    out = [f'<section class="section profile" style="margin-top:0"><p class="prose-p">{esc(pr["summary"])}</p><dl class="readcard">{grid}</dl></section>']
+    if ps:
+        order = {t: i for i, t in enumerate(THEMES)}
+        ps = sorted(ps, key=lambda p: (order[p["theme"]], -p["strength"], p["id"]))
+        counts = collections.Counter(p["theme"] for p in ps)
+        chips = "".join(f'<li><span class="chip">{esc(THEMES[t]["label"])} <span class="mono muted">{counts[t]}</span></span></li>' for t in THEMES if counts[t])
+        out.append(f'<section class="section"><h2>What it says: {plural(len(ps), "passage")}</h2><ul class="tags">{chips}</ul>'
+                   f'{psg_block(site, ctx, ps, 4, theme_tag=True, source=False)}</section>')
+    else:
+        why = ("The atlas does not hold the text of this source, so it has a profile but no quoted passages."
+               if pr.get("read_quality") == "none" else "The reader found no passage in this source that says something specific about the Tartars.")
+        out.append(f'<section class="section"><h2>What it says</h2><p class="muted">{why}</p></section>')
+    return "".join(out)
+
+
 # ---------------------------------------------------------------- pages
 
 def page_record(site, ctx, r):
@@ -489,11 +912,20 @@ def page_record(site, ctx, r):
         lang = lang[:34].rsplit(" ", 1)[0] + "…"
     eyebrow = " · ".join(esc(x) for x in [kind_word, lang, tradition_label(r["tradition"])] if x)
     title_html = esc(smart(no_em(r["title"])))
+    prof = site.profiles.get(r["id"])
     extra = ""
-    if r.get("original_script_title"):
-        extra += f'<p class="lede" lang="und">{esc(r["original_script_title"])}</p>'
-    extra += f'<p class="muted">{esc(no_em(r["creator"]))}</p>'
-    head = page_head(eyebrow, title_html, extra=extra)
+    if prof:
+        # A source that has been read opens with its plain-words title; the catalogue title sits beneath.
+        extra += f'<p class="cat-title"><span>Catalogue title</span> {title_html}</p>'
+        if r.get("original_script_title"):
+            extra += f'<p class="muted" lang="und">{esc(r["original_script_title"])}</p>'
+        extra += f'<p class="muted">{esc(no_em(r["creator"]))}</p>'
+        head = page_head(eyebrow, esc(prof["plain_title"]), esc(prof["one_line"]), extra=extra)
+    else:
+        if r.get("original_script_title"):
+            extra += f'<p class="lede" lang="und">{esc(r["original_script_title"])}</p>'
+        extra += f'<p class="muted">{esc(no_em(r["creator"]))}</p>'
+        head = page_head(eyebrow, title_html, extra=extra)
 
     # How we know
     ev = r["evidence_class"]
@@ -509,11 +941,18 @@ def page_record(site, ctx, r):
            + (f'<div><div class="eyebrow">Cautions</div><ul class="note-list">{caut_html}</ul></div>' if caut_html else "")
            + corr_note + '</section>')
 
-    sections = [how]
+    sections = []
+    if prof:
+        sections.append(profile_section(site, ctx, r))
+        sections.append('<h2 class="divider">Catalogue record</h2>')
+    elif not is_map:
+        sections.append(f'<p class="banner" style="margin:0"><strong>Not read yet.</strong> This source is catalogued, but it has not been read for passages. '
+                        f'<a href="{ctx.link("sources")}">See the sources read so far</a>.</p>')
+    sections.append(how)
     if r.get("research_value"):
         sections.append(f'<section class="section"><h2>Why it matters</h2><p class="prose">{linkify(site, ctx, r["research_value"])}</p></section>')
 
-    if r["tartar_referents_card"]:
+    if r["tartar_referents_card"] and not prof:
         items = "".join(f'<li><span class="chip">{esc(site.family_name(f))}</span></li>' for f in r["tartar_referents_card"])
         sections.append(
             f'<section class="section"><h2>What “Tartar” means here</h2>'
@@ -601,12 +1040,16 @@ def page_record(site, ctx, r):
         aside.append(mm)
     aside.append(f'<p class="small"><a href="{ctx.link("corrections")}">Report a correction to {r["id"]}</a></p>')
 
-    body = (f'<div class="page"><nav class="small muted" aria-label="Breadcrumb"><a href="{ctx.link("records")}">Records</a> / <span class="mono">{r["id"]}</span></nav>'
+    crumb = (f'<a href="{ctx.link("sources")}">Sources</a>' if prof else f'<a href="{ctx.link("records")}">Catalogue</a>')
+    body = (f'<div class="page"><nav class="small muted" aria-label="Breadcrumb">{crumb} / <span class="mono">{r["id"]}</span></nav>'
             f'{head}<div class="record-grid"><div style="display:grid;gap:28px">{"".join(sections)}</div>'
             f'<aside style="display:grid;gap:18px">{"".join(aside)}</aside></div></div>')
 
     title = f'{smart(short_title(no_em(r["title"]), 60))} ({made_label(r)}) · {r["id"]}'
     desc = first_sentence(no_em(r.get("research_value") or r["title"]))
+    if prof:
+        title = f'{short_title(prof["plain_title"], 70)} · {r["id"]}'
+        desc = first_sentence(prof["one_line"], 170)
     jsonld = {
         "@context": "https://schema.org",
         "@type": "Map" if is_map else "CreativeWork",
@@ -618,7 +1061,8 @@ def page_record(site, ctx, r):
         jsonld["dateCreated"] = str(d["made_start"]) if d["made_start"] >= 0 else None
     if r.get("primary_access"):
         jsonld["sameAs"] = r["primary_access"]
-    return dict(title=title, description=desc, body=body, nav="records", jsonld=jsonld)
+    return dict(title=title, description=desc, body=body, nav="sources" if prof else "records", jsonld=jsonld,
+                modules=["pmore"] if prof else [])
 
 
 def thumbnail(site, r):
@@ -666,7 +1110,13 @@ def page_place(site, ctx, p):
     lede = esc(p["note"]) if p.get("note") else None
     head = page_head(eyebrow, esc(p["name"]), lede)
     n = len(p["records"])
-    main = [f'<section class="section" style="margin-top:0"><h2>{n} record{"s" if n != 1 else ""} name this place, in date order</h2>{record_list(site, ctx, p["records"])}</section>']
+    ps = site.psg_by_place.get(p["id"], [])
+    main = []
+    if ps:
+        main.append(f'<section class="section" style="margin-top:0"><h2>What the sources say here: {plural(len(ps), "passage")}</h2>'
+                    f'{psg_block(site, ctx, ps, 4)}</section>')
+    top0 = "" if ps else ' style="margin-top:0"'
+    main.append(f'<section class="section"{top0}><h2>{n} record{"s" if n != 1 else ""} name this place, in date order</h2>{record_list(site, ctx, p["records"])}</section>')
     if p["id"] in LABEL_IDS:
         main.insert(0, f'<p class="banner"><strong>A label, not a location.</strong> Its extent changed from map to map. '
                        f'See when each Tartary label was in use on the <a href="{ctx.link("labels")}">Tartary labels timeline</a>.</p>')
@@ -689,15 +1139,17 @@ def page_place(site, ctx, p):
     mm = minimap(site, ctx, [p["id"]], caption=False)
     if mm:
         aside.insert(0, mm)
-    body = (f'<div class="page"><nav class="small muted" aria-label="Breadcrumb"><a href="{ctx.link("places")}">Places</a> / {esc(p["name"])}</nav>'
+    body = (f'<div class="page"><nav class="small muted" aria-label="Breadcrumb"><a href="{ctx.link("map")}">Map</a> / <a href="{ctx.link("places")}">Places</a> / {esc(p["name"])}</nav>'
             f'{head}<div class="record-grid"><div>{"".join(main)}</div><aside style="display:grid;gap:18px">{"".join(aside)}</aside></div></div>')
     desc = f'{p["name"]}: {n} historical source{"s" if n != 1 else ""} and maps that name it, in date order, with how each author knew.'
+    if ps:
+        desc = f'{p["name"]} in the historical record: {len(ps)} quoted passages and {n} sources and maps that name it, with how each author knew.'
     jsonld = {"@context": "https://schema.org", "@type": "Place", "name": p["name"], "url": f'{CONFIG["base_url"]}/place/{p["id"]}/'}
     if p["lat"] is not None and g in ("exact", "river", "capital"):
         jsonld["geo"] = {"@type": "GeoCoordinates", "latitude": p["lat"], "longitude": p["lon"]}
     if p.get("wikidata"):
         jsonld["sameAs"] = f'https://www.wikidata.org/wiki/{p["wikidata"]}'
-    return dict(title=f'{p["name"]} in the sources', description=desc, body=body, nav="places", jsonld=jsonld)
+    return dict(title=f'{p["name"]} in the sources', description=desc, body=body, nav="map", jsonld=jsonld, modules=["pmore"])
 
 
 def page_people(site, ctx, p):
@@ -730,7 +1182,7 @@ def page_records(site, ctx):
             f'<td>{ev_chip(r["evidence_class"])}</td><td class="rid">{r["id"]}</td></tr>')
     ev_opts = "".join(f'<option value="{esc(e)}">{esc(e)}</option>' for e in EVIDENCE_ORDER)
     counts = collections.Counter(r["kind"] for r in site.records)
-    head = page_head("Catalogue", "Records",
+    head = page_head("Archive · Catalogue", "The full catalogue",
                      f'{counts["written"]} written sources and {counts["map"]} maps, from antiquity to the 1870s, each with its date, its places and how its author knew.')
     body = (f'<div class="page">{head}<div data-module="rtable">'
             f'<div class="filterbar"><label for="rt-q">Find<input type="search" id="rt-q" placeholder="Witsen, Tobolsk, Tartaria, W122…"></label>'
@@ -739,7 +1191,7 @@ def page_records(site, ctx):
             f'<p class="small muted" aria-live="polite"><span data-count>{len(site.records)}</span> shown</p></div>'
             f'<div class="table-wrap"><table class="data"><thead><tr><th class="num">Date</th><th>Kind</th><th>Title and creator</th><th>Evidence</th><th>ID</th></tr></thead>'
             f'<tbody>{"".join(rows)}</tbody></table></div></div></div>')
-    return dict(title="Records", description="All 422 written sources and maps in the Tartary Atlas, in date order, searchable by name, place and ID.", body=body, nav="records", modules=["rtable"])
+    return dict(title="Records", description=f"All {len(site.records)} written sources and maps in the Tartary Atlas, in date order, searchable by name, place and ID.", body=body, nav="records", modules=["rtable"])
 
 
 def page_places(site, ctx):
@@ -1128,7 +1580,7 @@ def explorer_data(site):
     places = []
     for p in site.places:
         g = basis_group(p["coord_basis"])
-        places.append([p["id"], p["name"], g, p["lon"], p["lat"]])
+        places.append([p["id"], p["name"], g, p["lon"], p["lat"], len(site.psg_by_place.get(p["id"], []))])
     return {
         "records": recs, "places": places,
         "traditions": [[t, trads[t]] for t in tlist],
@@ -1137,7 +1589,7 @@ def explorer_data(site):
     }
 
 
-def page_home(site, ctx):
+def page_map(site, ctx):
     data = explorer_data(site)
     js = json.dumps(data, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
     n_w = sum(1 for r in site.records if r["kind"] == "written")
@@ -1148,9 +1600,10 @@ def page_home(site, ctx):
 <div class="mapwrap"><div id="map" role="region" aria-label="Map of places named in the sources"></div>
 <div class="map-note">Modern coastlines and rivers, Natural Earth. Aral Sea at its modern extent.</div></div>
 <div class="side">
-<div class="side-sec intro"><h1>The Tartary Atlas</h1>
-<p>Every place named in {n_w} written sources and {n_m} maps about Tartary, from the Mongol conquests to the nineteenth century. Pick a date range, then click a place to see who wrote about it, when, and how they knew.</p>
+<div class="side-sec intro"><h1>The map</h1>
+<p>Every place named in {n_w} written sources and {n_m} maps. Click a place to see what was written about it. Narrow the dates if you want one period.</p>
 <div class="stats"><span><b data-stat="records">{len(site.records)}</b>records shown</span><span><b data-stat="places">0</b>places plotted</span></div></div>
+<div class="side-sec place-panel" data-panel aria-live="polite"></div>
 <div class="side-sec"><h2>Dates</h2>
 <div class="range"><svg class="hist" viewBox="0 0 200 44" preserveAspectRatio="none" aria-hidden="true" data-hist></svg>
 <div class="dual"><div class="track"></div><div class="fill" data-fill></div>
@@ -1165,12 +1618,11 @@ def page_home(site, ctx):
 <details class="filters"><summary>How the author knew</summary><div class="checks" data-ev></div></details>
 <details class="filters"><summary>Language tradition</summary><div class="checks" data-tr></div></details>
 </div>
-<div class="side-sec place-panel" data-panel aria-live="polite"></div>
 <div class="side-sec"><h2>Map key</h2><div class="legend">{legend}</div>
 <p class="small muted">Dot size follows the number of records. Hollow dashed rings mark editorial approximations for regions with no single location. <a href="{ctx.link("method")}">How places were plotted</a>.</p></div>
 </div></div>'''
-    desc = f"An open atlas of Tartary (Tartaria) in {n_w} historical texts and {n_m} maps: every place named, when, and how each author knew."
-    return dict(title="The Tartary Atlas: Tartary and Tartaria in the historical record", description=desc, body=body, nav="", modules=["explorer"], maplibre=True, bare_title=True)
+    desc = f"A map of every place named in {n_w} historical texts and {n_m} maps about Tartary (Tartaria): who wrote about each one, when, and how they knew."
+    return dict(title="Map of Tartary in the sources", description=desc, body=body, nav="map", modules=["explorer"], maplibre=True)
 
 
 # ------------------------------------------------ About, Method, Corrections
@@ -1179,13 +1631,15 @@ def page_about(site, ctx):
     c = CONFIG
     body = f'''<div class="page">{page_head("About", "About the atlas")}
 <div class="prose">
-<p>The Tartary Atlas gathers what the historical record says about Tartary: which sources name it, where, when, and how each author came to know what they wrote. It covers {len(site.records)} written sources and maps in more than a dozen languages, from Old Turkic inscriptions and Mongol-era travel accounts to nineteenth-century atlases.</p>
+<p>The Tartary Atlas gathers what the historical record says about Tartary: what the sources describe, where, when, and how each author came to know what they wrote. It covers {len(site.records)} written sources and maps in more than a dozen languages, from Old Turkic inscriptions and Mongol-era travel accounts to nineteenth-century atlases.</p>
 <p>Tartary, printed as Tartaria on Latin maps, has lately become the subject of popular claims about a lost Tartarian Empire. The atlas is built so anyone can test a claim against the sources themselves. Each record page shows the source's date and how precise that date is, the places and peoples it names, whether its author saw them or compiled from others, and a link to the source.</p>
 <h2>Who made it</h2>
 <p>The atlas is a research project by {esc(c["researcher"])}, host of the <a href="{esc(c["podcast_url"])}" rel="noopener">{esc(c["podcast_name"])}</a>, where the research behind it is discussed. The catalogue, the gazetteer and the site were built with AI research assistance, and every record links back to its source so the work can be checked.</p>
 <h2>How to use it</h2>
 <ul>
-<li><a href="{ctx.link("")}">The map</a> plots every place the sources name. Narrow the dates, then click a place.</li>
+<li><a href="{ctx.link("passages")}">Passages</a> are the quickest way in: {num(len(site.passages))} short extracts on cities, buildings, daily life, the name and strange tales, each with its quote and its page.</li>
+<li><a href="{ctx.link("sources")}">Sources</a> describes each source that has been read in plain words: who wrote it, how they knew, and what to watch out for.</li>
+<li><a href="{ctx.link("map")}">The map</a> plots every place the sources name. Click a place to read what was written about it.</li>
 <li><a href="{ctx.link("labels")}">Tartary labels</a> shows when Great, Little, Chinese, Independent and Muscovite Tartary appear.</li>
 <li><a href="{ctx.link("meanings")}">What “Tartar” meant</a> shows which peoples the word pointed to, source by source.</li>
 <li><a href="{ctx.link("lineage")}">Map lineage</a> traces which maps copied which.</li>
@@ -1204,14 +1658,31 @@ def page_method(site, ctx):
     prec_rows = "".join(f"<li><strong>{esc(v)}</strong> <span class=\"muted\">({esc(k)})</span></li>" for k, v in PRECISION.items() if not k.startswith("century (") )
     n_approx = sum(1 for p in site.places if basis_group(p["coord_basis"]) in ("approx", "anchor"))
     n_notes = sum(1 for r in site.records if r["date"].get("override"))
+    chk = collections.Counter(p["check"] for p in site.passages)
+    n_read, n_written = reading_progress(site)
+    n_tr = sum(1 for p in site.passages if p.get("translation"))
+    basis_rows_p = "".join(f"<li>{basis_chip(k)} {esc(v[1])} <span class='muted'>({num(sum(1 for p in site.passages if p['basis'] == k))} passages)</span></li>" for k, v in PBASIS.items())
+    passages_method = f'''<h2>The passages</h2>
+<p>The passages are a reading layer on top of the catalogue. So far {n_read} of the {n_written} written sources have a plain-words profile, and the ones whose text the project holds were read for passages: the scanned pages that mention Tartars or Tartary were read with AI assistance, and the passages that say something specific were kept and sorted into five trails. The richest sources were read closely and the rest lightly, so the passages are a selection, never everything a source says. The remaining sources are waiting to be read.</p>
+<ul>
+<li><strong>The quote</strong> is copied from the page it cites, in the original language, and kept to 70 words or fewer. Spelling is tidied only where the scan's machine-read text was broken (long s, split words, garbled letters).</li>
+<li><strong>The translation</strong>, where the page is not in English, is a working translation made for this atlas ({num(n_tr)} passages). It is a guide to the original, which is always shown with it.</li>
+<li><strong>The summary</strong> above each quote is the atlas's own plain-words account of what the page says.</li>
+<li><strong>The page link</strong> opens the scan at the page quoted. Read the page before citing a passage.</li>
+</ul>
+<p>Each passage carries a label for how the author knew that one thing, which can differ from the source as a whole:</p>
+<ul style="list-style:none;padding-left:0">{basis_rows_p}</ul>
+<p><strong>Checking the quotes.</strong> Every quote was compared by machine with the stored text of the page it cites. {num(chk["page"])} of {num(len(site.passages))} match their page. {num(chk["image"])} were transcribed from the page image because the stored text of that scan is unreadable (blackletter, Fraktur and Arabic-script prints mostly), and each of those says so. {num(chk["partial"])} could not be confirmed automatically because the stored text is damaged, and each carries a note asking you to check the page. No passage has yet been checked line by line by a human editor.</p>'''
     body = f'''<div class="page">{page_head("Method", "How the atlas is built")}
 <div class="prose">
 <h2>Three layers of data</h2>
 <ul>
 <li><strong>The catalogue.</strong> {m["records"]} records: {m["written"]} written sources (IDs W001 to W303) and {m["maps"]} maps (M001 to M119), each with a card describing its date, places, peoples, access, and how its author knew. The catalogue was compiled from library, archive and scholarly catalogues in English, Latin, Italian, Spanish, Portuguese, French, Dutch, German, Russian, Persian, Arabic, Ottoman Turkish, Chagatai, Tatar, Chinese, Manchu, Mongolian, Tibetan and Japanese.</li>
 <li><strong>The site data.</strong> Structured dates, a gazetteer of {m["places"]} places ({m["places_plotted"]} with a point), {m["peoples"]} peoples and polities, an evidence class for every record, {m["lineage_edges"]} map lineage links, and IIIF image routes for {m["maps_with_iiif"]} maps. Built {esc(site.meta["built"])}.</li>
+<li><strong>The passages.</strong> {num(len(site.passages))} short extracts from {len(site.profiles)} of the written sources, sorted into five trails. See the next section.</li>
 <li><strong>Passage attestations</strong> (in preparation). Every place a source names Tartary or a related term, with page, original wording and what it refers to. This layer will replace the provisional card-level readings on <a href="{ctx.link("meanings")}">What “Tartar” meant</a>.</li>
 </ul>
+{passages_method}
 <h2>Dates</h2>
 <p>Every record carries the date it was written or drawn, and a precision label saying how far to trust it. Written sources also carry the period they describe. A map may carry a later impression year, a modern facsimile year, or a content date when it prints much older geography, as a 1482 Ptolemy printing does. The map and the timelines use the date made.</p>
 <ul>{prec_rows}</ul>
@@ -1265,7 +1736,7 @@ def page_corrections(site, ctx):
 def header(ctx, nav_key):
     cur = ' aria-current="page"'
     items = "".join(
-        f'<a href="{ctx.link(k)}" data-nav="{k}"{cur if k == nav_key else ""}>{esc(label)}</a>' for k, label in NAV)
+        f'<a href="{ctx.link(k)}" data-nav="{k}"{cur if k == nav_group(nav_key) else ""}>{esc(label)}</a>' for k, label in NAV)
     return (f'<a class="skip" href="#main">Skip to content</a><header class="site-header"><div class="bar">'
             f'<a class="wordmark" href="{ctx.link("")}"><span>The</span> Tartary Atlas</a>'
             f'<nav class="site-nav" aria-label="Main">{items}</nav></div></header>')
@@ -1275,7 +1746,7 @@ def footer(site, ctx):
     c = CONFIG
     return (f'<footer class="site-footer"><div class="inner"><span>The Tartary Atlas, a research project by {esc(c["researcher"])}</span>'
             f'<a href="{esc(c["podcast_url"])}" rel="noopener">Discussed on the {esc(c["podcast_name"])}</a>'
-            f'<a href="{ctx.link("method")}">Method</a><a href="{ctx.link("corrections")}">Corrections</a>'
+            f'<a href="{ctx.link("archive")}">Archive</a><a href="{ctx.link("method")}">Method</a><a href="{ctx.link("corrections")}">Corrections</a>'
             f'<span>Data built {esc(site.meta["built"])}</span></div></footer>')
 
 
@@ -1315,7 +1786,11 @@ def static_page(site, key, pg):
 def all_pages(site, ctx_factory):
     """Yield (key, page dict) for every page. ctx_factory(key) builds the link context."""
     yield "", page_home(site, ctx_factory(""))
-    for k, fn in [("records", page_records), ("places", page_places), ("peoples", page_peoples),
+    yield "passages", page_passages(site, ctx_factory("passages"))
+    for t in THEMES:
+        k = "passages/" + t
+        yield k, page_passages(site, ctx_factory(k), t)
+    for k, fn in [("map", page_map), ("sources", page_sources), ("archive", page_archive), ("records", page_records), ("places", page_places), ("peoples", page_peoples),
                   ("labels", page_labels), ("meanings", page_meanings), ("lineage", page_lineage),
                   ("about", page_about), ("method", page_method), ("corrections", page_corrections)]:
         yield k, fn(site, ctx_factory(k))
@@ -1344,6 +1819,7 @@ def write_static(site):
     shutil.copy(STATIC / "js" / "site.js", OUT / "assets" / "site.js")
     shutil.copy(STATIC / "vendor" / "maplibre-gl.css", OUT / "assets" / "maplibre-gl.css")
     write_basemap(OUT / "assets" / "basemap.json")
+    write_passage_assets(site, OUT / "assets")
     (OUT / "assets" / "eurasia.svg").write_text(f'<svg xmlns="http://www.w3.org/2000/svg">{build_land_svg()}</svg>')
     (OUT / ".nojekyll").write_text("")
     (OUT / "robots.txt").write_text(f'User-agent: *\nAllow: /\nSitemap: {CONFIG["base_url"]}/sitemap.xml\n')
@@ -1352,7 +1828,7 @@ def write_static(site):
     (OUT / "404.html").write_text(
         '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">'
         f'<title>Page not found · {CONFIG["site_name"]}</title><link rel="stylesheet" href="/assets/site.css"></head>'
-        '<body><main class="page"><h1>Page not found</h1><p class="lede">That address is not in the atlas. <a href="/">Go to the map</a> or <a href="/records/">browse the records</a>.</p></main></body></html>')
+        '<body><main class="page"><h1>Page not found</h1><p class="lede">That address is not in the atlas. <a href="/">Go to the start</a> or <a href="/passages/">browse the passages</a>.</p></main></body></html>')
     return keys
 
 
@@ -1367,7 +1843,7 @@ def write_preview(site):
     (PREVIEW / "assets").mkdir(parents=True)
     pages = {}
     for key, pg in all_pages(site, lambda k: Ctx("preview", k)):
-        pages[key] = {"t": full_title(pg), "h": pg["body"], "n": pg["nav"]}
+        pages[key] = {"t": full_title(pg), "h": pg["body"], "n": nav_group(pg["nav"])}
     ctx = Ctx("preview", "")
     css = (STATIC / "vendor" / "maplibre-gl.css").read_text() + "\n" + (STATIC / "css" / "site.css").read_text()
     js = (STATIC / "js" / "site.js").read_text()
@@ -1383,6 +1859,7 @@ def write_preview(site):
            f'<script>window.TA_PREVIEW=true;</script><script>{js}</script>')
     (PREVIEW / "index.html").write_text(doc)
     write_basemap(PREVIEW / "assets" / "basemap.json")
+    write_passage_assets(site, PREVIEW / "assets")
     return len(pages)
 
 

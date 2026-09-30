@@ -1,0 +1,336 @@
+{
+ "Bakhchysarai": [
+  "bakhchisaray",
+  "crimea"
+ ],
+ "Simferopol": [
+  "crimea"
+ ],
+ "Feodosia": [
+  "kaffa",
+  "crimea"
+ ],
+ "Alushta": [
+  "crimea"
+ ],
+ "Yalta": [
+  "crimea"
+ ],
+ "Alupka": [
+  "crimea"
+ ],
+ "Inkerman": [
+  "crimea"
+ ],
+ "Mangup": [
+  "crimea"
+ ],
+ "Staryi Krym": [
+  "solkhat",
+  "crimea"
+ ],
+ "Stary Krym": [
+  "solkhat",
+  "crimea"
+ ],
+ "Eski-Krym": [
+  "solkhat",
+  "crimea"
+ ],
+ "Eupatoria": [
+  "gozleve",
+  "crimea"
+ ],
+ "Yevpatoria": [
+  "gozleve",
+  "crimea"
+ ],
+ "Karasubazar": [
+  "crimea"
+ ],
+ "Bilohirsk": [
+  "crimea"
+ ],
+ "Crimean steppe": [
+  "crimea"
+ ],
+ "Kyiv": [
+  "kiev"
+ ],
+ "Bolgar": [
+  "volga-bulgaria"
+ ],
+ "Derbent": [
+  "dagestan"
+ ],
+ "Gorgan plain": [
+  "hyrcania"
+ ],
+ "Gonbad-e Kavus": [
+  "hyrcania"
+ ],
+ "Shigatse": [
+  "tibet"
+ ],
+ "Tashilhunpo": [
+  "tibet"
+ ],
+ "Leh": [
+  "ladakh"
+ ],
+ "Spiti": [
+  "western-tibet"
+ ],
+ "Lahaul": [
+  "himalaya"
+ ],
+ "Kunduz": [
+  "afghanistan"
+ ],
+ "Bamiyan": [
+  "afghanistan"
+ ],
+ "Bamyan Province": [
+  "afghanistan"
+ ],
+ "Hazarajat": [
+  "afghanistan"
+ ],
+ "Kandahar": [
+  "afghanistan"
+ ],
+ "Wakhan": [
+  "badakhshan"
+ ],
+ "Konye-Urgench": [
+  "khwarazm"
+ ],
+ "Kunya-Urgench": [
+  "khwarazm"
+ ],
+ "Merv": [
+  "khorasan"
+ ],
+ "Nishapur": [
+  "khorasan"
+ ],
+ "Sarakhs": [
+  "khorasan"
+ ],
+ "Damghan": [
+  "persia"
+ ],
+ "Madzhary": [
+  "kuban"
+ ],
+ "Budyonnovsk": [
+  "kuban"
+ ],
+ "Sarpa steppe": [
+  "kalmyk-steppe"
+ ],
+ "Manych steppe": [
+  "kalmyk-steppe"
+ ],
+ "Selitrennoye": [
+  "sarai"
+ ],
+ "Tsarev": [
+  "sarai"
+ ],
+ "Akhtuba": [
+  "volga"
+ ],
+ "Mongolian steppe": [
+  "mongolia"
+ ],
+ "Mongol lands": [
+  "mongolia"
+ ],
+ "Hohhot": [
+  "inner-mongolia"
+ ],
+ "Krasnoyarsk": [
+  "yenisei"
+ ],
+ "Abakan": [
+  "khakassia"
+ ],
+ "Minusinsk": [
+  "khakassia"
+ ],
+ "Novokuznetsk": [
+  "western-siberia"
+ ],
+ "Ablaikit": [
+  "irtysh"
+ ],
+ "Ablai-kit ruins": [
+  "irtysh"
+ ],
+ "Oskemen": [
+  "irtysh"
+ ],
+ "Almaliq": [
+  "ili"
+ ],
+ "Jiuquan": [
+  "gansu"
+ ],
+ "Liaoning": [
+  "liaodong"
+ ],
+ "Liaoyang": [
+  "liaodong"
+ ],
+ "Jinzhou": [
+  "liaodong"
+ ],
+ "Hangzhou": [
+  "zhejiang"
+ ],
+ "Shaoxing": [
+  "zhejiang"
+ ],
+ "Tianjin": [
+  "zhili"
+ ],
+ "Zhangjiakou": [
+  "zhili"
+ ],
+ "Nanchang": [
+  "jiangxi"
+ ],
+ "Yinchuan": [
+  "western-xia"
+ ],
+ "Changbai Mountain": [
+  "manchuria"
+ ],
+ "Vladimir": [
+  "suzdal",
+  "rus"
+ ],
+ "Tver": [
+  "rus"
+ ],
+ "Torzhok": [
+  "rus"
+ ],
+ "Kursk": [
+  "rus"
+ ],
+ "Kozelsk": [
+  "rus"
+ ],
+ "Rostov": [
+  "rus"
+ ],
+ "Kulikovo Field": [
+  "nepryadva"
+ ],
+ "Sviyazhsk": [
+  "kazan"
+ ],
+ "Yelabuga": [
+  "volga-kama"
+ ],
+ "Bashkortostan": [
+  "bashkiria"
+ ],
+ "Volhynia": [
+  "galicia-volhynia"
+ ],
+ "Lutsk": [
+  "galicia-volhynia"
+ ],
+ "Volodymyr": [
+  "galicia-volhynia"
+ ],
+ "Ferghana Valley": [
+  "fergana"
+ ],
+ "Osh": [
+  "fergana"
+ ],
+ "Margilan": [
+  "fergana"
+ ],
+ "Andijan": [
+  "fergana"
+ ],
+ "Shahrisabz": [
+  "transoxiana"
+ ],
+ "Karshi": [
+  "transoxiana"
+ ],
+ "Otrar": [
+  "syr-darya"
+ ],
+ "Taraz": [
+  "talas"
+ ],
+ "Karashahr": [
+  "tarim-basin"
+ ],
+ "Lop Nur region": [
+  "tarim-basin"
+ ],
+ "Taklamakan Desert": [
+  "tarim-basin"
+ ],
+ "Damascus": [
+  "syria"
+ ],
+ "Cairo": [
+  "egypt"
+ ],
+ "Agra": [
+  "mughal"
+ ],
+ "Anapa": [
+  "circassia"
+ ],
+ "Aldan River": [
+  "yakutia"
+ ],
+ "Kolyma River": [
+  "northeastern-siberia"
+ ],
+ "Sredne Kolymsk": [
+  "northeastern-siberia"
+ ],
+ "Ishim River": [
+  "western-siberia"
+ ],
+ "Tunka": [
+  "transbaikalia"
+ ],
+ "Chindant": [
+  "transbaikalia"
+ ],
+ "Pontic-Caspian steppe": [
+  "pontic-steppe",
+  "dasht-i-qipchaq"
+ ],
+ "Dasht-i Kipchak": [
+  "dasht-i-qipchaq"
+ ],
+ "Yakutsk region": [
+  "yakutia"
+ ],
+ "Nizhny Novgorod": [
+  "volga"
+ ],
+ "Tatarstan": [
+  "kazan"
+ ],
+ "Inner Asia": [
+  "central-asia"
+ ],
+ "Western Asia": [],
+ "Pontic steppe": [
+  "pontic-steppe"
+ ]
+}
