@@ -81,16 +81,17 @@
       ? '<blockquote><p>' + esc(p.t) + '</p><p class="q-tag">Working translation</p><details><summary>Original wording</summary><p class="orig" dir="auto">' + esc(p.q) + '</p></details></blockquote>'
       : '<blockquote><p dir="auto">' + esc(p.q) + '</p></blockquote>';
     var notes = '';
-    if (p.c) notes += '<p><strong>Keep in mind.</strong> ' + esc(p.c) + '</p>';
+    if (p.c) notes += '<p>' + esc(p.c) + '</p>';
     if (p.n) notes += '<p>' + esc(p.n) + '</p>';
+    if (notes) notes = '<details class="psg-notes"><summary>' + (p.c ? 'Keep in mind' : 'A note on this quote') + '</summary>' + notes + '</details>';
     var b = BASIS[p.b] || [p.b, ''];
     var links = '<a href="' + esc(p.u) + '" rel="noopener">Read the page' + (p.p ? ' (p. ' + esc(p.p) + ')' : '') + '</a>';
     if (o.source !== false) links += '<a href="' + TA.href('w/' + p.r) + '">About this source</a>';
     return '<article class="psg' + (o.cls ? ' ' + o.cls : '') + '" id="p-' + esc(p.i) + '">' +
       '<div class="psg-meta">' + meta + '</div><h3>' + esc(p.h) + '</h3><p class="gloss">' + esc(p.g) + '</p>' + quote +
-      (p.pe ? '<p class="psg-people"><span>Who</span> ' + esc(p.pe) + '</p>' : '') +
       '<div class="psg-foot"><span class="basis ' + esc(p.b) + '" title="' + esc(b[1]) + '">' + esc(b[0]) + '</span><span class="who">' + esc(p.s) + '</span></div>' +
-      (notes ? '<div class="psg-notes">' + notes + '</div>' : '') + '<div class="psg-links">' + links + '</div></article>';
+      (p.pe ? '<p class="psg-people"><span>About</span> ' + esc(p.pe) + '</p>' : '') +
+      notes + '<div class="psg-links">' + links + '</div></article>';
   };
   function bestOrder(a, b) { return (b.st - a.st) || (a.x - b.x) || (a.i < b.i ? -1 : 1); }
   function shuffled(arr) {
@@ -207,6 +208,36 @@
       p.sr = D.src[p.r];
       slot.innerHTML = TA.card(p, { cls: 'big' });
     });
+  };
+
+  /* The gallery of old maps: century buttons and a search box. */
+  TA.modules.gallery = function (el) {
+    var q = el.querySelector('#gl-q'), cnt = el.querySelector('[data-count]'), empty = el.querySelector('[data-empty]');
+    var cards = Array.prototype.slice.call(el.querySelectorAll('[data-grid] > a'));
+    var btns = Array.prototype.slice.call(el.querySelectorAll('[data-era]'));
+    var lo = null, hi = null;
+    function upd() {
+      var words = q.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+      var n = 0;
+      cards.forEach(function (a) {
+        var y = a.getAttribute('data-y');
+        var inEra = (lo === null && hi === null) || (y !== '' && (lo === null || +y >= lo) && (hi === null || +y <= hi));
+        var ok = inEra && words.every(function (w) { return a.getAttribute('data-h').indexOf(w) >= 0; });
+        a.hidden = !ok;
+        if (ok) n++;
+      });
+      cnt.textContent = n;
+      empty.hidden = n > 0;
+    }
+    btns.forEach(function (b) {
+      b.addEventListener('click', function () {
+        btns.forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+        var l = b.getAttribute('data-lo'), h = b.getAttribute('data-hi');
+        lo = l ? +l : null; hi = h ? +h : null;
+        upd();
+      });
+    });
+    q.addEventListener('input', upd);
   };
 
   /* The list of sources that have been read. */

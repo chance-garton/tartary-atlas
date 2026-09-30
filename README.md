@@ -13,6 +13,9 @@ Planned address: `https://tartary.innerversepodcast.com`
 | `data/passage_places.json` | Hand map from passage place names to gazetteer IDs, for names the gazetteer does not carry. |
 | `data/corrections.json` | Published corrections applied at build time. Each one names the record, the field, the old and new wording, the reason and its sources. The Corrections page lists them. |
 | `generator/build.py` | The site generator. Python 3, standard library only. |
+| `data/pictures.json` | The named pictures on the front page and the trail pages: a detail of a catalogued map (record, IIIF region) or an image at a given address, each with its alt text and caption. |
+| `data/map_images.json` | Pixel sizes of the map pictures, written by `generator/fetch_map_images.py`. |
+| `generator/fetch_map_images.py` | Fetches a small and a large picture of every map with a working IIIF route, and the named pictures, into `_cache/` (not committed). Only the preview uses the copies. |
 | `generator/prepare_basemap.sh` | Rebuilds the self-hosted basemap from Natural Earth. |
 | `static/` | Stylesheet, page script, MapLibre stylesheet, and the basemap GeoJSON. |
 | `docs/` | The generated site, one HTML file per page. GitHub Pages serves this folder. |
@@ -21,6 +24,7 @@ Planned address: `https://tartary.innerversepodcast.com`
 ## Build
 
 ```
+python3 generator/fetch_map_images.py # once, and after data/iiif.json or data/pictures.json change: fills _cache/ for the preview
 python3 generator/build.py            # writes docs/ and preview/
 python3 generator/build.py --static   # docs/ only
 ```
@@ -35,10 +39,11 @@ Site-wide settings (name, address, repository link, researcher, podcast link) si
 
 ## Pages
 
-* `/` the front door: one featured passage with a "Show me another" button, five question trails, twelve places, six witnesses, and links down into the archive.
+* `/` the front door: a period map, five question trails with pictures, a strip of old maps, one featured passage with a "Show me another" button, twelve places, six witnesses, and links down into the archive.
 * `/passages/` and `/passages/<trail>/` the passage explorer (cities, architecture, customs, names, outliers): search, how the author knew, century, order, shuffle. Reads `assets/passages-<trail>.json`.
 * `/sources/` every source that has been read, in plain words.
-* `/map/` the map explorer: MapLibre GL JS with a self-hosted Natural Earth basemap, a date range, and filters for kind, evidence class and language tradition.
+* `/maps/` the old maps: a picture gallery of every map with a working image route, by century, with a search box.
+* `/map/` the places map: MapLibre GL JS with a self-hosted Natural Earth basemap, a date range, and filters for kind, evidence class and language tradition.
 * `/archive/` the way in to the catalogue and research tools below.
 * `/records/`, `/places/`, `/peoples/` browse pages.
 * `/w/W122/`, `/m/M081/` one page per record: for a source that has been read, its plain-words profile and passages first; then dates with precision, places and peoples, the "How we know" panel, access and IIIF links, map lineage.
@@ -62,5 +67,6 @@ Also written: `sitemap.xml`, `robots.txt`, `404.html`, `.nojekyll`.
 
 * Basemap: Natural Earth 1:50m land, lakes and rivers, public domain. The Aral Sea is shown at its modern extent.
 * Map library: MapLibre GL JS 4.7.1 (BSD-3-Clause), loaded from cdnjs.
-* Map images load from each holding library's IIIF server; nothing is copied here.
-* Fonts: IM Fell English (Igino Marini), Public Sans, IBM Plex Mono, from Google Fonts.
+* Map images load from each holding library's IIIF server; nothing is copied into this repository or the static site. The private preview artifact carries its own small copies, because an artifact cannot load images from other sites. Check each library's terms before copying pictures anywhere public (David Rumsey: CC BY-NC-SA; Bodleian: CC BY-NC; the Vatican Library reserves rights).
+* The vegetable lamb engraving is from Henry Lee, The Vegetable Lamb of Tartary (1887), via Wikimedia Commons, public domain.
+* Fonts: Newsreader, Public Sans, IBM Plex Mono, and IM Fell English SC (Igino Marini) for the wordmark, from Google Fonts.

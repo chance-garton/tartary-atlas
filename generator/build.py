@@ -32,7 +32,7 @@ CONFIG = {
     "podcast_name": "InnerVerse Podcast",
     "podcast_url": "https://innerversepodcast.com",
     "maplibre_js": "https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/4.7.1/maplibre-gl.js",
-    "fonts": "https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&family=IBM+Plex+Mono:wght@400;500;600&family=Public+Sans:wght@400..700&display=swap",
+    "fonts": "https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400..500&family=IBM+Plex+Mono:wght@400;500&family=Public+Sans:wght@400..700&display=swap",
 }
 
 LABEL_IDS = ["tartary", "great-tartary", "little-tartary", "chinese-tartary",
@@ -135,7 +135,7 @@ LINEAGE_SHORT = {
 }
 
 NAV = [
-    ("", "Start"), ("passages", "Passages"), ("map", "Map"), ("sources", "Sources"),
+    ("", "Start"), ("passages", "Passages"), ("maps", "Old maps"), ("map", "Places"), ("sources", "Sources"),
     ("archive", "Archive"), ("about", "About"),
 ]
 
@@ -184,6 +184,26 @@ HOW_KNEW = {
     "saw it": "Eyewitness", "mixed": "Part eyewitness", "heard it": "From informants",
     "compiled": "Compiled from others", "official record": "Official record", "legend collection": "Legends",
 }
+
+# Who holds each map picture, by the address of its image server.
+HOLDERS = {
+    "tile.loc.gov": "Library of Congress",
+    "www.davidrumsey.com": "David Rumsey Map Collection (CC BY-NC-SA)",
+    "iiif.bodleian.ox.ac.uk": "Bodleian Libraries, University of Oxford (CC BY-NC)",
+    "digi.vatlib.it": "Biblioteca Apostolica Vaticana",
+    "api.digitale-sammlungen.de": "Bayerische Staatsbibliothek, Munich",
+    "www.e-rara.ch": "e-rara, the platform for rare books in Swiss libraries",
+    "rmda.kulib.kyoto-u.ac.jp": "Kyoto University Rare Materials Digital Archive",
+    "glam.uni.wroc.pl": "Wroclaw University Library",
+    "imagines.manuscriptorium.com": "Manuscriptorium",
+}
+# Pictures that show a cover, a title page or a page of text from the volume, not the map itself.
+NOT_MAP_VIEW = {"M001", "M016", "M106", "M111", "M116"}
+MAP_PX = {"s": 640, "l": 1400}
+# Maps shown on the front page, oldest first.
+HOME_MAPS = ["M002", "M081", "M049", "M007", "M080", "M072"]
+ERAS = [("e0", "Before 1500", None, 1499), ("e1", "1500s", 1500, 1599), ("e2", "1600s", 1600, 1699),
+        ("e3", "1700s", 1700, 1799), ("e4", "1800s", 1800, None)]
 
 PSG_PARTIAL = "The scan's machine-read text is too damaged to confirm this quote automatically. Check it against the page."
 FIRST_FEATURE = "W043-05"
@@ -343,6 +363,8 @@ class Site:
         self.lineage = json.loads((DATA / "lineage.json").read_text())
         self.iiif = json.loads((DATA / "iiif.json").read_text())
         self.meta = json.loads((DATA / "meta.json").read_text())
+        self.map_img = self.optional("map_images.json")
+        self.pics = {k: v for k, v in self.optional("pictures.json").items() if v.get("size")}
         corr_path = DATA / "corrections.json"
         self.corrections = json.loads(corr_path.read_text()) if corr_path.exists() else []
         self.apply_corrections()
@@ -359,6 +381,19 @@ class Site:
         for e in self.lineage:
             self.edges_by[e["source"]].append(("out", e))
             self.edges_by[e["target"]].append(("in", e))
+
+    @staticmethod
+    def optional(name):
+        path = DATA / name
+        return json.loads(path.read_text()) if path.exists() else {}
+
+    def iiif_base(self, rid):
+        img = next((e for e in self.iiif.get(rid, []) if e["kind"] == "image" and e["status"] == "ok"), None)
+        return img["url"].rstrip("/") if img else None
+
+    def holder(self, rid):
+        base = self.iiif_base(rid)
+        return HOLDERS.get(base.split("/")[2], base.split("/")[2]) if base else ""
 
     def load_passages(self):
         """Source profiles and themed passages from the reading pass (data/passages.json)."""
@@ -428,6 +463,21 @@ class Ctx:
         if self.mode == "preview":
             return "assets/" + name
         return self.root + "assets/" + name
+
+    def map_img(self, site, rid, size="s"):
+        """A picture of a map. The preview serves its own copy; the static site asks the holding library."""
+        if self.mode == "preview":
+            return f"assets/maps/{rid}-{size}.jpg"
+        return f"{site.iiif_base(rid)}/full/!{MAP_PX[size]},{MAP_PX[size]}/0/default.jpg"
+
+    def pic(self, site, key):
+        """A named picture from data/pictures.json: a detail of a map, or an image at a given address."""
+        if self.mode == "preview":
+            return f"assets/pics/{key}.jpg"
+        pic = site.pics[key]
+        if pic.get("url"):
+            return pic["url"]
+        return f"{site.iiif_base(pic['rec'])}/{pic['region']}/{pic.get('width', 900)},/{pic.get('rotate', 0)}/default.jpg"
 
     def land_href(self):
         return "#ta-land" if self.mode == "preview" else self.asset("eurasia.svg") + "#ta-land"
@@ -561,7 +611,57 @@ def basis_dot(g):
 
 def page_head(eyebrow, title, lede=None, extra=""):
     lede_html = f'<p class="lede">{lede}</p>' if lede else ""
-    return f'<header class="page-head"><div class="eyebrow">{eyebrow}</div><h1>{title}</h1>{lede_html}{extra}</header>'
+    long = ' class="long"' if len(html.unescape(title)) > 60 else ""
+    return f'<header class="page-head"><div class="eyebrow">{eyebrow}</div><h1{long}>{title}</h1>{lede_html}{extra}</header>'
+
+
+# ---------------------------------------------------------------- pictures
+
+def map_name(r):
+    """A short name for a map: the mapmaker, as the lineage diagrams call them."""
+    return LINEAGE_SHORT.get(r["id"]) or short_creator(r["creator"], 34)
+
+
+def map_alt(r):
+    what = "A page from the volume that holds the map" if r["id"] in NOT_MAP_VIEW else "Map"
+    return f'{what}: {short_title(no_em(r["title"]), 90)}, {map_name(r)}, {made_label(r)}'
+
+
+def map_img_tag(site, ctx, r, size="s", eager=False):
+    w, h = site.map_img[r["id"]][size]
+    load = ' fetchpriority="high"' if eager else ' loading="lazy" decoding="async"'
+    return f'<img src="{esc(ctx.map_img(site, r["id"], size))}" width="{w}" height="{h}" alt="{esc(map_alt(r))}"{load}>'
+
+
+def map_card(site, ctx, r):
+    """A map as a picture card, for the gallery and the strips on other pages."""
+    y = r["date"]["made_start"]
+    hay = " ".join([r["id"], r["title"], r["creator"] or "", r["language"] or "", made_label(r)]).lower()
+    name, sub = map_name(r), smart(short_title(no_em(r["title"]), 64))
+    sub_html = "" if sub.lower().startswith(name.lower()) else f'<span class="mapcard-sub">{esc(sub)}</span>'
+    return (f'<a class="mapcard" href="{ctx.link(site.rkey(r))}" data-y="{"" if y is None else y}" data-h="{esc(hay)}">'
+            f'<span class="mapcard-img">{map_img_tag(site, ctx, r)}</span>'
+            f'<span class="mapcard-when">{esc(made_label(r))}</span>'
+            f'<span class="mapcard-t">{esc(name)}</span>{sub_html}</a>')
+
+
+def pictured_maps(site, ids=None):
+    """Maps that have a picture, oldest first. Pictures of covers and text pages go last."""
+    recs = [r for r in site.records if r["kind"] == "map" and r["id"] in site.map_img and (ids is None or r["id"] in ids)]
+    return sorted(recs, key=lambda r: (r["id"] in NOT_MAP_VIEW,) + sort_key(r))
+
+
+def pic_tag(site, ctx, key, eager=False):
+    pic = site.pics[key]
+    w, h = pic["size"]
+    load = ' fetchpriority="high"' if eager else ' loading="lazy" decoding="async"'
+    return f'<img src="{esc(ctx.pic(site, key))}" width="{w}" height="{h}" alt="{esc(pic["alt"])}"{load}>'
+
+
+def pic_link(site, ctx, key):
+    """Where a named picture leads: the map's own page, or the page it was taken from."""
+    pic = site.pics[key]
+    return ctx.link(site.rkey(pic["rec"])) if pic.get("rec") else pic.get("page", "")
 
 
 # ---------------------------------------------------------------- passages
@@ -614,12 +714,13 @@ def psg_card(site, ctx, p, theme_tag=True, source=True, cls=""):
         quote = f'<blockquote><p dir="auto">{esc(p["quote"])}</p></blockquote>'
     notes = []
     if p.get("caution"):
-        notes.append(f'<p><strong>Keep in mind.</strong> {esc(p["caution"])}</p>')
+        notes.append(f'<p>{esc(p["caution"])}</p>')
     qn = psg_note(p)
     if qn:
         notes.append(f"<p>{esc(qn)}</p>")
-    notes_html = f'<div class="psg-notes">{"".join(notes)}</div>' if notes else ""
-    people = f'<p class="psg-people"><span>Who</span> {esc(p["people"])}</p>' if p.get("people") else ""
+    notes_label = "Keep in mind" if p.get("caution") else "A note on this quote"
+    notes_html = f'<details class="psg-notes"><summary>{notes_label}</summary>{"".join(notes)}</details>' if notes else ""
+    people = f'<p class="psg-people"><span>About</span> {esc(p["people"])}</p>' if p.get("people") else ""
     page = "Read the page" + (f' (p. {esc(p["p"])})' if p.get("p") else "")
     links = [f'<a href="{esc(p["url"])}" rel="noopener">{page}</a>']
     if source:
@@ -627,9 +728,9 @@ def psg_card(site, ctx, p, theme_tag=True, source=True, cls=""):
     return (f'<article class="psg{(" " + cls) if cls else ""}" id="p-{p["id"]}">'
             f'<div class="psg-meta">{"".join(meta)}</div>'
             f'<h3>{esc(p["headline"])}</h3>'
-            f'<p class="gloss">{esc(p["gloss"])}</p>{quote}{people}'
+            f'<p class="gloss">{esc(p["gloss"])}</p>{quote}'
             f'<div class="psg-foot">{basis_chip(p["basis"])}<span class="who">{esc(p["speaker"])}</span></div>'
-            f'{notes_html}<div class="psg-links">{"".join(links)}</div></article>')
+            f'{people}{notes_html}<div class="psg-links">{"".join(links)}</div></article>')
 
 
 def psg_note(p):
@@ -694,13 +795,12 @@ def trail_cards(site, ctx):
     cards = []
     for t, m in THEMES.items():
         ps = site.psg_by_theme[t]
-        peek = [p for p in ps if p["basis"] == "saw" or t in ("outliers", "names")][:2]
-        peek_html = " and ".join(f"“{esc(p['headline'])}”" for p in peek)
+        key = "trail-" + t
+        img = f'<span class="trail-img">{pic_tag(site, ctx, key)}</span>' if key in site.pics else ""
         cards.append(
-            f'<a class="trail" href="{ctx.link("passages/" + t)}"><span class="trail-label">{esc(m["label"])}</span>'
+            f'<a class="trail" href="{ctx.link("passages/" + t)}">{img}<span class="trail-body"><span class="trail-label">{esc(m["label"])}</span>'
             f'<span class="trail-q">{esc(m["q"])}</span><span class="trail-blurb">{esc(m["blurb"])}</span>'
-            f'<span class="trail-peek">Inside: {peek_html}</span>'
-            f'<span class="trail-n">{plural(len(ps), "passage")}</span></a>')
+            f'<span class="trail-n">{plural(len(ps), "passage")}</span></span></a>')
     return f'<div class="trails">{"".join(cards)}</div>'
 
 
@@ -741,20 +841,36 @@ def page_home(site, ctx):
                            ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
     feature = ""
     if first:
-        feature = (f'<div class="feature" data-module="feature"><script type="application/json">{feat_json}</script>'
-                   f'<div class="feature-head"><span class="eyebrow">One passage from the record</span>'
+        feature = (f'<section class="band"><div class="feature" data-module="feature"><script type="application/json">{feat_json}</script>'
+                   f'<div class="feature-head"><h2>One passage from the record</h2>'
+                   f'<p>Every passage quotes the source, says how the author knew, and links to the page it comes from.</p>'
                    f'<button type="button" class="btn" data-next>Show me another</button></div>'
-                   f'<div data-slot>{psg_card(site, ctx, first, cls="big")}</div></div>')
+                   f'<div data-slot>{psg_card(site, ctx, first, cls="big")}</div></div></section>')
 
+    n_pictured = len(site.map_img)
+    hero_fig = ""
+    if "hero" in site.pics:
+        hero_fig = (f'<figure class="hero-fig"><a href="{pic_link(site, ctx, "hero")}">{pic_tag(site, ctx, "hero", eager=True)}</a>'
+                    f'<figcaption>{esc(site.pics["hero"]["caption"])}</figcaption></figure>')
     hero = (f'<section class="hero"><div class="hero-text"><div class="eyebrow">Tartary in the historical record</div>'
             f'<h1>What did the people who went there write down?</h1>'
-            f'<p class="lede">Travellers, envoys, captives, monks and chroniclers described the lands that European maps called Tartary. '
-            f'This atlas collects their words one passage at a time. Every passage says how the author knew, and links to the page it comes from.</p>'
-            f'<p class="hero-actions"><a class="btn primary" href="{ctx.link("passages")}">Browse the passages</a>'
-            f'<a class="btn" href="{ctx.link("map")}">Open the map</a></p></div>{feature}</section>')
+            f'<p class="lede">Travellers, envoys, captives and monks described the lands that old maps call Tartary. '
+            f'Read their words one passage at a time, and see the maps for yourself.</p>'
+            f'<p class="hero-actions"><a class="btn primary" href="{ctx.link("passages")}">Read the passages</a>'
+            f'<a class="btn" href="{ctx.link("maps")}">See the old maps</a></p>'
+            f'<ul class="hero-stats"><li><b>{num(n_psg)}</b> passages</li><li><b>{n_written}</b> written sources</li><li><b>{n_maps}</b> maps</li></ul>'
+            f'</div>{hero_fig}</section>')
 
     trails = (f'<section class="band"><div class="band-head"><h2>Follow a question</h2>'
-              f'<p>Five trails through {num(n_psg)} passages. Pick the one you are curious about.</p></div>{trail_cards(site, ctx)}</section>')
+              f'<p>Five trails through the passages. Pick the one you are curious about.</p></div>{trail_cards(site, ctx)}</section>')
+
+    picks_m = [site.rec[i] for i in HOME_MAPS if i in site.map_img]
+    maps_band = ""
+    if picks_m:
+        maps_band = (f'<section class="band"><div class="band-head row"><div><h2>See it on the old maps</h2>'
+                     f'<p>Tartary as mapmakers drew it, from a 1375 atlas to the last years the name was in use.</p></div>'
+                     f'<a class="btn" href="{ctx.link("maps")}">All {n_pictured} map pictures</a></div>'
+                     f'<div class="mapstrip">{"".join(map_card(site, ctx, r) for r in picks_m)}</div></section>')
 
     # places with the most passages
     counts = [(len(v), pid) for pid, v in site.psg_by_place.items()
@@ -767,7 +883,7 @@ def page_home(site, ctx):
               f'<p>Twelve towns the sources keep returning to. The number is how many passages describe each one.</p></div>'
               f'<div class="place-start"><div>{minimap(site, ctx, top, caption=False)}</div>'
               f'<div class="place-start-list"><ul class="tags">{chips}</ul>'
-              f'<p class="small muted">Or see all {len(site.places)} places on <a href="{ctx.link("map")}">the map</a>.</p></div></div></section>')
+              f'<p class="small muted">Or see all {len(site.places)} places on <a href="{ctx.link("map")}">the places map</a>.</p></div></div></section>')
 
     picks = [rid for rid in ["W043", "W132", "W073", "W074", "W001", "W053"] if rid in site.profiles]
     witnesses = (f'<section class="band"><div class="band-head"><h2>Start with a witness</h2>'
@@ -793,7 +909,7 @@ def page_home(site, ctx):
                     f'The quotes are machine-checked against their pages; the summaries and translations have not yet been reviewed line by line by a person. '
                     f'<a href="{ctx.link("method")}">How the passages were chosen and checked</a>.</p>')
 
-    body = f'<div class="page home">{hero}{trails}{places}{witnesses}{deeper}{progress}</div>'
+    body = f'<div class="page home">{hero}{trails}{maps_band}{feature}{places}{witnesses}{deeper}{progress}</div>'
     desc = (f"What {n_written} historical texts and {n_maps} maps say about Tartary (Tartaria): {num(n_psg)} quoted passages on cities, "
             f"buildings, daily life and legends, each linked to its page.")
     return dict(title="The Tartary Atlas: Tartary and Tartaria in the historical record", description=desc, body=body,
@@ -806,6 +922,10 @@ def page_passages(site, ctx, theme=None):
     if theme:
         m = THEMES[theme]
         head = page_head(f'Trail · {plural(len(plist), "passage")} from {n_src} sources', esc(m["q"]), esc(m["blurb"]))
+        key = "trail-" + theme
+        if key in site.pics:
+            head = (f'<div class="trail-head">{head}<figure class="trail-fig"><a href="{pic_link(site, ctx, key)}">{pic_tag(site, ctx, key, eager=True)}</a>'
+                    f'<figcaption>{esc(site.pics[key]["caption"])}</figcaption></figure></div>')
         title, desc = m["q"], f'{m["blurb"]} {num(len(plist))} quoted passages from {n_src} historical sources on Tartary.'
     else:
         head = page_head("Passages", "What the sources say",
@@ -818,16 +938,16 @@ def page_passages(site, ctx, theme=None):
     legend = "".join(f'<span>{basis_chip(k)} {esc(v[1])}</span>' for k, v in list(PBASIS.items())[:4])
     cards = "".join(psg_card(site, ctx, p, theme_tag=theme is None) for p in plist[:PAGE_SIZE])
     body = (f'<div class="page">{head}{trail_tabs(site, ctx, theme)}'
-            f'<div data-module="pexplore" data-theme="{theme or ""}" data-total="{len(plist)}">'
-            f'<div class="filterbar"><label for="px-q">Find<input type="search" id="px-q" placeholder="Karakorum, felt, mosque, Kalmyk…"></label>'
+            f'<div class="px-layout" data-module="pexplore" data-theme="{theme or ""}" data-total="{len(plist)}">'
+            f'<aside class="px-side" aria-label="Narrow the passages"><div class="filterbar stack"><label for="px-q">Find<input type="search" id="px-q" placeholder="Karakorum, felt, mosque…"></label>'
             f'<label for="px-b">How the author knew<select id="px-b"><option value="">Any</option>{basis_opts}</select></label>'
             f'<label for="px-w">When<select id="px-w"><option value="">Any time</option>{when_opts}</select></label>'
             f'<label for="px-o">Order<select id="px-o"><option value="best">A mix of the best</option><option value="old">Oldest first</option><option value="new">Newest first</option></select></label>'
             f'<button type="button" class="btn" data-shuffle>Shuffle</button></div>'
-            f'<p class="small muted px-count" aria-live="polite"><span data-count>{num(len(plist))}</span> passages</p>'
+            f'<details class="basis-legend"><summary>What the labels mean</summary>{legend}</details></aside>'
+            f'<div class="px-main"><p class="small muted px-count" aria-live="polite"><span data-count>{num(len(plist))}</span> passages</p>'
             f'<div class="psg-list" data-list>{cards}</div>'
-            f'<p class="px-more"><button type="button" class="btn" data-more>Show {PAGE_SIZE} more</button></p>'
-            f'<div class="basis-legend">{legend}</div></div></div>')
+            f'<p class="px-more"><button type="button" class="btn" data-more>Show {PAGE_SIZE} more</button></p></div></div></div>')
     return dict(title=title, description=desc, body=body, nav="passages", modules=["pexplore"])
 
 
@@ -864,10 +984,42 @@ def page_sources(site, ctx):
                 body=body, nav="sources", modules=["slist"])
 
 
+def page_maps(site, ctx):
+    maps = [r for r in site.records if r["kind"] == "map"]
+    shown = pictured_maps(site)
+    rest = [r["id"] for r in maps if r["id"] not in site.map_img]
+    btns = ['<button type="button" class="pill" data-era="" aria-pressed="true">All</button>']
+    for key, label, lo, hi in ERAS:
+        n = sum(1 for r in shown if r["date"]["made_start"] is not None
+                and (lo is None or r["date"]["made_start"] >= lo) and (hi is None or r["date"]["made_start"] <= hi))
+        btns.append(f'<button type="button" class="pill" data-era="{key}" data-lo="{"" if lo is None else lo}" data-hi="{"" if hi is None else hi}" aria-pressed="false">{label} <span class="n">{n}</span></button>')
+    holders = collections.Counter(site.holder(r["id"]).split(" (")[0] for r in shown)
+    credit = "; ".join(f"{h} ({n})" for h, n in holders.most_common())
+    head = page_head("Old maps", "Tartary on the old maps",
+                     f'{len(shown)} of the {len(maps)} maps in the atlas, pictured. Open one to see it large, with its date, the places it names and the maps it was copied from.')
+    rest_html = ""
+    if rest:
+        rest_html = (f'<section class="section"><h2>{len(rest)} more maps, without a picture here yet</h2>'
+                     f'<p class="muted">Each page links to the library that holds the map.</p>{record_list(site, ctx, rest, show_ev=False)}</section>')
+    body = (f'<div class="page">{head}<div data-module="gallery">'
+            f'<div class="gallery-bar"><div class="pills" role="group" aria-label="Century">{"".join(btns)}</div>'
+            f'<label class="gallery-find" for="gl-q"><span class="sr">Find a map</span><input type="search" id="gl-q" placeholder="Find a map: Ortelius, Siberia, 1706…"></label></div>'
+            f'<p class="small muted px-count" aria-live="polite"><span data-count>{len(shown)}</span> maps</p>'
+            f'<div class="gallery" data-grid>{"".join(map_card(site, ctx, r) for r in shown)}</div>'
+            f'<p class="muted" data-empty hidden>No map matches. Try a shorter word, or choose All.</p></div>'
+            f'{rest_html}'
+            f'<p class="progress">The pictures come from the libraries that hold the maps: {esc(credit)}. '
+            f'Each map page names its library and links to the full image. '
+            f'Want where a town sits today? Use <a href="{ctx.link("map")}">the places map</a>.</p></div>')
+    return dict(title="Old maps of Tartary", description=f"{len(shown)} old maps of Tartary (Tartaria) pictured, from medieval world maps to nineteenth-century atlases, each with its date and source library.",
+                body=body, nav="maps", modules=["gallery"])
+
+
 def page_archive(site, ctx):
     n_w = sum(1 for r in site.records if r["kind"] == "written")
     n_m = len(site.records) - n_w
     items = [
+        ("maps", "Old maps", f"Pictures of {len(site.map_img)} of the {n_m} maps, in date order."),
         ("records", "The full catalogue", f"All {n_w} written sources and {n_m} maps in date order, with evidence class, cautions and access links. Searchable by name, place and ID."),
         ("places", "Places", f"A gazetteer of {len(site.places)} places the records name, with how each map point was chosen."),
         ("peoples", "Peoples and polities", f"{len(site.peoples)} peoples and polities named in the records, grouped into families."),
@@ -997,9 +1149,17 @@ def page_record(site, ctx, r):
 
     # aside
     aside = []
-    thumb = thumbnail(site, r)
-    if thumb:
-        aside.append(thumb)
+    figure = ""
+    if r["id"] in site.map_img:
+        note = " This picture shows a page from the volume, not the map itself." if r["id"] in NOT_MAP_VIEW else ""
+        target = r.get("primary_access") or site.iiif_base(r["id"])
+        figure = (f'<figure class="mapfig"><a href="{esc(target)}" rel="noopener">{map_img_tag(site, ctx, r, "l", eager=True)}</a>'
+                  f'<figcaption>Picture: {esc(site.holder(r["id"]))}.{note} '
+                  f'<a href="{esc(target)}" rel="noopener">Open the full image at the library</a></figcaption></figure>')
+    else:
+        thumb = thumbnail(site, r)
+        if thumb:
+            aside.append(thumb)
     facts = [("Record", f'<span class="mono">{r["id"]}</span>'), ("Kind", esc(r["type"] or kind_word))]
     if r.get("language"):
         facts.append(("Language", esc(r["language"])))
@@ -1048,9 +1208,10 @@ def page_record(site, ctx, r):
         aside.append(mm)
     aside.append(f'<p class="small"><a href="{ctx.link("corrections")}">Report a correction to {r["id"]}</a></p>')
 
-    crumb = (f'<a href="{ctx.link("sources")}">Sources</a>' if prof else f'<a href="{ctx.link("records")}">Catalogue</a>')
-    body = (f'<div class="page"><nav class="small muted" aria-label="Breadcrumb">{crumb} / <span class="mono">{r["id"]}</span></nav>'
-            f'{head}<div class="record-grid"><div style="display:grid;gap:28px">{"".join(sections)}</div>'
+    crumb = (f'<a href="{ctx.link("sources")}">Sources</a>' if prof else
+             f'<a href="{ctx.link("maps")}">Old maps</a>' if is_map else f'<a href="{ctx.link("records")}">Catalogue</a>')
+    body = (f'<div class="page"><nav class="crumbs" aria-label="Breadcrumb">{crumb} / <span class="mono">{r["id"]}</span></nav>'
+            f'{head}{figure}<div class="record-grid"><div style="display:grid;gap:28px">{"".join(sections)}</div>'
             f'<aside style="display:grid;gap:18px">{"".join(aside)}</aside></div></div>')
 
     title = f'{smart(short_title(no_em(r["title"]), 60))} ({made_label(r)}) · {r["id"]}'
@@ -1069,7 +1230,7 @@ def page_record(site, ctx, r):
         jsonld["dateCreated"] = str(d["made_start"]) if d["made_start"] >= 0 else None
     if r.get("primary_access"):
         jsonld["sameAs"] = r["primary_access"]
-    return dict(title=title, description=desc, body=body, nav="sources" if prof else "records", jsonld=jsonld,
+    return dict(title=title, description=desc, body=body, nav="sources" if prof else ("maps" if is_map else "records"), jsonld=jsonld,
                 modules=["pmore"] if prof else [])
 
 
@@ -1125,6 +1286,13 @@ def page_place(site, ctx, p):
                     f'{psg_block(site, ctx, ps, 4)}</section>')
     top0 = "" if ps else ' style="margin-top:0"'
     main.append(f'<section class="section"{top0}><h2>{n} record{"s" if n != 1 else ""} name this place, in date order</h2>{record_list(site, ctx, p["records"])}</section>')
+    on_maps = pictured_maps(site, set(p["records"]))
+    on_maps = [r for r in on_maps if r["id"] not in NOT_MAP_VIEW]
+    if on_maps:
+        more = f' The first eight of {len(on_maps)} are shown; the rest are in the list below.' if len(on_maps) > 8 else ""
+        strip = (f'<section class="section"><h2>On the old maps</h2><p class="muted">Maps whose catalogue card names {esc(p["name"])}.{more}</p>'
+                 f'<div class="mapstrip small">{"".join(map_card(site, ctx, r) for r in on_maps[:8])}</div></section>')
+        main.insert(1 if ps else 0, strip)
     if p["id"] in LABEL_IDS:
         main.insert(0, f'<p class="banner"><strong>A label, not a location.</strong> Its extent changed from map to map. '
                        f'See when each Tartary label was in use on the <a href="{ctx.link("labels")}">Tartary labels timeline</a>.</p>')
@@ -1147,7 +1315,7 @@ def page_place(site, ctx, p):
     mm = minimap(site, ctx, [p["id"]], caption=False)
     if mm:
         aside.insert(0, mm)
-    body = (f'<div class="page"><nav class="small muted" aria-label="Breadcrumb"><a href="{ctx.link("map")}">Map</a> / <a href="{ctx.link("places")}">Places</a> / {esc(p["name"])}</nav>'
+    body = (f'<div class="page"><nav class="crumbs" aria-label="Breadcrumb"><a href="{ctx.link("map")}">Places map</a> / <a href="{ctx.link("places")}">All places</a> / {esc(p["name"])}</nav>'
             f'{head}<div class="record-grid"><div>{"".join(main)}</div><aside style="display:grid;gap:18px">{"".join(aside)}</aside></div></div>')
     desc = f'{p["name"]}: {n} historical source{"s" if n != 1 else ""} and maps that name it, in date order, with how each author knew.'
     if ps:
@@ -1173,7 +1341,7 @@ def page_people(site, ctx, p):
         aside += ('<div style="display:grid;gap:6px"><div class="eyebrow">Same family</div><ul class="tags">'
                   + "".join(f'<li><a href="{ctx.link("peoples/" + q["id"])}"><span class="chip">{esc(q["name"])}</span></a></li>' for q in fam)
                   + "</ul></div>")
-    body = (f'<div class="page"><nav class="small muted" aria-label="Breadcrumb"><a href="{ctx.link("peoples")}">Peoples</a> / {esc(p["name"])}</nav>'
+    body = (f'<div class="page"><nav class="crumbs" aria-label="Breadcrumb"><a href="{ctx.link("peoples")}">Peoples</a> / {esc(p["name"])}</nav>'
             f'{head}<div class="record-grid"><div>{record_list(site, ctx, ids)}</div><aside style="display:grid;gap:18px">{aside}</aside></div></div>')
     return dict(title=f'{p["name"]} in the sources', description=f'Historical sources and maps that name the {p["name"]}, in date order.', body=body, nav="peoples")
 
@@ -1608,7 +1776,7 @@ def page_map(site, ctx):
 <div class="mapwrap"><div id="map" role="region" aria-label="Map of places named in the sources"></div>
 <div class="map-note">Modern coastlines and rivers, Natural Earth. Aral Sea at its modern extent.</div></div>
 <div class="side">
-<div class="side-sec intro"><h1>The map</h1>
+<div class="side-sec intro"><h1>The places map</h1>
 <p>Every place named in {n_w} written sources and {n_m} maps. Click a place to see what was written about it. Narrow the dates if you want one period.</p>
 <div class="stats"><span><b data-stat="records">{len(site.records)}</b>records shown</span><span><b data-stat="places">0</b>places plotted</span></div></div>
 <div class="side-sec place-panel" data-panel aria-live="polite"></div>
@@ -1647,7 +1815,8 @@ def page_about(site, ctx):
 <ul>
 <li><a href="{ctx.link("passages")}">Passages</a> are the quickest way in: {num(len(site.passages))} short extracts on cities, buildings, daily life, the name and strange tales, each with its quote and its page.</li>
 <li><a href="{ctx.link("sources")}">Sources</a> describes each source that has been read in plain words: who wrote it, how they knew, and what to watch out for.</li>
-<li><a href="{ctx.link("map")}">The map</a> plots every place the sources name. Click a place to read what was written about it.</li>
+<li><a href="{ctx.link("maps")}">Old maps</a> shows the maps themselves, {len(site.map_img)} of them pictured, each linked to the library that holds it.</li>
+<li><a href="{ctx.link("map")}">The places map</a> plots every place the sources name on a modern map. Click a place to read what was written about it.</li>
 <li><a href="{ctx.link("labels")}">Tartary labels</a> shows when Great, Little, Chinese, Independent and Muscovite Tartary appear.</li>
 <li><a href="{ctx.link("meanings")}">What “Tartar” meant</a> shows which peoples the word pointed to, source by source.</li>
 <li><a href="{ctx.link("lineage")}">Map lineage</a> traces which maps copied which.</li>
@@ -1798,7 +1967,7 @@ def all_pages(site, ctx_factory):
     for t in THEMES:
         k = "passages/" + t
         yield k, page_passages(site, ctx_factory(k), t)
-    for k, fn in [("map", page_map), ("sources", page_sources), ("archive", page_archive), ("records", page_records), ("places", page_places), ("peoples", page_peoples),
+    for k, fn in [("maps", page_maps), ("map", page_map), ("sources", page_sources), ("archive", page_archive), ("records", page_records), ("places", page_places), ("peoples", page_peoples),
                   ("labels", page_labels), ("meanings", page_meanings), ("lineage", page_lineage),
                   ("about", page_about), ("method", page_method), ("corrections", page_corrections)]:
         yield k, fn(site, ctx_factory(k))
@@ -1866,6 +2035,14 @@ def write_preview(site):
            f'<script type="application/json" id="ta-pages">{pages_json}</script>'
            f'<script>window.TA_PREVIEW=true;</script><script>{js}</script>')
     (PREVIEW / "index.html").write_text(doc)
+    # A Claude artifact cannot load pictures from other sites, so the preview carries its own copies.
+    for sub, names in [("maps", [f"{rid}-{k}.jpg" for rid in site.map_img for k in MAP_PX]), ("pics", [f"{k}.jpg" for k in site.pics])]:
+        (PREVIEW / "assets" / sub).mkdir()
+        for name in names:
+            src = ROOT / "_cache" / sub / name
+            if not src.exists():
+                raise SystemExit(f"Missing picture {src.relative_to(ROOT)}. Run python3 generator/fetch_map_images.py")
+            shutil.copy(src, PREVIEW / "assets" / sub / name)
     write_basemap(PREVIEW / "assets" / "basemap.json")
     write_passage_assets(site, PREVIEW / "assets")
     return len(pages)

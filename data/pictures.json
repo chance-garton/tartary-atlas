@@ -1,0 +1,68 @@
+{
+  "hero": {
+    "rec": "M047",
+    "region": "pct:5.5,7,89,82",
+    "width": 1800,
+    "alt": "Hand-coloured 1570 map of Tartary by Abraham Ortelius, with a round title cartouche, tents of the khans, and Japan and the American coast to the east",
+    "caption": "Abraham Ortelius, Tartariae sive Magni Chami regni typus, first printed 1570. Library of Congress.",
+    "size": [
+      1800,
+      1256
+    ]
+  },
+  "trail-cities": {
+    "rec": "M047",
+    "region": "pct:16,39,27,21",
+    "width": 900,
+    "alt": "Map detail: red town symbols around Samarcand and Bukhara, with the tents of the Great Khan drawn beside them",
+    "caption": "Towns and the Great Khan's tents on Ortelius's map of Tartary, 1570.",
+    "size": [
+      900,
+      530
+    ]
+  },
+  "trail-architecture": {
+    "rec": "M081",
+    "region": "pct:52,33,27,21",
+    "width": 900,
+    "alt": "Map detail: clusters of round felt tents, covered wagons and camels drawn on the steppe",
+    "caption": "Tents and wagons on Anthony Jenkinson's map of Russia, Muscovy and Tartary, 1562.",
+    "size": [
+      900,
+      533
+    ]
+  },
+  "trail-customs": {
+    "rec": "M002",
+    "region": "pct:51,11.8,46,10.4",
+    "rotate": 180,
+    "width": 900,
+    "alt": "Map detail: a caravan of loaded camels and riders on horseback",
+    "caption": "A caravan on the Catalan Atlas of 1375.",
+    "size": [
+      900,
+      265
+    ]
+  },
+  "trail-names": {
+    "rec": "M047",
+    "region": "pct:57,8,35,27",
+    "width": 900,
+    "alt": "Map detail: a round ornamental cartouche lettered Tartariae sive Magni Chami Regni typus",
+    "caption": "The title cartouche of Ortelius's map: Tartary, or the kingdom of the Great Khan.",
+    "size": [
+      900,
+      526
+    ]
+  },
+  "trail-outliers": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Vegetable_lamb_%28Lee%2C_1887%29.jpg/960px-Vegetable_lamb_%28Lee%2C_1887%29.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Vegetable_lamb_(Lee,_1887).jpg",
+    "alt": "Engraving of a lamb growing on a stalk like a plant, grazing the grass around it",
+    "caption": "The vegetable lamb of Tartary, from Henry Lee's book of 1887, redrawn from Johann Zahn (1696). Wikimedia Commons, public domain.",
+    "size": [
+      960,
+      1222
+    ]
+  }
+}
