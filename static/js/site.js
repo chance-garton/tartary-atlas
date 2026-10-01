@@ -1205,6 +1205,333 @@
     if (saved) { upd(); TA.rescroll(); }
   };
 
+  /* ------------------------------------------------------------ ride with a traveler
+     The stops scroll past a map that stays put. The stop under the reader's eye is the current one: the line
+     draws itself to it, a rider cut from one of the maps travels along the line, and the dot wakes up.
+     The arrows and the dots on the map go to a stop too. Without script the whole line is simply drawn. */
+  TA.modules.ride = function (el) {
+    var stage = el.querySelector('[data-stage]'), sheet = el.querySelector('.ride-sheet'), svg = el.querySelector('.ride-svg');
+    var stops = arr(el.querySelectorAll('.ride-stop')), dots = arr(el.querySelectorAll('.rdot')), legs = arr(el.querySelectorAll('.leg'));
+    var rider = el.querySelector('[data-rider]'), pos = el.querySelector('[data-pos]');
+    var prev = el.querySelector('[data-prev]'), next = el.querySelector('[data-next]');
+    var vb = svg.viewBox.baseVal, cur = -1, anim = null, lockUntil = 0, n = stops.length;
+    var header = document.querySelector('.site-header');
+    function narrow() { return window.matchMedia('(max-width: 900px)').matches; }
+    function topGap() {
+      // the header stays at the top of the window on some screens and scrolls away on others
+      var h = header && getComputedStyle(header).position === 'sticky' ? header.getBoundingClientRect().height : 0;
+      el.style.setProperty('--ride-top', Math.round(h) + 'px');
+      return narrow() ? stage.getBoundingClientRect().height + h + 14 : h + 28;
+    }
+    function place(x, y) { rider.style.left = (x / vb.width * 100) + '%'; rider.style.top = (y / vb.height * 100) + '%'; }
+    function atStop(i) { var s = stops[i]; rider.style.left = s.getAttribute('data-x') + '%'; rider.style.top = s.getAttribute('data-y') + '%'; }
+    function stopAnim() {
+      if (!anim) return;
+      cancelAnimationFrame(anim.raf);
+      anim.leg.style.strokeDasharray = ''; anim.leg.style.strokeDashoffset = '';
+      anim = null;
+    }
+    function ride(leg, back, done) {
+      // a non-scaling stroke measures its dashes in screen pixels, the path in map units
+      var len = leg.getTotalLength(), k = svg.getBoundingClientRect().width / vb.width, px = len * k + 2;
+      var t0 = null, dur = Math.max(500, Math.min(1500, len * 3.2));
+      leg.classList.add('on');
+      leg.style.strokeDasharray = px + ' ' + px;
+      var step = function (t) {
+        if (t0 == null) t0 = t;
+        var u = Math.min(1, (t - t0) / dur), e = u < 0.5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2;
+        var f = back ? 1 - e : e, p = leg.getPointAtLength(len * f);
+        leg.style.strokeDashoffset = px * (1 - f);
+        place(p.x, p.y);
+        if (u < 1) { anim.raf = requestAnimationFrame(step); return; }
+        leg.style.strokeDasharray = ''; leg.style.strokeDashoffset = '';
+        if (back) leg.classList.remove('on');
+        anim = null;
+        done();
+      };
+      anim = { leg: leg, raf: requestAnimationFrame(step) };
+    }
+    function paint(i) {
+      legs.forEach(function (l, k) { l.classList.toggle('on', k < i); });
+      dots.forEach(function (d, k) { d.classList.toggle('done', k < i); d.classList.toggle('on', k === i); });
+      stops.forEach(function (s, k) { s.classList.toggle('on', k === i); });
+      prev.disabled = i <= 0;
+      next.disabled = i >= n - 1;
+      if (i < 0) { pos.textContent = n + ' stops'; rider.hidden = true; return; }
+      var s = stops[i], when = s.querySelector('.ride-when').textContent;
+      pos.innerHTML = '<b>' + esc(s.querySelector('h2').textContent) + '</b>' + (when ? ' · ' + esc(when) : '') + ' <span class="muted">(' + (i + 1) + ' of ' + n + ')</span>';
+      rider.hidden = false;
+    }
+    function set(i) {
+      if (i === cur) return;
+      var was = cur;
+      cur = i;
+      stopAnim();
+      TA.mem.set('ride', i);
+      if (!reduced() && was >= 0 && i === was + 1) {
+        paint(i); legs[was].classList.remove('on'); dots[i].classList.remove('on');
+        ride(legs[was], false, function () { paint(cur); atStop(cur); });
+      } else if (!reduced() && i >= 0 && i === was - 1) {
+        paint(i); legs[i].classList.add('on'); dots[i].classList.remove('on');
+        ride(legs[i], true, function () { paint(cur); atStop(cur); });
+      } else {
+        paint(i);
+        if (i >= 0) atStop(i);
+      }
+    }
+    function go(i, focus) {
+      i = Math.max(0, Math.min(n - 1, i));
+      var y = stops[i].getBoundingClientRect().top + window.scrollY - topGap() + 6;
+      lockUntil = Date.now() + 900;
+      window.scrollTo({ top: y, behavior: reduced() ? 'auto' : 'smooth' });
+      set(i);
+      if (focus) stops[i].focus({ preventScroll: true });
+    }
+    // The current stop is the last one whose top has passed the reading line under the map (or the header).
+    function fromScroll() {
+      if (Date.now() < lockUntil) return;
+      var line = topGap() + 60, i = -1;
+      for (var k = 0; k < n; k++) { if (stops[k].getBoundingClientRect().top <= line) i = k; else break; }
+      set(i);
+    }
+    var ticking = false;
+    var onScroll = function () {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function () { ticking = false; fromScroll(); });
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    el.addEventListener('click', function (e) {
+      var t = e.target.closest ? e.target.closest('[data-go], [data-begin], [data-prev], [data-next]') : null;
+      if (!t) return;
+      e.preventDefault();
+      if (t.hasAttribute('data-go')) go(+t.getAttribute('data-go'), true);
+      else if (t.hasAttribute('data-begin')) go(0, true);
+      else if (t.hasAttribute('data-prev')) go(cur - 1);
+      else go(cur + 1);
+    });
+    TA.cleanups.push(function () {
+      stopAnim();
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+    });
+    el.classList.add('live');
+    topGap();
+    paint(-1);
+    // A reader coming Back lands where they were; the scroll position is put back first, then the map follows.
+    setTimeout(fromScroll, TA.restoring ? 400 : 0);
+  };
+
+  /* ------------------------------------------------------------ the deck
+     Three cards dealt from the strongest passages: a place, a people, a marvel. Each trail is a suit with a
+     drawing cut from one of the maps. A card turns when pressed and its passage is set out in full below,
+     where it can be saved as a picture. A reader who comes Back finds the same three cards. */
+  TA.modules.deck = function (el) {
+    var D = JSON.parse(el.querySelector('script[type="application/json"]').textContent);
+    var slots = arr(el.querySelectorAll('[data-card]')), read = el.querySelector('[data-read]');
+    var dealBtns = arr(el.querySelectorAll('[data-deal]')), turnBtn = el.querySelector('[data-turn]');
+    var back = el.querySelector('.pc-back').outerHTML;
+    var pools = {}, queues = {}, hand = [], up = [], sel = -1;
+    function suit(th, cls) {
+      var s = D.suits[th];
+      if (!s) return '';
+      var u = 'url(' + TA.asset('cuts/ornaments/' + s.k + '.png') + ')';
+      return '<i class="cut ' + cls + '" style="-webkit-mask-image:' + u + ';mask-image:' + u + ';aspect-ratio:' + s.w + '/' + s.h + '"></i>';
+    }
+    function who(p) { return p.s.replace(/\s*\([^)]*\)\s*$/, ''); }
+    function words(p) { return p.t || p.q; }
+    function face(p) {
+      return '<span class="pc-face"><span class="pc-top"><span class="pc-year">' + (p.y == null ? '' : esc(yearText(p.y))) + '</span>' + suit(p.th, 'suit') + '</span>' +
+        '<span class="pc-trail">' + esc(THEME_LABEL[p.th]) + '</span>' +
+        '<span class="pc-body"><span class="pc-h">' + esc(p.h) + '</span><span class="pc-q">“' + esc(words(p)) + '”</span></span>' +
+        '<span class="pc-who">' + esc(who(p)) + '</span></span>';
+    }
+    function label(i) { return up[i] ? D.spread[i].n + ': ' + hand[i].h + '. Press to read it below.' : D.spread[i].n + ': a card face down. Press to turn it.'; }
+    function keep() { TA.mem.set('deck', { ids: hand.map(function (p) { return p.i; }), up: up, sel: sel }); }
+    function show() {
+      slots.forEach(function (s, i) {
+        var c = s.querySelector('.pcard');
+        if (!c) return;
+        c.classList.toggle('up', !!up[i]);
+        c.classList.toggle('sel', i === sel);
+        c.setAttribute('aria-label', label(i));
+        c.setAttribute('aria-pressed', i === sel ? 'true' : 'false');
+      });
+      turnBtn.hidden = !hand.length || up.every(Boolean);
+      if (sel < 0) {
+        read.innerHTML = hand.length ? '<p class="deck-hint">Turn a card to read it.</p>' : '';
+        return;
+      }
+      read.innerHTML = '<p class="deck-read-k">' + esc(D.spread[sel].n) + '</p>' + TA.card(hand[sel], { cls: 'big' }) +
+        '<p class="deck-save"><button type="button" class="btn" data-save>Save this card as a picture</button></p>';
+    }
+    function draw(i) {
+      var key = D.spread[i].t.join('+');
+      if (!queues[key] || !queues[key].length) queues[key] = shuffled(pools[key]);
+      var p = queues[key].shift();
+      // never the same source twice in one hand
+      for (var tries = 0; tries < 8 && hand.some(function (h) { return h && h.r === p.r; }); tries++) {
+        queues[key].push(p);
+        p = queues[key].shift();
+      }
+      return p;
+    }
+    function lay(animate) {
+      slots.forEach(function (s, i) {
+        s.innerHTML = '<button type="button" class="pcard' + (animate && !reduced() ? ' dealt' : '') + '" data-i="' + i + '" style="animation-delay:' + (i * 130) + 'ms">' +
+          '<span class="pcard-in">' + back + face(hand[i]) + '</span></button>';
+      });
+      show();
+    }
+    function deal() {
+      hand = []; up = [false, false, false]; sel = -1;
+      D.spread.forEach(function (sp, i) { hand[i] = draw(i); });
+      lay(true);
+      keep();
+    }
+    function turn(i) {
+      up[i] = true;
+      sel = i;
+      show();
+      keep();
+    }
+    el.addEventListener('click', function (e) {
+      var t = e.target.closest ? e.target.closest('[data-deal], [data-turn], .pcard, [data-save]') : null;
+      if (!t || t.disabled) return;
+      if (t.hasAttribute('data-deal')) { deal(); if (!t.classList.contains('deck-stack')) el.querySelector('.deck-table').scrollIntoView({ block: 'nearest', behavior: reduced() ? 'auto' : 'smooth' }); }
+      else if (t.hasAttribute('data-turn')) { up = up.map(function () { return true; }); if (sel < 0) sel = 0; show(); keep(); }
+      else if (t.hasAttribute('data-save')) save(hand[sel], t);
+      else turn(+t.getAttribute('data-i'));
+    });
+
+    /* ---- a card as a picture: drawn on a canvas in the card's own paper and ink */
+    function wrap(ctx, text, maxW) {
+      var out = [], line = '';
+      text.split(/\s+/).forEach(function (w) {
+        var test = line ? line + ' ' + w : w;
+        if (line && ctx.measureText(test).width > maxW) { out.push(line); line = w; } else line = test;
+      });
+      if (line) out.push(line);
+      return out;
+    }
+    function tinted(img, color, h) {
+      var c = document.createElement('canvas'), w = Math.round(h * img.width / img.height);
+      c.width = w; c.height = h;
+      var x = c.getContext('2d');
+      x.drawImage(img, 0, 0, w, h);
+      x.globalCompositeOperation = 'source-in';
+      x.fillStyle = color;
+      x.fillRect(0, 0, w, h);
+      return c;
+    }
+    function loadImg(src) {
+      return new Promise(function (res) {
+        var im = new Image();
+        im.onload = function () { res(im); };
+        im.onerror = function () { res(null); };
+        im.src = src;
+      });
+    }
+    function picture(p) {
+      var W = 1080, H = 1512, M = 86, cs = getComputedStyle(document.documentElement);
+      var paper = cs.getPropertyValue('--card').trim() || '#fbf6e6', ink = cs.getPropertyValue('--card-ink').trim() || '#1a2124';
+      var ink2 = cs.getPropertyValue('--card-ink-2').trim() || '#4a5558', red = cs.getPropertyValue('--card-back').trim() || '#862a40';
+      var serif = '"Newsreader", Georgia, serif', sans = '"Public Sans", system-ui, sans-serif', mono = '"IBM Plex Mono", ui-monospace, monospace';
+      var s = D.suits[p.th];
+      var fonts = document.fonts && document.fonts.load
+        ? Promise.all(['500 60px ' + serif, 'italic 400 44px ' + serif, '600 30px ' + sans, '500 40px ' + mono].map(function (f) { return document.fonts.load(f).catch(function () {}); }))
+        : Promise.resolve();
+      return Promise.all([fonts, s ? loadImg(TA.asset('cuts/ornaments/' + s.k + '.png')) : null]).then(function (r) {
+        var c = document.createElement('canvas');
+        c.width = W; c.height = H;
+        var x = c.getContext('2d');
+        x.fillStyle = paper; x.fillRect(0, 0, W, H);
+        x.strokeStyle = ink; x.lineWidth = 4; x.strokeRect(34, 34, W - 68, H - 68);
+        x.lineWidth = 1.5; x.strokeRect(46, 46, W - 92, H - 92);
+        x.textBaseline = 'alphabetic';
+        var y = M + 70;
+        x.fillStyle = ink; x.font = '500 54px ' + mono;
+        if (p.y != null) x.fillText(yearText(p.y), M, y);
+        if (r[1]) {
+          var orn = tinted(r[1], red, 150);
+          var ow = Math.min(orn.width, 300), oh = orn.height * ow / orn.width;
+          x.drawImage(orn, W - M - ow, M + 6, ow, oh);
+        }
+        y += 96;
+        x.fillStyle = red; x.font = '600 28px ' + sans;
+        x.fillText(THEME_LABEL[p.th].toUpperCase().split('').join(' '), M, y);
+        // the headline
+        y += 30;
+        x.fillStyle = ink; x.font = '500 68px ' + serif;
+        wrap(x, p.h, W - 2 * M).slice(0, 4).forEach(function (l) { y += 76; x.fillText(l, M, y); });
+        // the quote: as large as will fit in the room left
+        var foot = H - M - 150, room = foot - (y + 70), text = '“' + words(p) + '”', size = 50, lines;
+        do {
+          x.font = 'italic 400 ' + size + 'px ' + serif;
+          lines = wrap(x, text, W - 2 * M - 30);
+          size -= 2;
+        } while (lines.length * (size + 2) * 1.36 > room && size > 24);
+        var lh = (size + 2) * 1.36;
+        y += 70;
+        x.fillStyle = red; x.fillRect(M, y - 6, 5, lines.length * lh);
+        x.fillStyle = ink2;
+        lines.forEach(function (l, i) { x.fillText(l, M + 30, y + (i + 0.78) * lh); });
+        // who said it, and where the card comes from
+        x.strokeStyle = ink; x.lineWidth = 1.5;
+        x.beginPath(); x.moveTo(M, foot + 14); x.lineTo(W - M, foot + 14); x.stroke();
+        x.fillStyle = ink; x.font = '600 32px ' + sans;
+        var whoLine = wrap(x, p.s + (p.p ? ', p. ' + p.p : ''), W - 2 * M);
+        x.fillText(whoLine[0] + (whoLine.length > 1 ? '…' : ''), M, foot + 64);
+        x.fillStyle = ink2; x.font = '400 28px ' + sans;
+        x.fillText((p.t ? 'Working translation. ' : '') + 'The Tartary Atlas · ' + D.site, M, foot + 110);
+        return c;
+      });
+    }
+    function save(p, btn) {
+      var old = btn.textContent;
+      btn.disabled = true; btn.textContent = 'Drawing the card…';
+      picture(p).then(function (c) {
+        btn.disabled = false; btn.textContent = old;
+        var url = c.toDataURL('image/png'), name = 'tartary-atlas-' + p.i + '.png';
+        if (!window.HTMLDialogElement) { var a = document.createElement('a'); a.href = url; a.download = name; a.click(); return; }
+        var dlg = document.createElement('dialog');
+        dlg.className = 'cardshot';
+        dlg.setAttribute('aria-label', 'The card as a picture');
+        dlg.innerHTML = '<div class="cardshot-in"><img alt="' + esc(p.h + ': a card from the Tartary Atlas deck') + '" src="' + url + '">' +
+          '<p>Press and hold the picture to save it on a phone.</p>' +
+          '<div class="cardshot-acts"><a class="btn primary" href="' + url + '" download="' + name + '">Download the picture</a>' +
+          '<button type="button" class="btn" data-x>Close</button></div></div>';
+        document.body.appendChild(dlg);
+        dlg.addEventListener('click', function (e) { if (e.target === dlg || (e.target.closest && e.target.closest('[data-x]'))) dlg.close(); });
+        dlg.addEventListener('close', function () { dlg.remove(); });
+        dlg.showModal();
+      }, function () { btn.disabled = false; btn.textContent = 'Could not draw the card here'; });
+    }
+
+    dealBtns.forEach(function (b) { b.disabled = true; });
+    turnBtn.hidden = true;
+    read.innerHTML = '<p class="deck-hint">Shuffling the deck…</p>';
+    TA.loadThemes(THEMES.map(function (t) { return t[0]; })).then(function (all) {
+      var byId = {};
+      all.forEach(function (p) { byId[p.i] = p; });
+      D.spread.forEach(function (sp) {
+        pools[sp.t.join('+')] = all.filter(function (p) { return p.st === 3 && sp.t.indexOf(p.th) >= 0; });
+      });
+      dealBtns.forEach(function (b) { b.disabled = false; });
+      var saved = TA.restoring ? TA.mem.get('deck') : null;
+      if (saved && saved.ids && saved.ids.length === D.spread.length && saved.ids.every(function (id) { return byId[id]; })) {
+        hand = saved.ids.map(function (id) { return byId[id]; });
+        up = saved.up || [false, false, false];
+        sel = saved.sel == null ? -1 : saved.sel;
+        lay(false);
+        TA.rescroll();
+      } else deal();
+    }, function () {
+      read.innerHTML = '<p class="deck-hint">The deck could not be loaded. <a href="' + TA.href('passages') + '">Read the passages</a> instead.</p>';
+    });
+  };
+
   /* ------------------------------------------------------------ start */
   if (PREVIEW) {
     var pages = JSON.parse(document.getElementById('ta-pages').textContent);

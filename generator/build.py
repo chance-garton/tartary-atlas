@@ -375,6 +375,7 @@ class Site:
         self.labels = [c for c in cuts.get("labels", []) if c.get("size")]
         self.orn = {c["key"]: c for c in cuts.get("ornaments", []) if c.get("size")}
         self.front = self.optional("front_map.json")
+        self.journeys = self.optional("journeys.json").get("journeys", [])
         corr_path = DATA / "corrections.json"
         self.corrections = json.loads(corr_path.read_text()) if corr_path.exists() else []
         self.apply_corrections()
@@ -1038,8 +1039,9 @@ def page_home(site, ctx):
               f'<li><a href="{ctx.link("records")}">Every book and map</a><span>All {len(site.records)}, with dates and links.</span></li>'
               f'<li><a href="{ctx.link("archive")}">The rest of the vault</a><span>Places, peoples, and how the atlas was made.</span></li></ul></section>')
 
-    body = (f'{hero}<div class="page home">{names}{orn_rule(site, ctx, "tents")}{trails}{orn_rule(site, ctx, "compass-star")}{maps_band}'
-            f'{orn_rule(site, ctx, "rider")}{places}{orn_rule(site, ctx, "archer")}{witnesses}{orn_rule(site, ctx, "ship")}{deeper}</div>')
+    rides = rides_band(site, ctx) or places
+    body = (f'{hero}<div class="page home">{names}{orn_rule(site, ctx, "tents")}{trails}{deck_band(site, ctx)}{orn_rule(site, ctx, "compass-star")}{maps_band}'
+            f'{orn_rule(site, ctx, "rider")}{rides}{orn_rule(site, ctx, "archer")}{witnesses}{orn_rule(site, ctx, "ship")}{deeper}</div>')
     desc = (f"What {n_written} historical texts and {n_maps} maps say about Tartary (Tartaria): {num(n_psg)} quoted passages on cities, "
             f"buildings, daily life and legends, each linked to its page.")
     return dict(title="The Tartary Atlas: Tartary and Tartaria in the historical record", description=desc, body=body,
@@ -1059,7 +1061,7 @@ def page_passages(site, ctx, theme=None):
         title, desc = m["q"], f'{m["blurb"]} {num(len(plist))} quoted passages from {n_src} historical sources on Tartary.'
     else:
         head = page_head("In their words", "What the sources say",
-                         f'{num(len(plist))} passages from {n_src} sources. Follow a question, or search them all.', ornament=orn(site, ctx, "scholar", "head"))
+                         f'{num(len(plist))} passages from {n_src} sources. Follow a question, search them all, or <a href="{ctx.link("deck")}">draw three from the deck</a>.', ornament=orn(site, ctx, "scholar", "head"))
         title, desc = "Passages: what the sources say about Tartary", f'{num(len(plist))} quoted passages about the Tartars and Tartary from {n_src} historical sources, searchable by place, people and date.'
     basis_opts = "".join(f'<option value="{k}">{esc(v[0])}</option>' for k, v in PBASIS.items())
     when_opts = ('<option value="0">Before 1200</option>'
@@ -1100,7 +1102,7 @@ def page_sources(site, ctx):
     hk_opts = "".join(f'<option value="{esc(k)}">{esc(v)}</option>' for k, v in HOW_KNEW.items()
                       if any(p["how_they_knew"] == k for p in site.profiles.values()))
     head = page_head(f"{n_read + n_profile_only} sources", "The witnesses",
-                     "Who wrote it, how they knew, and what to watch out for. The richest come first.", ornament=orn(site, ctx, "archer", "head"))
+                     f'Who wrote it, how they knew, and what to watch out for. The richest come first. Six of them left a road you can follow: <a href="{ctx.link("ride")}">ride with a traveler</a>.', ornament=orn(site, ctx, "archer", "head"))
     body = (f'<div class="page">{head}<div data-module="slist">'
             f'<div class="filterbar"><label for="sl-q">Search<input type="search" id="sl-q" placeholder="Rubruck, Crimea, Chinese, 1253…"></label>'
             f'<label for="sl-hk">How they knew<select id="sl-hk"><option value="">Any</option>{hk_opts}</select></label>'
@@ -1252,6 +1254,9 @@ def page_record(site, ctx, r):
             acts.append(f'<a class="btn primary" href="#what-it-says">Read the {plural(n_here, "passage")}</a>')
         if r.get("primary_access"):
             acts.append(f'<a class="btn" href="{esc(r["primary_access"])}" rel="noopener">Open the original book</a>')
+        ride = next((j for j in site.journeys if j["rec"] == r["id"]), None)
+        if ride:
+            acts.append(f'<a class="btn" href="{ctx.link("ride/" + ride["key"])}">Ride the route</a>')
         if acts:
             extra += f'<p class="hero-actions">{"".join(acts)}</p>'
         head = page_head(eyebrow, esc(prof["plain_title"]), esc(prof["one_line"]), extra=extra)
@@ -1970,6 +1975,335 @@ def page_map(site, ctx):
     return dict(title="Map of Tartary in the sources", description=desc, body=body, nav="map", modules=["explorer"], maplibre=True)
 
 
+# ---------------------------------------------------------------- rides and the deck
+
+RIDE_W = 1000.0
+RIDE_MIN_RATIO = 0.52      # a route that runs due east still gets a map tall enough to read
+# The five trails as suits: each wears a drawing cut from one of the maps.
+SUITS = collections.OrderedDict([
+    ("cities", "tents"), ("architecture", "khan"), ("customs", "rider"), ("names", "scholar"), ("outliers", "merfolk"),
+])
+# The three places in a spread, and the trails each draws from.
+SPREAD = [("The place", ["cities", "architecture"]), ("The people", ["customs", "names"]), ("The marvel", ["outliers"])]
+
+
+def clip_ring(ring, box):
+    """Sutherland-Hodgman: a closed ring clipped to a lon/lat box."""
+    x0, y0, x1, y1 = box
+    def clip(pts, inside, cross):
+        out = []
+        for i, cur in enumerate(pts):
+            prev = pts[i - 1]
+            if inside(cur):
+                if not inside(prev):
+                    out.append(cross(prev, cur))
+                out.append(cur)
+            elif inside(prev):
+                out.append(cross(prev, cur))
+        return out
+    def at_x(x):
+        return lambda a, b: (x, a[1] + (b[1] - a[1]) * (x - a[0]) / (b[0] - a[0]))
+    def at_y(y):
+        return lambda a, b: (a[0] + (b[0] - a[0]) * (y - a[1]) / (b[1] - a[1]), y)
+    pts = [tuple(p[:2]) for p in ring]
+    for inside, cross in [(lambda p: p[0] >= x0, at_x(x0)), (lambda p: p[0] <= x1, at_x(x1)),
+                          (lambda p: p[1] >= y0, at_y(y0)), (lambda p: p[1] <= y1, at_y(y1))]:
+        if not pts:
+            break
+        pts = clip(pts, inside, cross)
+    return pts
+
+
+class RideMap:
+    """The sheet a journey is drawn on: a plain projection fitted to the stops, with the coast, lakes and rivers
+    of the self-hosted basemap clipped to it."""
+    _base = None
+
+    def __init__(self, stops):
+        lons, lats = [s["lon"] for s in stops], [s["lat"] for s in stops]
+        lon0, lon1, lat0, lat1 = min(lons), max(lons), min(lats), max(lats)
+        pad = max(lon1 - lon0, 10) * 0.07
+        lon0, lon1 = lon0 - pad, lon1 + pad
+        lat0, lat1 = lat0 - pad * 0.8, lat1 + pad * 0.8
+        self.kx = math.cos(math.radians((lat0 + lat1) / 2))
+        w_deg = (lon1 - lon0) * self.kx
+        if (lat1 - lat0) < w_deg * RIDE_MIN_RATIO:
+            grow = (w_deg * RIDE_MIN_RATIO - (lat1 - lat0)) / 2
+            lat0, lat1 = lat0 - grow, lat1 + grow
+        self.lon0, self.lat1 = lon0, lat1
+        self.s = RIDE_W / w_deg
+        self.W, self.H = RIDE_W, (lat1 - lat0) * self.s
+        m = 3.0
+        self.box = (lon0 - m, lat0 - m, lon1 + m, lat1 + m)
+        self.view = (lon0, lat0, lon1, lat1)
+
+    def xy(self, lon, lat):
+        return (lon - self.lon0) * self.kx * self.s, (self.lat1 - lat) * self.s
+
+    @classmethod
+    def base(cls):
+        if cls._base is None:
+            cls._base = {n: json.loads((STATIC / "basemap" / f"{n}.json").read_text()) for n in ("land", "lakes", "rivers")}
+        return cls._base
+
+    def _d(self, pts, close):
+        out, last = [], None
+        for lon, lat in pts:
+            x, y = self.xy(lon, lat)
+            if last is None or abs(x - last[0]) + abs(y - last[1]) > 0.9:
+                out.append(f"{x:.1f} {y:.1f}")
+                last = (x, y)
+        if len(out) < (3 if close else 2):
+            return ""
+        return "M" + "L".join(out) + ("Z" if close else "")
+
+    def _rings(self, geoms):
+        x0, y0, x1, y1 = self.box
+        parts = []
+        for g in geoms:
+            polys = g["coordinates"] if g["type"] == "MultiPolygon" else [g["coordinates"]]
+            for poly in polys:
+                for ring in poly:
+                    xs, ys = [p[0] for p in ring], [p[1] for p in ring]
+                    if max(xs) < x0 or min(xs) > x1 or max(ys) < y0 or min(ys) > y1:
+                        continue
+                    parts.append(self._d(clip_ring(ring, self.box), True))
+        return "".join(parts)
+
+    def land(self):
+        return self._rings(self.base()["land"]["geometries"])
+
+    def lakes(self):
+        return self._rings([f["geometry"] for f in self.base()["lakes"]["features"] if f["geometry"]])
+
+    def rivers(self):
+        x0, y0, x1, y1 = self.box
+        parts = []
+        for f in self.base()["rivers"]["features"]:
+            g = f["geometry"]
+            if not g:
+                continue
+            lines = g["coordinates"] if g["type"] == "MultiLineString" else [g["coordinates"]]
+            for line in lines:
+                run = []
+                for p in line:
+                    if x0 <= p[0] <= x1 and y0 <= p[1] <= y1:
+                        run.append(p[:2])
+                    else:
+                        parts.append(self._d(run, False))
+                        run = []
+                parts.append(self._d(run, False))
+        return "".join(parts)
+
+    def graticule(self):
+        lon0, lat0, lon1, lat1 = self.view
+        out = []
+        for lon in range(int(math.floor(lon0 / 10) * 10), int(lon1) + 10, 10):
+            x, _ = self.xy(lon, 0)
+            out.append(f"M{x:.1f} 0V{self.H:.1f}")
+        for lat in range(int(math.floor(lat0 / 10) * 10), int(lat1) + 10, 10):
+            _, y = self.xy(0, lat)
+            out.append(f"M0 {y:.1f}H{self.W:.0f}")
+        return "".join(out)
+
+    def legs(self, stops):
+        """One curve per leg, eased through the stops so the line bends like a road and not like a ruler."""
+        P = [self.xy(s["lon"], s["lat"]) for s in stops]
+        out = []
+        for i in range(len(P) - 1):
+            p0, p1, p2, p3 = P[max(i - 1, 0)], P[i], P[i + 1], P[min(i + 2, len(P) - 1)]
+            t = 0.16
+            # keep the bend in proportion to the leg itself, so a short hop next to a long one does not loop
+            d = math.hypot(p2[0] - p1[0], p2[1] - p1[1])
+            def lim(vx, vy):
+                n = math.hypot(vx, vy)
+                k = min(1.0, d * 0.45 / n) if n else 0
+                return vx * k, vy * k
+            ax, ay = lim((p2[0] - p0[0]) * t * 2, (p2[1] - p0[1]) * t * 2)
+            bx, by = lim((p3[0] - p1[0]) * t * 2, (p3[1] - p1[1]) * t * 2)
+            out.append(f"M{p1[0]:.1f} {p1[1]:.1f}C{p1[0] + ax:.1f} {p1[1] + ay:.1f} {p2[0] - bx:.1f} {p2[1] - by:.1f} {p2[0]:.1f} {p2[1]:.1f}")
+        return out
+
+
+def ride_counts(site, j):
+    n_psg = sum(len([i for i in s["psg"] if i in site.psg]) for s in j["stops"])
+    return len(j["stops"]), n_psg
+
+
+def ride_thumb(site, ctx, j):
+    """A small picture of the route for a card: the line over the same land shape the mini maps use."""
+    pts = [mm_proj(s["lon"], s["lat"]) for s in j["stops"]]
+    xs, ys = [p[0] for p in pts], [p[1] for p in pts]
+    w, h = max(xs) - min(xs), max(ys) - min(ys)
+    pad = max(w, h) * 0.12 + 6
+    x0, y0, w, h = min(xs) - pad, min(ys) - pad, w + 2 * pad, h + 2 * pad
+    if h < w * 0.5:
+        y0 -= (w * 0.5 - h) / 2
+        h = w * 0.5
+    line = "M" + "L".join(f"{x:.1f} {y:.1f}" for x, y in pts)
+    r = w / 110
+    ends = (f'<circle class="end" cx="{pts[0][0]:.1f}" cy="{pts[0][1]:.1f}" r="{r:.2f}"/>'
+            f'<circle class="end far" cx="{pts[-1][0]:.1f}" cy="{pts[-1][1]:.1f}" r="{r:.2f}"/>')
+    return (f'<svg class="ride-thumb" viewBox="{x0:.1f} {y0:.1f} {w:.1f} {h:.1f}" aria-hidden="true" preserveAspectRatio="xMidYMid slice">'
+            f'<use class="land" href="{ctx.land_href()}" width="{MM_W}" height="{MM_H}"/>'
+            f'<path class="line" d="{line}" vector-effect="non-scaling-stroke"/>{ends}</svg>')
+
+
+def ride_card(site, ctx, j):
+    n_stops, n_psg = ride_counts(site, j)
+    return (f'<a class="ridecard" href="{ctx.link("ride/" + j["key"])}">{ride_thumb(site, ctx, j)}'
+            f'<span class="ridecard-body"><span class="ridecard-when">{esc(j["years"])}</span>'
+            f'<span class="ridecard-t">{esc(j["title"])}</span>'
+            f'<span class="ridecard-one">{esc(j["one_line"])}</span>'
+            f'<span class="ridecard-n">{n_stops} stops · {plural(n_psg, "passage")} on the road</span></span></a>')
+
+
+def rides_sorted(site):
+    def first_year(j):
+        m = re.search(r"\d{4}", j["years"])
+        return int(m.group(0)) if m else 0
+    return sorted(site.journeys, key=first_year)
+
+
+def page_rides(site, ctx):
+    js = rides_sorted(site)
+    cards = "".join(ride_card(site, ctx, j) for j in js)
+    head = page_head("Ride with a traveler", "Pick a road and ride it",
+                     "Six people who crossed Tartary and wrote it down. Follow each one stop by stop, and read what they saw where they saw it.",
+                     ornament=orn(site, ctx, "rider", "head"))
+    body = f'<div class="page">{head}<div class="ridecards">{cards}</div></div>'
+    return dict(title="Ride with a traveler", description="Follow six travelers across Tartary stop by stop, from Changchun in 1220 to John Bell in 1722, and read what each one wrote at each place.",
+                body=body, nav="sources")
+
+
+def page_ride(site, ctx, j):
+    r = site.rec[j["rec"]]
+    rm = RideMap(j["stops"])
+    legs = rm.legs(j["stops"])
+    n = len(j["stops"])
+    svg = (f'<svg class="ride-svg" viewBox="0 0 {rm.W:.0f} {rm.H:.1f}" role="img" aria-label="Map of the route, from {esc(j["stops"][0]["name"])} to {esc(j["stops"][-1]["name"])}">'
+           f'<defs><path id="ride-land" d="{rm.land()}" fill-rule="evenodd" vector-effect="non-scaling-stroke"/></defs>'
+           f'<rect class="sea" width="{rm.W:.0f}" height="{rm.H:.1f}"/>'
+           f'<path class="grat" d="{rm.graticule()}" vector-effect="non-scaling-stroke"/>'
+           # the coast is drawn four times: three widening shore lines in the water, then the land over them
+           + "".join(f'<use class="shore s{k}" href="#ride-land"/>' for k in (3, 2, 1))
+           + '<use class="land" href="#ride-land"/>'
+           f'<path class="lake" d="{rm.lakes()}" vector-effect="non-scaling-stroke"/>'
+           f'<path class="river" d="{rm.rivers()}" vector-effect="non-scaling-stroke"/>'
+           + "".join(f'<path class="leg" data-leg="{i}" d="{d}" vector-effect="non-scaling-stroke"/>' for i, d in enumerate(legs))
+           + "</svg>")
+    dots, items = [], []
+    for i, s in enumerate(j["stops"]):
+        x, y = rm.xy(s["lon"], s["lat"])
+        px, py = x / rm.W * 100, y / rm.H * 100
+        ps = [site.psg[p] for p in s["psg"] if p in site.psg]
+        cls = ("exact" if s.get("exact", True) else "rough") + (" has" if ps else "")
+        cls += (" al" if px < 16 else " ar" if px > 84 else "") + (" lo" if py < 18 else " hi" if py > 84 else "")
+        dots.append(f'<a class="rdot {cls}" href="#stop-{i + 1}" data-go="{i}" style="left:{px:.2f}%;top:{py:.2f}%" '
+                    f'aria-label="Stop {i + 1}: {esc(s["name"])}"><span>{esc(s["name"])}</span></a>')
+        where = [x for x in [s.get("modern"), None if s.get("exact", True) else "rough position"] if x]
+        modern = f'<p class="ride-modern">{esc(" · ".join(where))}</p>' if where else ""
+        block = psg_block(site, ctx, ps, 2, theme_tag=True, source=False) if ps else ""
+        more = ""
+        pid = s.get("place_id")
+        if pid in site.place and len(site.psg_by_place.get(pid, [])) > len(ps):
+            more = (f'<p class="ride-more"><a href="{ctx.link("place/" + pid)}">What others wrote about {esc(site.place[pid]["name"])}</a></p>')
+        items.append(
+            f'<li class="ride-stop{"" if ps else " way"}" id="stop-{i + 1}" data-i="{i}" data-x="{px:.2f}" data-y="{py:.2f}" tabindex="-1">'
+            f'<div class="ride-k"><span class="ride-num">{i + 1}</span><span class="ride-when">{esc(s["when"] or "")}</span></div>'
+            f'<h2>{esc(s["name"])}</h2>{modern}<p class="ride-say">{esc(no_em(s["say"]))}</p>{block}{more}</li>')
+    n_stops, n_psg = ride_counts(site, j)
+    others = "".join(ride_card(site, ctx, o) for o in rides_sorted(site) if o["key"] != j["key"])
+    tale = tale_link(ctx.link(site.rkey(r)), *tale_meta(site, j["rec"])) if j["rec"] in site.profiles else ""
+    rider = site.orn.get("rider")
+    rider_html = f'<span class="ride-rider" data-rider hidden>{cut(site, ctx, rider, "ornaments")}</span>' if rider else '<span class="ride-rider plain" data-rider hidden></span>'
+    stage = (f'<div class="ride-stage" data-stage><div class="ride-sheet" style="aspect-ratio:{rm.W:.0f}/{rm.H:.1f}">{svg}'
+             f'<div class="ride-dots">{"".join(dots)}</div>{rider_html}</div>'
+             f'<div class="ride-bar"><button type="button" class="btn icon" data-prev aria-label="The stop before" disabled>←</button>'
+             f'<p class="ride-pos" data-pos aria-live="polite">{n} stops</p>'
+             f'<button type="button" class="btn icon" data-next aria-label="The next stop">→</button></div></div>')
+    head = (f'<header class="ride-head"><div class="eyebrow"><a href="{ctx.link("ride")}">Ride with a traveler</a></div>'
+            f'<h1>{esc(j["title"])}</h1><p class="ride-who">{esc(j["who"])} · {esc(j["years"])}</p>'
+            f'<p class="lede">{esc(no_em(j["about"]))}</p>'
+            f'<p class="hero-actions"><a class="btn primary" href="#stop-1" data-begin>Begin the ride</a>'
+            f'<a class="btn" href="{ctx.link(site.rkey(r))}">Meet the witness</a></p></header>')
+    def plain(d):
+        # the working notes name passages by number; a reader does not need the numbers
+        d = re.sub(r"\(W\d{3}-\d+\)\s*", "", d)
+        d = re.sub(r"\(W\d{3}-\d+, ", "(", d)
+        return re.sub(r"\s*\bW\d{3}-\d+\b(,| and)?", "", d)
+    doubts = ""
+    if j.get("doubts"):
+        doubts = (f'<details class="ride-doubts"><summary>What is still uncertain ({len(j["doubts"])} notes)</summary>'
+                  f'<ul>{"".join("<li>" + esc(no_em(plain(d))) + "</li>" for d in j["doubts"])}</ul></details>')
+    end = (f'<div class="ride-end"><h2>The road ends here</h2>'
+           f'<p class="ride-note"><strong>How sure is the line?</strong> {esc(no_em(j["route_note"]))} The line joins the stops. It is not the exact road.</p>'
+           f'{doubts}{tale}</div>')
+    body = (f'<div class="page ride" data-module="ride">{head}'
+            f'<div class="ride-body">{stage}<ol class="ride-stops">{"".join(items)}</ol></div>{end}'
+            f'{orn_rule(site, ctx, "compass-star")}'
+            f'<section class="band"><div class="band-head"><h2>Ride with someone else</h2></div><div class="ridecards">{others}</div></section></div>')
+    desc = f'{j["one_line"]} Follow the route stop by stop and read {plural(n_psg, "passage")} from the book at the places they describe.'
+    return dict(title=f'{j["title"]}: {j["who"]}, {j["years"]}', description=desc, body=body, nav="sources", modules=["ride"])
+
+
+def playing_back(site, ctx):
+    """The back of a card: a mapmaker's lettering over a compass, inside ruled borders."""
+    wheel = site.orn.get("compass-wheel") or site.orn.get("compass-star")
+    label = next((c for c in site.labels if c.get("wordmark")), None)
+    inner = (cut(site, ctx, label, "labels", "pc-back-name") if label else "") + (cut(site, ctx, wheel, "ornaments", "pc-back-orn") if wheel else "")
+    return f'<span class="pc-back" aria-hidden="true"><span class="pc-back-in">{inner}</span></span>'
+
+
+def deck_stack(site, ctx, n=3):
+    return "".join(f'<span class="pc pc-s{i}">{playing_back(site, ctx)}</span>' for i in range(n))
+
+
+def page_deck(site, ctx):
+    suits = {}
+    for t, key in SUITS.items():
+        c = site.orn.get(key)
+        if c:
+            suits[t] = {"k": key, "w": c["size"][0], "h": c["size"][1], "l": THEMES[t]["label"]}
+    data = {"suits": suits, "spread": [{"n": n, "t": ts} for n, ts in SPREAD], "site": CONFIG["base_url"].split("//")[1]}
+    js = json.dumps(data, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
+    slots = "".join(
+        f'<div class="spread-slot" data-slot="{i}"><p class="spread-k">{esc(n)}</p><div class="spread-card" data-card></div></div>'
+        for i, (n, _) in enumerate(SPREAD))
+    n_good = sum(1 for p in site.passages if p["strength"] == 3)
+    head = page_head("The deck", "Draw three from the record",
+                     f"{num(n_good)} of the strongest passages, shuffled. One place, one people, one marvel. Turn a card to read it.")
+    body = (f'<div class="page deck" data-module="deck"><script type="application/json">{js}</script>{head}'
+            f'<div class="deck-table"><button type="button" class="deck-stack" data-deal aria-label="Deal three cards">{deck_stack(site, ctx)}'
+            f'<span class="deck-stack-k">Deal three</span></button>'
+            f'<div class="spread" data-spread>{slots}</div></div>'
+            f'<p class="deck-acts"><button type="button" class="btn primary" data-deal>Deal three more</button>'
+            f'<button type="button" class="btn" data-turn>Turn them all</button></p>'
+            f'<div class="deck-read" data-read aria-live="polite"></div>'
+            f'<noscript><p class="muted">The deck needs the page script. <a href="{ctx.link("passages")}">Read the passages</a> instead.</p></noscript></div>')
+    return dict(title="The deck: draw three passages", description=f"Draw three passages about Tartary at random from {num(n_good)} quoted sources: one place, one people, one marvel. Each card links to its page.",
+                body=body, nav="passages", modules=["deck"])
+
+
+def rides_band(site, ctx):
+    js = rides_sorted(site)
+    if not js:
+        return ""
+    picks = [j for j in js if j["key"] in ("changchun", "rubruck", "ides")] or js[:3]
+    return (f'<section class="band"><div class="band-head row"><div><h2>Ride with a traveler</h2>'
+            f'<p>Pick a road. The line draws itself, and at each stop you read what they wrote there.</p></div>'
+            f'<a class="btn" href="{ctx.link("ride")}">See all {len(js)} rides</a></div>'
+            f'<div class="ridecards">{"".join(ride_card(site, ctx, j) for j in picks)}</div></section>')
+
+
+def deck_band(site, ctx):
+    return (f'<section class="band deck-door"><a class="deck-door-a" href="{ctx.link("deck")}">'
+            f'<span class="deck-door-stack" aria-hidden="true">{deck_stack(site, ctx)}</span>'
+            f'<span class="deck-door-body"><span class="deck-door-t">Draw three from the deck</span>'
+            f'<span class="deck-door-p">One place, one people, one marvel, dealt at random from the record.</span>'
+            f'<span class="btn primary">Deal me in</span></span></a></section>')
+
+
 # ------------------------------------------------ About, Method, Corrections
 
 def page_about(site, ctx):
@@ -2033,6 +2367,8 @@ def page_method(site, ctx):
 <li><strong>Passage attestations</strong> (in preparation). Every place a source names Tartary or a related term, with page, original wording and what it refers to. This layer will replace the provisional card-level readings on <a href="{ctx.link("meanings")}">What “Tartar” meant</a>.</li>
 </ul>
 {passages_method}
+<h2>The rides</h2>
+<p><a href="{ctx.link("ride")}">Ride with a traveler</a> sets {len(site.journeys)} journeys out stop by stop. Each route was written with AI assistance from the passages and the standard account of the journey, then checked a second time against the edition the atlas cites, and the dates follow that edition. A passage sits at a stop only when the traveler saw, heard or wrote it at or about that place on that journey. The rest of the source's passages stay on its own page. Camps that moved and places scholars still argue over are drawn as rough positions, and every ride ends with a list of what is still uncertain. The line joins the stops and is not the exact road. No route has yet been checked by a human editor.</p>
 <h2>Dates</h2>
 <p>Every record carries the date it was written or drawn, and a precision label saying how far to trust it. Written sources also carry the period they describe. A map may carry a later impression year, a modern facsimile year, or a content date when it prints much older geography, as a 1482 Ptolemy printing does. The map and the timelines use the date made.</p>
 <ul>{prec_rows}</ul>
@@ -2166,6 +2502,12 @@ def all_pages(site, ctx_factory):
                   ("labels", page_labels), ("meanings", page_meanings), ("lineage", page_lineage),
                   ("about", page_about), ("method", page_method), ("corrections", page_corrections)]:
         yield k, fn(site, ctx_factory(k))
+    yield "deck", page_deck(site, ctx_factory("deck"))
+    if site.journeys:
+        yield "ride", page_rides(site, ctx_factory("ride"))
+        for j in site.journeys:
+            k = "ride/" + j["key"]
+            yield k, page_ride(site, ctx_factory(k), j)
     for r in site.records:
         k = site.rkey(r)
         yield k, page_record(site, ctx_factory(k), r)

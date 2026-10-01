@@ -89,6 +89,27 @@ gone = [c['key'] for c in cuts['labels'] if not (D/'assets/cuts/labels'/(c['key'
 check(not gone, f"every cut in data/cuts.json has its picture in the site ({gone[:5]})")
 check('data-wordmarks=' in w43 and 'mask-image:url(../../assets/cuts/labels/' in w43, 'header: the name is set in lettering cut from a map, addressed from the page')
 check(front.count('class="orn-rule"') >= 4 and 'One name, many hands' in front, 'front page: the many hands strip and the ornament rules are there')
+# 3f. the rides and the deck
+J = json.load(open(ROOT/'data/journeys.json'))['journeys']
+PID = {p['id']: p for p in psg}
+bad = []
+for j in J:
+    t = (D/'ride'/j['key']/'index.html').read_text()
+    ids = [i for s in j['stops'] for i in s['psg']]
+    if t.count('<li class="ride-stop') != len(j['stops']) or t.count('class="leg"') != len(j['stops']) - 1 or t.count('class="rdot ') != len(j['stops']): bad.append(j['key'] + ': stops')
+    if any(i not in PID or PID[i]['rec'] != j['rec'] or f'id="p-{i}"' not in t for i in ids) or len(ids) != len(set(ids)): bad.append(j['key'] + ': passages')
+    if set(ids) | {x['id'] for x in j['left_out']} != {p['id'] for p in psg if p['rec'] == j['rec']}: bad.append(j['key'] + ': a passage is neither on the road nor left out')
+    if any(not (-10 <= s['lon'] <= 150 and 20 <= s['lat'] <= 70) for s in j['stops']): bad.append(j['key'] + ': a stop is off the sheet')
+    if '–' in json.dumps(j, ensure_ascii=False) or '—' in json.dumps(j, ensure_ascii=False): bad.append(j['key'] + ': dash')
+    if 'Ride the route' not in (D/'w'/j['rec']/'index.html').read_text(): bad.append(j['key'] + ': no way in from the source page')
+check(len(J) >= 6 and not bad, f'rides: {len(J)} journeys, every stop drawn, every passage of the source either on the road or left out with a reason ({bad[:4]})')
+rides = (D/'ride/index.html').read_text()
+check(rides.count('class="ridecard"') == len(J) and front.count('class="ridecard"') == 3 and 'Ride with a traveler' in front, 'rides: the list shows them all and the front page offers three')
+deck = (D/'deck/index.html').read_text()
+dd = json.loads(re.search(r'data-module="deck"><script type="application/json">(.*?)</script>', deck, re.S).group(1))
+check(len(dd['spread']) == 3 and deck.count('data-card') == 3 and set(dd['suits']) == {'cities', 'architecture', 'customs', 'names', 'outliers'}
+      and all((D/'assets/cuts/ornaments'/(v['k'] + '.png')).exists() for v in dd['suits'].values()), 'deck: three places in the spread and a suit drawing for each of the five trails')
+check('class="deck-door-a"' in front and 'draw three from the deck' in (D/'passages/index.html').read_text(), 'deck: a door on the front page and on the passages page')
 # 4. em dashes
 em_titles = [str(f.relative_to(D)) for f in D.rglob('*.html') if '—' in re.search(r'<title>(.*?)</title>', f.read_text(), re.S).group(1)]
 check(not em_titles, f'no em dash in any page title ({len(list(D.rglob("*.html")))} pages)')

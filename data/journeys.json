@@ -1,0 +1,1491 @@
+{
+ "about": "Routes for Ride with a traveler. Each stop carries the passages the atlas quotes from that traveler at that place. Written and then checked against the cited editions on 2026-09-30; doubts lists what is still uncertain.",
+ "journeys": [
+  {
+   "key": "changchun",
+   "rec": "W113",
+   "who": "Qiu Chuji (Changchun)",
+   "title": "An old sage crosses Asia to meet the Khan",
+   "years": "1220 to 1224",
+   "one_line": "The Daoist master Changchun travels from Shandong across Mongolia and Central Asia to Genghis Khan's camp near the Hindu Kush, at the Khan's summons.",
+   "about": "Qiu Chuji, known as Changchun, was an elderly Daoist master from Shandong and head of the Quanzhen school. Genghis Khan sent for him in 1219, hoping to learn how to prolong life. Changchun set out in 1220, met the Khan in May 1222 and was back in Beijing in January 1224, and his disciple Li Zhichang wrote down the journey.",
+   "route_note": "Almaliq, Samarkand and Balkh are well fixed, but the camps and halts in Mongolia, the site of Chinqai's town, the red stone city near the Talas and the Khan's camp near the Hindu Kush are rough positions, and the return road is not drawn.",
+   "stops": [
+    {
+     "name": "Laizhou",
+     "modern": "Laizhou, Shandong, China",
+     "lat": 37.18,
+     "lon": 119.94,
+     "exact": true,
+     "when": "February 1220",
+     "say": "Changchun was living here when the Khan's envoy arrived in the winter of 1219 to 1220 with the letter of invitation. He agreed to go and set out for the north with nineteen disciples.",
+     "psg": [],
+     "place_id": null
+    },
+    {
+     "name": "Yanjing",
+     "modern": "Beijing, China",
+     "lat": 39.90666667,
+     "lon": 116.3975,
+     "exact": true,
+     "when": "April to May 1220",
+     "say": "Changchun reached the former Jin capital about the start of April 1220 and learned that the Khan had gone far to the west. He left the city in May, spent the summer and the winter at Dexing to the north-west, and started for Mongolia in February 1221.",
+     "psg": [],
+     "place_id": "beijing"
+    },
+    {
+     "name": "Steppe beyond Dali Lake",
+     "modern": "north-east of Dali Lake (Dalai Nur), Inner Mongolia, China",
+     "lat": 43.8,
+     "lon": 117.2,
+     "exact": false,
+     "when": "late March to April 1221",
+     "say": "Leaving a fishing lake on 29 March, the party rode north-east into nomad country. Every home was a black cart or a white tent, and no tree was in sight.",
+     "psg": [
+      "W113-01"
+     ],
+     "place_id": null
+    },
+    {
+     "name": "Prince Otchigin's camp",
+     "modern": "near Lake Buir and the Khalkha River, eastern Mongolia",
+     "lat": 47.8,
+     "lon": 117.7,
+     "exact": false,
+     "when": "23 April to 9 May 1221",
+     "say": "The party reached the camp of Otchigin, the Khan's youngest brother, during a wedding. Thousands of carts and tents stood in rows, and on 29 April the prince asked the master how to prolong life.",
+     "psg": [
+      "W113-02"
+     ],
+     "place_id": null
+    },
+    {
+     "name": "Kerulen River",
+     "modern": "eastern Mongolia",
+     "lat": 48.1,
+     "lon": 114.5,
+     "exact": false,
+     "when": "23 May 1221",
+     "say": "Riding upstream along the south bank of the Kerulen, the travellers saw the sun eclipsed at noon. It grew dark enough for the stars to show.",
+     "psg": [
+      "W113-18"
+     ],
+     "place_id": "kerulen"
+    },
+    {
+     "name": "From the Kerulen to the Tuul",
+     "modern": "central Mongolia",
+     "lat": 47.8,
+     "lon": 105.5,
+     "exact": false,
+     "when": "June 1221",
+     "say": "West of the Kerulen the country was full of carts and tents. The diarist describes Mongol dress, the tall headdress of married women and the lack of writing, and the party passed a ruined city said to be the work of the Khitan.",
+     "psg": [
+      "W113-03",
+      "W113-04",
+      "W113-05"
+     ],
+     "place_id": null
+    },
+    {
+     "name": "The Empress's camp",
+     "modern": "probably on the Ider River, upper Selenga basin, Mongolia",
+     "lat": 48.3,
+     "lon": 98.9,
+     "exact": false,
+     "when": "18 to 29 July 1221",
+     "say": "After days in the forested Khangai mountains the party came to the camp of one of the Khan's chief wives. More than a thousand carts and tents stood by a river, and flour came by camel from beyond the Tian Shan.",
+     "psg": [
+      "W113-06"
+     ],
+     "place_id": null
+    },
+    {
+     "name": "Chinqai's town",
+     "modern": "probably in Govi-Altai province, western Mongolia",
+     "lat": 46.3,
+     "lon": 95.3,
+     "exact": false,
+     "when": "mid to late August 1221",
+     "say": "Near this granary town run by the Khan's officer Chinqai, Chinese craftsmen came out to welcome the master. Chinqai joined the party as escort, and nine disciples stayed behind in a monastery built for them.",
+     "psg": [
+      "W113-07"
+     ],
+     "place_id": null
+    },
+    {
+     "name": "Altai Mountains",
+     "modern": "Mongolian Altai",
+     "lat": 46.0,
+     "lon": 92.5,
+     "exact": false,
+     "when": "early September 1221",
+     "say": "On the way to the Altai, Chinqai and a servant told stories of goblins in these mountains. The escort hauled the two carts over on a road made by the Khan's third son, Ogedei.",
+     "psg": [
+      "W113-08"
+     ],
+     "place_id": "altai"
+    },
+    {
+     "name": "Field of White Bones",
+     "modern": "Dzungarian desert, Xinjiang, China",
+     "lat": 44.9,
+     "lon": 90.3,
+     "exact": false,
+     "when": "September 1221",
+     "say": "South of the Altai, Chinqai warned of a desert battlefield where crossing by day could kill man and horse. The party marched through the night and reached a small town the next morning.",
+     "psg": [
+      "W113-09"
+     ],
+     "place_id": null
+    },
+    {
+     "name": "Sayram Lake and the Talki pass",
+     "modern": "Xinjiang, China",
+     "lat": 44.48,
+     "lon": 81.13,
+     "exact": true,
+     "when": "about 12 October 1221",
+     "say": "After following the north side of the Tian Shan west, the party came to a mountain lake and went down a gorge. The road and its forty-eight wooden bridges had been built by the Khan's second son, Chagatai, when the army marched west.",
+     "psg": [
+      "W113-10"
+     ],
+     "place_id": null
+    },
+    {
+     "name": "Almaliq",
+     "modern": "near Huocheng in the Ili valley, Xinjiang, China",
+     "lat": 44.15,
+     "lon": 80.5,
+     "exact": true,
+     "when": "14 October 1221",
+     "say": "The local Muslim ruler and the Mongol governor came out together to meet the master. The party rested in an orchard west of the city, which was named for its fruit.",
+     "psg": [
+      "W113-11"
+     ],
+     "place_id": null
+    },
+    {
+     "name": "Talas valley",
+     "modern": "near Taraz, Kazakhstan",
+     "lat": 42.9,
+     "lon": 71.36666667,
+     "exact": false,
+     "when": "about 10 November 1221",
+     "say": "Riding west along the mountains, the travellers saw a city of red stone, traces of an old army camp and great grave mounds. They went on over a stone bridge.",
+     "psg": [
+      "W113-12"
+     ],
+     "place_id": "talas"
+    },
+    {
+     "name": "Samarkand",
+     "modern": "Samarkand, Uzbekistan",
+     "lat": 39.65055556,
+     "lon": 66.96527778,
+     "exact": true,
+     "when": "December 1221 to April 1222",
+     "say": "Changchun arrived on 3 December 1221 and spent the winter here, lodged in the former Sultan's palace. The diarist found only a quarter of the city's people left after the Mongol conquest.",
+     "psg": [
+      "W113-13"
+     ],
+     "place_id": "samarkand"
+    },
+    {
+     "name": "Genghis Khan's camp",
+     "modern": "south of the Hindu Kush, Afghanistan",
+     "lat": 35.0,
+     "lon": 69.2,
+     "exact": false,
+     "when": "mid May 1222",
+     "say": "Changchun left Samarkand in late April 1222, crossed the Amu Darya and reached the Khan's camp in mid May. Asked for a medicine of immortality, he said there was none, and the Khan praised his honesty.",
+     "psg": [
+      "W113-15"
+     ],
+     "place_id": null
+    },
+    {
+     "name": "Balkh",
+     "modern": "Balkh, Afghanistan",
+     "lat": 36.75805556,
+     "lon": 66.89805556,
+     "exact": true,
+     "when": "late September 1222",
+     "say": "After a summer back in Samarkand, Changchun rode south again to rejoin the Khan and passed Balkh by night. The people had fled and only dogs were heard. He took leave of the Khan in April 1223, east of the Syr Darya, and was back in Beijing in January 1224.",
+     "psg": [
+      "W113-14"
+     ],
+     "place_id": "balkh"
+    }
+   ],
+   "left_out": [
+    {
+     "id": "W113-16",
+     "why": "This is Genghis Khan's letter of invitation, written for him by a secretary and dated to the fifth month of 1219, when the Khan was camped in the old Naiman country. It is a separate document from the travel diary, in another voice, and Changchun was not at that camp. It caused the journey but is not a stop on it."
+    },
+    {
+     "id": "W113-17",
+     "why": "The same letter of invitation of 1219, issued in Genghis Khan's name and printed by the translator ahead of the diary (pages 37 to 39). It is not something the travellers saw or wrote on the road."
+    }
+   ],
+   "doubts": [
+    "The two 1219 items are the Khan's letter of invitation (pages 37 to 39, before the diary starts), not the diary. The envoy brought it to Changchun at Laizhou in the winter of 1219 to 1220, so it could arguably be shown at Laizhou as the cause of the journey, but under the rule on other speakers it is left out.",
+    "The date of the letter is uncertain by a month. Bretschneider converts the first day of the fifth month of 1219 to 15 May, but Waley says that month began on 14 June 1219. The atlas labels these two items May 1219 after Bretschneider.",
+    "Day dates follow Bretschneider's conversions. Waley's translation differs by a day or two in places (for example 28 April against 26 April 1222 for leaving Samarkand), so exact days could be a day or two off. The eclipse of 23 May 1221 is independently confirmed.",
+    "Bretschneider's book names only Shandong as the starting point. Laizhou comes from the fuller text as translated by Waley. The exact day of leaving Laizhou in early 1220 was not confirmed.",
+    "The wintering place of 1220 to 1221 is given as the Longyang temple at Dexing, north-west of Beijing. Waley's fuller text also puts Changchun at nearby Xuande in early 1221, so the exact point of the final start in February 1221 is not certain.",
+    "The fishing lake is taken as Dali Lake (Dalai Nur) in Inner Mongolia, following Bretschneider. The stop is a rough point north-east of it.",
+    "Otchigin's camp is not fixed. Palladius put it on the Khalkha River, and Bretschneider thought it lay farther north. The point given is by Lake Buir.",
+    "The eclipse spot is an estimate: about nine days' ride up the Kerulen from the lake where the party first met the river.",
+    "The ruined Khitan city is not securely identified. Scholars have looked for it on the Tuul, on its tributary the Kharukha, or on the Orkhon. The stop that holds it is a rough midpoint for a stretch of several weeks' travel, so the three passages there were not all written at one spot.",
+    "The Empress's camp is placed on the Ider River after Potanin's suggestion, which Bretschneider accepts. It is a guess from the narrative.",
+    "The site of Chinqai's town was long disputed. The coordinates follow the modern identification with ruins in Sharga district, Govi-Altai province. Bretschneider and Potanin placed it elsewhere in western Mongolia.",
+    "The pass used to cross the Altai is unknown, and the Field of White Bones is only known to lie in the desert between the Altai and the Tian Shan. Both points are estimates. The diary gives no day for the night march, only that it fell between 2 and 14 September 1221.",
+    "The town reached after the night march is called a Hui-ho town. Bretschneider reads that as Muslim and Waley as Uighur, so the stop just says a small town.",
+    "The red stone city is placed at Taraz, following Bretschneider's view that the party crossed the Talas there. The diary does not name the city, its account of this stretch is confused, and Bretschneider rejected one identification of the ruins.",
+    "The Khan's camp of May 1222 is only known to have been south of the Hindu Kush. Bretschneider says near Kabul. The point given (near Parwan, north of Kabul) is approximate.",
+    "The Balkh passage (September 1222, page 93) follows the first audience (May 1222, page 86) because Changchun returned to Samarkand for the summer between the two. The camp where he rejoined the Khan a few days past Balkh, the second stay in Samarkand and the whole return journey of 1223 to 1224 are described in the text but not drawn as stops."
+   ]
+  },
+  {
+   "key": "rubruck",
+   "rec": "W043",
+   "who": "William of Rubruck",
+   "title": "A friar rides to the Great Khan",
+   "years": "1253 to 1255",
+   "one_line": "A Flemish friar travels from Constantinople across the steppe to the Mongol court at Karakorum and back, hoping to preach there.",
+   "about": "William of Rubruck was a Flemish Franciscan friar who was with King Louis IX of France on crusade in the Holy Land. He set out in 1253 with the king's letter, hoping to stay among the Mongols as a missionary, and was passed from one Mongol prince to the next until he reached the Great Khan Mongke. On his return he wrote a long report for the king, the fullest early European description of Mongol life.",
+   "route_note": "The towns are well known, but the Mongol camps moved with the seasons and the long steppe ride between the Volga and Mongolia is fixed by only a few named places, so those positions are rough.",
+   "stops": [
+    {
+     "name": "Constantinople",
+     "modern": "Istanbul, Turkey",
+     "lat": 41.01,
+     "lon": 28.97,
+     "exact": true,
+     "when": "7 May 1253",
+     "say": "William and his companions sail from here into the Black Sea on 7 May. He carries a letter from King Louis IX to the Mongol prince Sartaq.",
+     "psg": [],
+     "place_id": null
+    },
+    {
+     "name": "Soldaia",
+     "modern": "Sudak, Crimea",
+     "lat": 44.85138889,
+     "lon": 34.9725,
+     "exact": true,
+     "when": "21 May to about 1 June 1253",
+     "say": "The party lands at this trading port on the Crimean coast. On the advice of merchants they load their goods on ox carts and set off about 1 June.",
+     "psg": [],
+     "place_id": "sudak"
+    },
+    {
+     "name": "The first Tartar camps",
+     "modern": "Crimean steppe north of Sudak",
+     "lat": 45.4,
+     "lon": 34.6,
+     "exact": false,
+     "when": "Early June 1253",
+     "say": "On the third day out of Soldaia William meets Mongols for the first time, and soon after reaches the camp of a commander he calls Scatatai. At this point in his book he describes their felt houses on carts, their mare's milk drink, the women's tall headdresses and the tombs on the steppe.",
+     "psg": [
+      "W043-04",
+      "W043-05",
+      "W043-16",
+      "W043-17",
+      "W043-10"
+     ],
+     "place_id": null
+    },
+    {
+     "name": "Camp of Sartaq",
+     "modern": "Steppe between the Don and the Volga, Russia",
+     "lat": 51.2,
+     "lon": 44.7,
+     "exact": false,
+     "when": "31 July to early August 1253",
+     "say": "After two months with the ox carts William reaches Sartaq, the son of Batu, three days short of the Volga. Sartaq will not decide anything and after four days sends him on to his father. At this point in his book William explains how Mongols and Tartars differ.",
+     "psg": [
+      "W043-02"
+     ],
+     "place_id": null
+    },
+    {
+     "name": "Camp of Batu",
+     "modern": "East bank of the Volga below Saratov, Russia",
+     "lat": 50.0,
+     "lon": 46.0,
+     "exact": false,
+     "when": "August to mid September 1253",
+     "say": "William goes down the Volga by boat to Batu's moving camp on the east bank and is astonished that it looks like a great city. Batu sends him on to the Great Khan, and the friars travel down the river with the camp for five weeks before starting east.",
+     "psg": [
+      "W043-06"
+     ],
+     "place_id": null
+    },
+    {
+     "name": "Kinchat",
+     "modern": "Talas valley near Taraz, Kazakhstan",
+     "lat": 42.9,
+     "lon": 71.37,
+     "exact": false,
+     "when": "8 November 1253",
+     "say": "After weeks of hard riding east across the steppe, the party turns south through the mountains and comes to a small Muslim town where William sees vines and drinks wine.",
+     "psg": [],
+     "place_id": null
+    },
+    {
+     "name": "Cailac",
+     "modern": "Koilyk, south-east Kazakhstan",
+     "lat": 45.65,
+     "lon": 80.25,
+     "exact": false,
+     "when": "About 18 to 30 November 1253",
+     "say": "William rests for twelve days in this market town and visits its temples. Just beyond it he finds a village of Nestorian Christians with a church, then rides on past a great lake, probably Alakol.",
+     "psg": [],
+     "place_id": null
+    },
+    {
+     "name": "Camp of Mongke Khan",
+     "modern": "Central Mongolia, some days' ride south of Karakorum",
+     "lat": 46.0,
+     "lon": 102.9,
+     "exact": false,
+     "when": "27 December 1253",
+     "say": "William reaches the winter camp of the Great Khan and is given his first audience about 4 January 1254. He lives with the court until it moves north to Karakorum at the end of March, and asks priests from China about distant peoples.",
+     "psg": [
+      "W043-20"
+     ],
+     "place_id": null
+    },
+    {
+     "name": "Karakorum",
+     "modern": "Kharkhorin, Mongolia",
+     "lat": 47.21027778,
+     "lon": 102.84777778,
+     "exact": true,
+     "when": "5 April to about 10 July 1254",
+     "say": "William enters the Mongol capital with the court on Palm Sunday. He describes the small walled town and the silver drinking fountain, takes part in a debate between faiths, and hears Mongke explain his own belief before sending him home.",
+     "psg": [
+      "W043-09",
+      "W043-07",
+      "W043-08",
+      "W043-18"
+     ],
+     "place_id": "karakorum"
+    },
+    {
+     "name": "Sarai",
+     "modern": "Near Selitrennoye on the lower Volga, Russia",
+     "lat": 47.17,
+     "lon": 47.43,
+     "exact": false,
+     "when": "Late October to 1 November 1254",
+     "say": "William rides back by a more northerly road and finds Batu's camp again on 16 September, a year after leaving it. A month later he goes down the Volga to Sarai, the new town Batu is building, and leaves on 1 November.",
+     "psg": [
+      "W043-14"
+     ],
+     "place_id": "sarai"
+    },
+    {
+     "name": "Derbent",
+     "modern": "Derbent, Dagestan, Russia",
+     "lat": 42.06,
+     "lon": 48.29,
+     "exact": true,
+     "when": "Mid November 1254",
+     "say": "Heading south toward the Caspian shore, William passes through the walled town he calls the Iron Gate. He notes that the Tartars have knocked down the tops of its towers.",
+     "psg": [
+      "W043-15"
+     ],
+     "place_id": null
+    },
+    {
+     "name": "Nakhchivan",
+     "modern": "Nakhchivan, Azerbaijan",
+     "lat": 39.21,
+     "lon": 45.41,
+     "exact": true,
+     "when": "Christmas 1254 to 13 January 1255",
+     "say": "After crossing the plain of the Kura and Aras rivers and passing through the camp of the Mongol general Baiju, William spends Christmas in this town. Snow holds him there until 13 January.",
+     "psg": [],
+     "place_id": null
+    },
+    {
+     "name": "Ani",
+     "modern": "Ruins of Ani, eastern Turkey",
+     "lat": 40.507,
+     "lon": 43.573,
+     "exact": true,
+     "when": "2 February 1255",
+     "say": "William reaches the Armenian city of Ani and is there on 2 February. He goes on up the Aras river and crosses into the lands of the Seljuk sultan.",
+     "psg": [],
+     "place_id": null
+    },
+    {
+     "name": "Iconium",
+     "modern": "Konya, Turkey",
+     "lat": 37.87,
+     "lon": 32.49,
+     "exact": true,
+     "when": "About 19 April 1255",
+     "say": "Travelling down the upper Euphrates and then by Sivas and Kayseri, William reaches the Seljuk capital three weeks after Easter.",
+     "psg": [],
+     "place_id": null
+    },
+    {
+     "name": "Curta",
+     "modern": "Korykos (Kizkalesi), south coast of Turkey",
+     "lat": 36.46,
+     "lon": 34.15,
+     "exact": true,
+     "when": "5 to 17 May 1255",
+     "say": "William comes down to this port in the Armenian kingdom of Cilicia and sends his baggage on by ship. He then goes inland to Sis to see the king's father, and sails for Cyprus from the port of Ayas.",
+     "psg": [],
+     "place_id": null
+    },
+    {
+     "name": "Tripoli",
+     "modern": "Tripoli, Lebanon",
+     "lat": 34.44,
+     "lon": 35.83,
+     "exact": true,
+     "when": "15 August 1255",
+     "say": "By way of Cyprus and Antioch William reaches Tripoli for a meeting of his order. King Louis has already gone back to France, and William's superior posts him to Acre and tells him to send his report in writing.",
+     "psg": [],
+     "place_id": null
+    }
+   ],
+   "left_out": [
+    {
+     "id": "W043-01",
+     "why": "The English chronicler Matthew Paris, quoted in the editor's introduction, not William's journey"
+    },
+    {
+     "id": "W043-19",
+     "why": "Matthew Paris again, quoted in the editor's introduction, not William's journey"
+    },
+    {
+     "id": "W043-03",
+     "why": "John of Plano Carpini's words from his earlier journey, quoted in an editor's footnote"
+    },
+    {
+     "id": "W043-11",
+     "why": "Carpini's journey of 1245 to 1247, not William's"
+    },
+    {
+     "id": "W043-12",
+     "why": "Carpini's journey of 1245 to 1247, not William's"
+    },
+    {
+     "id": "W043-13",
+     "why": "Carpini's journey of 1245 to 1247, not William's"
+    },
+    {
+     "id": "W043-21",
+     "why": "Benedict the Pole's report of the Carpini journey, not William's"
+    }
+   ],
+   "doubts": [
+    "The five descriptions of Mongol life (tents, carts, kumiss, headdresses, tombs) come from William's general chapters on Tartar customs, which he places straight after first meeting them on the third day out of Soldaia. They are not tied to one camp, so they are shown at the first camps as the best fit. The tombs passage speaks of Coman graves that he saw all the way to Sartaq's camp.",
+    "The explanation of the names Tartar and Mongol (W043-02) is dated 1254 and described as told at the Mongol court in the atlas notes. In the book it comes in the chapter on leaving Sartaq's camp in August 1253 (page 115), prompted by Sartaq's officials saying their lord was a Moal and not a Tartar. It is therefore kept at Sartaq's camp. William does not say who told him the story.",
+    "The talk about monsters with priests from Cathay (W043-20, page 199) comes in the chapter on the winter at Mongke's camp, before the court leaves for Karakorum. It was moved from Karakorum to the camp for that reason, but William does not say on what day or exactly where the talk took place.",
+    "The camps of Scatatai, Sartaq, Batu and Mongke were moving camps and their coordinates are rough. Sartaq was three days west of the Volga. Rockhill thought William reached the river near Ukek, just south of modern Saratov, and the Sartaq and Batu points follow that view. Mongke's winter camp is put a week's travel south of Karakorum because William says the court moved north to reach the town between 29 March and 5 April 1254. None of these positions is certain.",
+    "Kinchat is not firmly located. Rockhill links it with a town called Kendjek near Talas, and the coordinates given are those of modern Taraz.",
+    "Cailac is now usually identified with the excavated site at Koilyk (Antonovka) in Kazakhstan. Rockhill placed it near Kopal, somewhat to the west. One manuscript gives the stay there as fifteen days, not twelve. Rockhill identifies the lake beyond it as Alakol.",
+    "The site of Batu's first Sarai is usually put at Selitrennoye, as Rockhill also says, but this is debated. The atlas gazetteer has only an approximate point for Sarai (46.6 N, 47.8 E), so the Selitrennoye position was used and marked as rough. William does not give the day he reached Sarai, only that he set out for it on 16 October and left it on 1 November.",
+    "Coiac's remark about Sarai (W043-14) was made when William met Sartaq's party on the road, some days before he got back to Batu's camp. It is shown at Sarai because it is about that town.",
+    "Mongke's statement of belief (W043-18) was made at an audience on 31 May 1254, when the court was close to Karakorum. The exact spot is not certain.",
+    "William says his first audience was on the octave of the Innocents, which is 4 January. Rockhill's text gives 3 January in brackets, and his itinerary table gives 4 January.",
+    "William does not give the day he left the court. He says he took leave a fortnight after the feast of Saint John (24 June) and reached Batu after two months and ten days, on 16 September. Rockhill works this out as about 10 July 1254. Some older accounts put it in August.",
+    "The Derbent date is worked out, not stated. William left Sarai on 1 November, met no one for fifteen days, and was on the Aras by 23 November. Rockhill's table gives 17 November for Derbent. Rockhill's text also glosses the feast of Saint Martin as 15 December, which is a slip.",
+    "William says he left Batu's camp in 1253 on the day after Holy Cross (15 September) in one place and on the second day after (16 September) in another.",
+    "The dates were checked against Rockhill's 1900 text. They were not checked against Peter Jackson's 1990 edition, which may differ by a day here and there.",
+    "The port William calls Curta is identified by Rockhill with Korykos. William reached it on 5 May 1255 but sailed for Cyprus from Ayas (his Auax), which is not shown as a separate stop.",
+    "William says he was ordered to stay at Acre and to write to the king. The report was probably written there. Whether William had first come east with Louis's crusade in 1248 is often stated but not proven."
+   ]
+  },
+  {
+   "key": "ibn-battuta",
+   "rec": "W073",
+   "who": "Ibn Battuta",
+   "title": "A Moroccan scholar among the khans",
+   "years": "about 1332 to 1333",
+   "one_line": "Ibn Battuta crosses the Black Sea into the Golden Horde, then rides through Central Asia on his long way to India.",
+   "about": "Ibn Battuta was a Muslim legal scholar from Tangier who spent nearly thirty years travelling. Nobody sent him on this leg: he crossed the Black Sea to the lands of Uzbeg Khan, ruler of the Golden Horde, and then went on through Khwarazm and Transoxiana towards India. He dictated the story in Fez about twenty years later.",
+   "route_note": "The order of the main towns is clear from his book, but every date could be two years later, the Bulghar trip is rejected by scholars, and the steppe camps, the road to Constantinople and the site of Sarai can only be placed roughly.",
+   "stops": [
+    {
+     "name": "Sinope",
+     "modern": "Sinop, Turkey",
+     "lat": 42.03,
+     "lon": 35.15,
+     "exact": true,
+     "when": "about spring 1332",
+     "say": "After travelling through Anatolia he waited here about forty days for a ship, and eleven more for a fair wind, then sailed north across the Black Sea. After storms the ship put him ashore on the open coast near Kerch in Crimea.",
+     "psg": [],
+     "place_id": null
+    },
+    {
+     "name": "Kaffa",
+     "modern": "Feodosia, Crimea",
+     "lat": 45.03416667,
+     "lon": 35.37916667,
+     "exact": true,
+     "when": "about spring 1332",
+     "say": "From the landing place he went by hired wagon to Kaffa, a large port held by the Genoese. The sound of church bells on every side alarmed him.",
+     "psg": [],
+     "place_id": "kaffa"
+    },
+    {
+     "name": "Solkhat (Qirim)",
+     "modern": "Staryi Krym, Crimea",
+     "lat": 45.02916667,
+     "lon": 35.08861111,
+     "exact": true,
+     "when": "about spring 1332",
+     "say": "This was the seat of the khan's governor in Crimea. He bought wagons here and set out across the steppe in the governor's company.",
+     "psg": [],
+     "place_id": "solkhat"
+    },
+    {
+     "name": "Azov (Azaq)",
+     "modern": "Azov, Russia",
+     "lat": 47.10833333,
+     "lon": 39.41805556,
+     "exact": true,
+     "when": "about spring 1332",
+     "say": "He reached Azov after crossing the Kipchak steppe by wagon. On the way he saw great herds grazing with no herdsmen, and was told of the harsh law on theft that kept them safe.",
+     "psg": [
+      "W073-04"
+     ],
+     "place_id": "azov"
+    },
+    {
+     "name": "Uzbeg Khan's camp at Beshtau",
+     "modern": "near Pyatigorsk, Russia",
+     "lat": 44.05,
+     "lon": 43.06,
+     "exact": false,
+     "when": "about May 1332 (start of Ramadan)",
+     "say": "He caught up with the khan's moving camp at the Five Mountains, four days beyond the town of Majar, and was presented to Uzbeg Khan. He says he rode from here to Bulghar on the Volga and back, and was told there of the Land of Darkness, but scholars agree he did not make that trip.",
+     "psg": [
+      "W073-01",
+      "W073-02",
+      "W073-03",
+      "W073-05"
+     ],
+     "place_id": null
+    },
+    {
+     "name": "Astrakhan",
+     "modern": "Astrakhan, Russia",
+     "lat": 46.35,
+     "lon": 48.035,
+     "exact": true,
+     "when": "about June to July 1332",
+     "say": "He travelled with the khan's court to Astrakhan on the Volga, where he says the khan had hay laid over the frozen river as a winter road. From here he set out west with one of the khan's wives, a Byzantine princess going to her father's court.",
+     "psg": [
+      "W073-06"
+     ],
+     "place_id": "astrakhan"
+    },
+    {
+     "name": "The Byzantine frontier fortress",
+     "modern": "perhaps Yambol, Bulgaria",
+     "lat": 42.48,
+     "lon": 26.51,
+     "exact": false,
+     "when": "about August 1332",
+     "say": "At the first Byzantine fortress, which he calls Mahtuli, the khan's emir and his troops turned back and the princess went on with her own people. She left her travelling mosque behind here.",
+     "psg": [
+      "W073-07"
+     ],
+     "place_id": null
+    },
+    {
+     "name": "Constantinople",
+     "modern": "Istanbul, Turkey",
+     "lat": 41.01,
+     "lon": 28.98,
+     "exact": true,
+     "when": "about September to October 1332",
+     "say": "He stayed just over a month in the Byzantine capital, was received by the emperor and saw Hagia Sophia from the outside only. Then he went back across the steppe in the depth of winter.",
+     "psg": [],
+     "place_id": null
+    },
+    {
+     "name": "Sarai",
+     "modern": "probably near Selitrennoye, lower Volga, Russia",
+     "lat": 47.18,
+     "lon": 47.43,
+     "exact": false,
+     "when": "winter of 1332 to 1333",
+     "say": "He returned to Astrakhan, found the khan had moved on to his capital, and followed him for three days up the frozen Volga. He calls Sarai very handsome and very large.",
+     "psg": [
+      "W073-08"
+     ],
+     "place_id": "sarai"
+    },
+    {
+     "name": "Saraichik",
+     "modern": "Saraishyq, on the Ural river, Kazakhstan",
+     "lat": 47.5,
+     "lon": 51.73,
+     "exact": true,
+     "when": "about early 1333",
+     "say": "Ten days from Sarai he reached this town on the Ural river, which was crossed by a bridge of boats. Here he sold his horses and hired camels to pull the wagons across the desert to Khwarazm.",
+     "psg": [],
+     "place_id": null
+    },
+    {
+     "name": "Urgench (Khwarazm)",
+     "modern": "Konye-Urgench, Turkmenistan",
+     "lat": 42.32,
+     "lon": 59.15,
+     "exact": true,
+     "when": "about early 1333",
+     "say": "After thirty more days of forced marches across the desert he reached the capital of Khwarazm, which he calls the largest city of the Turks. It was ruled by an emir for Uzbeg Khan.",
+     "psg": [
+      "W073-09"
+     ],
+     "place_id": "khwarazm"
+    },
+    {
+     "name": "Bukhara",
+     "modern": null,
+     "lat": 39.76666667,
+     "lon": 64.42305556,
+     "exact": true,
+     "when": "about March 1333",
+     "say": "He crossed the desert between Khwarazm and Bukhara in eighteen days and found the city still in ruins from the Mongol conquest a century before. Here he retells a story about the origins of Genghis Khan.",
+     "psg": [
+      "W073-10",
+      "W073-11"
+     ],
+     "place_id": "bukhara"
+    },
+    {
+     "name": "Tarmashirin's camp near Nakhshab",
+     "modern": "near Qarshi, Uzbekistan",
+     "lat": 38.86,
+     "lon": 65.79,
+     "exact": false,
+     "when": "about March to May 1333",
+     "say": "He stayed 54 days, in bitter cold, at the camp of Tarmashirin, the Muslim khan of the Chagatai realm. He later heard that the khan was deposed and killed after he left.",
+     "psg": [
+      "W073-14"
+     ],
+     "place_id": null
+    },
+    {
+     "name": "Samarkand",
+     "modern": null,
+     "lat": 39.65055556,
+     "lon": 66.96527778,
+     "exact": true,
+     "when": "about spring 1333",
+     "say": "From the khan's camp he went to Samarkand. He admired the city, though much of it was in ruins.",
+     "psg": [],
+     "place_id": "samarkand"
+    },
+    {
+     "name": "Termez",
+     "modern": "Termez, Uzbekistan",
+     "lat": 37.22,
+     "lon": 67.28,
+     "exact": true,
+     "when": "about spring 1333",
+     "say": "He came south to Termez and crossed the Oxus river into Khurasan.",
+     "psg": [],
+     "place_id": null
+    },
+    {
+     "name": "Balkh",
+     "modern": "Balkh, Afghanistan",
+     "lat": 36.75805556,
+     "lon": 66.89805556,
+     "exact": true,
+     "when": "about spring 1333",
+     "say": "He found Balkh in ruins, not rebuilt since Genghis Khan destroyed it. He then describes a tour of Khurasan, which scholars doubt, before crossing the Hindu Kush towards India.",
+     "psg": [
+      "W073-13"
+     ],
+     "place_id": "balkh"
+    }
+   ],
+   "left_out": [
+    {
+     "id": "W073-12",
+     "why": "An aside added by the editor Ibn Juzayy about the Mongol war in Iraq in 1258, not something Ibn Battuta saw on this journey"
+    },
+    {
+     "id": "W073-15",
+     "why": "China, a later part of his travels (about 1345)"
+    },
+    {
+     "id": "W073-16",
+     "why": "Hangzhou in China, a later part of his travels (about 1346)"
+    },
+    {
+     "id": "W073-17",
+     "why": "China, a later part of his travels (about 1346)"
+    }
+   ],
+   "doubts": [
+    "Dates: the book's own dates do not fit together. It puts him at the khan's camp on 1 Ramadan 734 (May 1334) but on the Indus on 12 September 1333. H. A. R. Gibb's provisional chronology, followed by Ross Dunn and used here, moves this leg back two years: the camp on 27 May 1332, Constantinople in September and October 1332, Sarai in the winter of 1332 to 1333, Tarmashirin's camp until about May 1333. Ivan Hrbek kept the 1334 date for the camp, which would put every stop here two years later. Even on Gibb's scheme the months are estimates, and Dunn puts the arrival at Sarai in late November 1332 where Gibb has early January 1333.",
+    "Bulghar: he claims a ten night ride from the Beshtau camp to Bulghar on the middle Volga and back within Ramadan. The distance is about 800 miles (1,300 km) each way and the account has no detail of the road. Stephen Janicsek showed in 1929 that it was taken from older books, and Gibb, Hrbek and Dunn agree he did not go. The route line does not go to Bulghar. The Land of Darkness story he says he was told there is shown at the camp stop, where he says the trip began.",
+    "Constantinople: Gibb and Dunn accept the visit, though some earlier critics did not. He says he met the retired emperor, now a monk, whom he calls George. Andronikos II died in February 1332, before any possible date for the visit, and his name as a monk was Antonius, so Ibn Battuta misunderstood or was misled about who the monk was. The reigning emperor who received him was Andronikos III.",
+    "The frontier fortress he calls Mahtuli is not identified. Gibb notes that the Byzantine frontier town at the time was Diampolis (Yambol in Bulgaria) and that the travel times fit it. The stop is placed at Yambol as a rough position only.",
+    "The overland road from Astrakhan to Constantinople and back is not drawn in detail, and Gibb calls it impossible to define. The full text has him pass Ukek and Sudak on the way, which does not fit a road west from Astrakhan. Gibb and Dunn think he saw Sudak earlier, while in Crimea. The map line between Astrakhan and the Byzantine frontier is schematic.",
+    "Sarai: the site he visited is debated. It is placed here at Selitrennoye on the Akhtuba (about 47.18 N, 47.43 E), which more recent archaeological work identifies as the Sarai built up under Uzbeg Khan, and which fits his three days' travel from Astrakhan. Gibb and Dunn followed the older view that Uzbeg's capital was 'New Sarai' at Tsarev, about 225 miles above Astrakhan (about 48.68 N, 45.34 E), a site now often identified as Gulistan instead. The question is not settled. The atlas gazetteer point for Sarai (46.6 N, 47.8 E) is only approximate and was not used.",
+    "The Beshtau camp was a moving camp. The stop is placed at Pyatigorsk by the Beshtau mountain as a rough position. He went from Azov to the town of Majar (on the Kuma river, near modern Budyonnovsk) and found the camp four days further on. Majar is left off as a stop to keep the list short.",
+    "Astrakhan: he was there in summer on Gibb's dating and left on 10 Shawwal (5 July 1332). The hay road on the ice is what he was told of the khan's winter custom, not something he saw on that visit. Lee's abridged text says the khan stays there in the very cold weather. Gibb's full text says he stays until the cold grows severe.",
+    "Tarmashirin's camp was one day beyond Nakhshab (Qarshi) according to the full text. The exact spot is unknown and the stop is a rough position near Qarshi. The full text gives his stay as 54 days. Lee's abridged text says only 'some days'. Tarmashirin was overthrown and killed in about 1334, and Ibn Battuta says he heard of it about two years after reaching India.",
+    "After Balkh he describes a tour through Khurasan (Herat, Jam, Tus, Nishapur, Bistam) before Qunduz and the Hindu Kush. Gibb calls this stretch highly suspect and Dunn calls it doubtful, because it is thin on detail and hard to fit into the time available. The route here ends at Balkh.",
+    "The landing in Crimea was not in Kerch harbour. The ship turned away from it and put him ashore at an unnamed spot on the coast. Kerch is left off as a stop and mentioned at Sinope.",
+    "Why he took the northern road is not stated in his book. The summary gives no motive for that reason.",
+    "Details of Sinope, Kaffa, Solkhat, Majar, Constantinople, Saraichik, Samarkand and Termez come from the full text of the travels (Gibb's translations), not from Lee's 1829 abridgement that the atlas quotes. Those up to Sarai were checked against Gibb's 1962 volume 2. Those from Saraichik to Balkh were checked against Gibb's 1929 selected translation and Dunn, because volume 3 of the full translation could not be opened.",
+    "Urgench uses the gazetteer id for the Khwarazm region, because the atlas files this passage there. The point is the town of Konye-Urgench."
+   ]
+  },
+  {
+   "key": "clavijo",
+   "rec": "W046",
+   "who": "Ruy González de Clavijo",
+   "title": "A Castilian envoy rides to Timur's court",
+   "years": "1403 to 1406",
+   "one_line": "A knight of Madrid travels from Spain to Samarkand and back as envoy of King Henry III of Castile to Timur.",
+   "about": "Ruy González de Clavijo was a knight of Madrid and one of three envoys sent by King Henry III of Castile to Timur, known in Europe as Tamerlane. They sailed from the Bay of Cadiz in May 1403, wintered at Constantinople, crossed Armenia, Persia and Khorasan, and spent the autumn of 1404 at Samarkand, where they attended Timur's feasts and toured his new buildings. The book is a day-by-day account of what they saw and what they were told.",
+   "route_note": "The outward route is well fixed because the book dates most halts, but the positions of Calmarin and of the tent camp in Khorasan are rough, and the return journey is shown only as a single line home.",
+   "stops": [
+    {
+     "name": "Puerto de Santa María",
+     "modern": "El Puerto de Santa María, near Cadiz, Spain",
+     "lat": 36.6,
+     "lon": -6.23,
+     "exact": true,
+     "when": "21 to 22 May 1403",
+     "say": "The three envoys reach this port on the Bay of Cadiz on 21 May 1403 and board their ship the next day. An envoy of Timur who is returning home sails with them.",
+     "psg": [],
+     "place_id": null
+    },
+    {
+     "name": "Constantinople",
+     "modern": "Istanbul, Turkey",
+     "lat": 41.01,
+     "lon": 28.98,
+     "exact": true,
+     "when": "24 October 1403 to 20 March 1404",
+     "say": "The envoys land at Pera, the Genoese suburb, on 24 October 1403. They try to sail on in November but are wrecked near the mouth of the Black Sea, so they spend the winter at Pera and leave again on 20 March 1404.",
+     "psg": [],
+     "place_id": null
+    },
+    {
+     "name": "Trebizond",
+     "modern": "Trabzon, Turkey",
+     "lat": 41.005,
+     "lon": 39.72,
+     "exact": true,
+     "when": "11 to 27 April 1404",
+     "say": "The sea voyage ends here on 11 April 1404. From Trebizond the envoys go on by land, over the mountains to Erzincan and Erzurum.",
+     "psg": [],
+     "place_id": null
+    },
+    {
+     "name": "Calmarin",
+     "modern": "probably Surmari, now the village of Sürmeli on the Aras river in Iğdır province, Turkey",
+     "lat": 40.05,
+     "lon": 43.7,
+     "exact": false,
+     "when": "29 May 1404",
+     "say": "In Armenia, in sight of Mount Ararat, the envoys reach a strong city that locals call the first built after the Flood. The people tell them an 'Emperor of Tartary' sacked and burned it eight years before.",
+     "psg": [
+      "W046-09"
+     ],
+     "place_id": null
+    },
+    {
+     "name": "Khoy",
+     "modern": "Khoy, Iran",
+     "lat": 38.55,
+     "lon": 44.95,
+     "exact": true,
+     "when": "5 to 8 June 1404",
+     "say": "The envoys enter Persia. Here they find an envoy of the Sultan of Egypt who is taking presents to Timur, among them a giraffe, which Clavijo describes with wonder. The two embassies later ride on together to Samarkand.",
+     "psg": [],
+     "place_id": null
+    },
+    {
+     "name": "Tabriz",
+     "modern": null,
+     "lat": 38.06666667,
+     "lon": 46.3,
+     "exact": true,
+     "when": "11 to 20 June 1404",
+     "say": "The envoys rest for nine days in this large, rich trading city before taking the road east.",
+     "psg": [],
+     "place_id": "tabriz"
+    },
+    {
+     "name": "Sultaniyeh",
+     "modern": "Soltaniyeh, Iran",
+     "lat": 36.43416667,
+     "lon": 48.79444444,
+     "exact": true,
+     "when": "26 to 29 June 1404",
+     "say": "A busy market city, where the envoys are received by Timur's son Miran Shah.",
+     "psg": [],
+     "place_id": "sultaniyeh"
+    },
+    {
+     "name": "Tehran",
+     "modern": null,
+     "lat": 35.6889,
+     "lon": 51.3897,
+     "exact": true,
+     "when": "6 to 8 July 1404",
+     "say": "The envoys rest at Tehran, which Clavijo calls a large and pleasant town without walls. Soon after leaving they pass the ruins of the old city of Rayy.",
+     "psg": [],
+     "place_id": "tehran"
+    },
+    {
+     "name": "Damghan",
+     "modern": "Damghan, Iran",
+     "lat": 36.17,
+     "lon": 54.35,
+     "exact": true,
+     "when": "17 July 1404",
+     "say": "Outside the town the envoys see two towers built of mud and human heads, and two more that have fallen. They are told these are the heads of 'white Tartars' killed by Timur's army.",
+     "psg": [
+      "W046-11"
+     ],
+     "place_id": null
+    },
+    {
+     "name": "Nishapur",
+     "modern": "Nishapur, Iran",
+     "lat": 36.21,
+     "lon": 58.8,
+     "exact": true,
+     "when": "26 to 27 July 1404",
+     "say": "One of the three envoys, Gómez de Salazar, is carried into the city too ill to ride, and dies here. The others ride on the next day, pressed forward by Timur's officers.",
+     "psg": [],
+     "place_id": null
+    },
+    {
+     "name": "Mashhad",
+     "modern": "Mashhad, Iran",
+     "lat": 36.3,
+     "lon": 59.61,
+     "exact": true,
+     "when": "30 July 1404",
+     "say": "The envoys visit the great shrine of the imam here, then go on by Tus and across a desert in Khorasan.",
+     "psg": [],
+     "place_id": null
+    },
+    {
+     "name": "Tent camp in Khorasan",
+     "modern": "a river valley east of Mashhad, probably on the Tejen river near Sarakhs, on today's border of Iran and Turkmenistan",
+     "lat": 36.5,
+     "lon": 61.2,
+     "exact": false,
+     "when": "2 August 1404",
+     "say": "After two days and nights in the desert the envoys reach a river valley full of the tents of the Zagatays, Timur's own people. Clavijo notes that they have no other homes, and move with the seasons to sow corn, cotton and melons by the rivers.",
+     "psg": [
+      "W046-02"
+     ],
+     "place_id": null
+    },
+    {
+     "name": "The Oxus at Termez",
+     "modern": "Termez, Uzbekistan",
+     "lat": 37.22,
+     "lon": 67.28,
+     "exact": true,
+     "when": "21 August 1404",
+     "say": "Three days after passing Balkh the envoys cross the great river Oxus, today the Amu Darya, on a bridge of boats built for Timur's army. The same afternoon they reach the city of Termez on the far bank.",
+     "psg": [],
+     "place_id": null
+    },
+    {
+     "name": "Kesh",
+     "modern": "Shahrisabz, Uzbekistan",
+     "lat": 39.06,
+     "lon": 66.83,
+     "exact": true,
+     "when": "28 to 29 August 1404",
+     "say": "At Timur's birthplace the envoys tour great palaces of brick and glazed tile, still being built. Clavijo sees a lion and sun over a doorway and doubts that Timur began the work. Here he also sets down what he was told of Timur's rise and of how his people came to be called Zagatays.",
+     "psg": [
+      "W046-03",
+      "W046-01"
+     ],
+     "place_id": null
+    },
+    {
+     "name": "Samarkand",
+     "modern": null,
+     "lat": 39.65055556,
+     "lon": 66.96527778,
+     "exact": true,
+     "when": "31 August to 21 November 1404",
+     "say": "The envoys reach a garden outside the city on 31 August, and Timur receives them on 8 September 1404. For about two months they attend his feasts in gardens and a great tent camp outside the city, and Clavijo describes the city and its people. They leave on 21 November without a farewell audience.",
+     "psg": [
+      "W046-05",
+      "W046-06",
+      "W046-04",
+      "W046-07",
+      "W046-12",
+      "W046-08",
+      "W046-13",
+      "W046-10"
+     ],
+     "place_id": "samarkand"
+    },
+    {
+     "name": "Alcalá de Henares",
+     "modern": "Alcalá de Henares, Spain",
+     "lat": 40.48,
+     "lon": -3.36,
+     "exact": true,
+     "when": "March 1406",
+     "say": "The envoys go home by way of Bukhara, Tabriz, Trebizond, Constantinople and Genoa. They are held at Tabriz for almost six months in 1405 by the unrest after Timur's death. They land in Spain in March 1406 and report to King Henry here later that month.",
+     "psg": [],
+     "place_id": null
+    }
+   ],
+   "left_out": [],
+   "doubts": [
+    "Calmarin: Le Strange's 1928 translation identifies it with medieval Surmari (Surmalu, today Sürmeli) on the south bank of the Aras. Markham's 1859 note guessed Etchmiadzin, with a question mark. The point shown is rough. The date, 29 May 1404, is in the text.",
+    "The Calmarin story is dated 'about 1395' in the atlas because locals said the sack was eight years earlier. Le Strange's note says Timur himself stormed Surmari in 1387, so who sacked it and when is open. The stop only reports what Clavijo was told. The same passage also mentions Cusacana, passed on 9 June after Khoy, which is not given its own stop.",
+    "The Zagatay tent camp (page 112) is the one reached on 2 August 1404, two days past Mashhad. The 1859 edition does not name the river. Le Strange says it is the Tejen near Sarakhs, so the point is placed there as a rough position. The 1859 edition misprints this date and the one before it.",
+    "The account of the Zagatays (page 129) is told in the Kesh pages of the book, just before the envoys leave Kesh, so it is placed at Kesh. The atlas labels it Samarkand because it is about the people of Samarkand. Either stop can be defended.",
+    "The Tokhtamysh story (page 176) is told in the chapter on the city of Samarkand, where Clavijo says he will relate it 'in this place' after describing the city. It is therefore placed at Samarkand. The book does not say who told it to him. The battle itself was fought far away, north of the Caucasus.",
+    "The Amazon legend (page 175) is in the same Samarkand chapter. The land it describes lies well beyond the route.",
+    "The Egyptian envoy: the text calls him the envoy of the 'Sultan of Babylon', which the editors read as Cairo. The envoys found him at Khoy. The text says the two parties travelled in company from mid July, after leaving Timur's son-in-law near Tehran. Le Strange's introduction says they travelled together all the way from Khoy.",
+    "Sultaniyeh: the 1859 edition prints the arrival as 'Thursday, the 22nd of June', a misprint. The days of the week before and after it give Thursday 26 June 1404.",
+    "Gómez de Salazar: the text says he was carried into Nishapur on 26 July 1404 and ended his days there. It does not give the day of his death, and the others left on 27 July.",
+    "The embarkation: Markham has the envoys get under way on Tuesday 22 May 1403. Le Strange has them cross the bay to the ship at Cadiz on 22 May and set sail on Wednesday 23 May.",
+    "The return: the text says the envoys landed at Sanlúcar on Sunday 1 March 1406 and reached the king at Alcalá de Henares on Monday 24 March 1406. Those days of the week do not fit those dates, and Le Strange corrects them to 7 and 22 March. Only the month is given at the stop.",
+    "Miran Shah is called Timur's eldest son in the text. Modern accounts make him the third son, so the stop says only 'son'.",
+    "Erzincan, Erzurum, Rayy, Tus, Andkhoy and Balkh are known halts left off the stop list to keep it within sixteen. The return journey is one line from Samarkand to Spain and does not trace the real road back.",
+    "Checked against the full text of Markham's 1859 translation and Le Strange's 1928 translation. The Encyclopaedia Iranica article could not be opened during the check."
+   ]
+  },
+  {
+   "key": "ides",
+   "rec": "W006",
+   "who": "Evert Ysbrants Ides",
+   "title": "The tsars' envoy rides to Peking",
+   "years": "1692 to 1695",
+   "one_line": "A merchant in Russian service carries the tsars' letter from Moscow across Siberia to the Kangxi emperor in Peking, and comes home again.",
+   "about": "Evert Ysbrants Ides, also called Isbrand Ides, was a Holstein-born merchant living in Moscow. The tsars Ivan and Peter sent him as their envoy to the Kangxi emperor of China, three years after the Treaty of Nerchinsk had fixed the border between the two empires. He left Moscow in March 1692, reached Peking in November 1693, and was back in Moscow at the start of 1695.",
+   "route_note": "The Russian towns and the dates come from Ides's own book and are firm, but the stretch from the Argun across Manchuria and eastern Inner Mongolia to the Great Wall is rough, because he names few places there that can be fixed today.",
+   "stops": [
+    {
+     "name": "Moscow",
+     "modern": null,
+     "lat": 55.75583333,
+     "lon": 37.61777778,
+     "exact": true,
+     "when": "14 March 1692",
+     "say": "Ides sets out by sledge with his retinue. Heavy rain and floods make the first days to Vologda hard going.",
+     "psg": [],
+     "place_id": "moscow"
+    },
+    {
+     "name": "Veliky Ustyug",
+     "modern": null,
+     "lat": 60.76666667,
+     "lon": 46.3,
+     "exact": true,
+     "when": "late March 1692",
+     "say": "From Vologda he follows the Sukhona river north to Veliky Ustyug, then goes on through Solvychegodsk and the Komi country toward the Kama.",
+     "psg": [],
+     "place_id": "veliky-ustyug"
+    },
+    {
+     "name": "Solikamsk",
+     "modern": "Solikamsk, Perm Krai",
+     "lat": 59.65,
+     "lon": 56.77,
+     "exact": true,
+     "when": "27 April to 14 May 1692",
+     "say": "The winter road over the Urals by Verkhoturye is closed by the thaw. Ides waits here, then takes boats down the Kama to go up the Chusovaya instead.",
+     "psg": [],
+     "place_id": null
+    },
+    {
+     "name": "Chusovaya River",
+     "modern": "Chusovaya river, in the Ural hills",
+     "lat": 57.6,
+     "lon": 58.9,
+     "exact": false,
+     "when": "25 May 1692",
+     "say": "After twelve days of towing the boats upstream, Ides lands among the Voguls, today's Mansi, whom he calls the first Siberian Tartars. He spends a night with them and asks about their houses and their religion.",
+     "psg": [
+      "W006-01",
+      "W006-03",
+      "W006-02"
+     ],
+     "place_id": null
+    },
+    {
+     "name": "Tobolsk",
+     "modern": null,
+     "lat": 58.2,
+     "lon": 68.26666667,
+     "exact": true,
+     "when": "1 to 22 July 1692",
+     "say": "He reaches the capital of Siberia by way of Utka, Nevyansk and Tyumen, and stays three weeks. He describes the Russian upper town and the Tatar lower town, visits a mosque, and writes down the story of Yermak's conquest.",
+     "psg": [
+      "W006-04",
+      "W006-06",
+      "W006-05"
+     ],
+     "place_id": "tobolsk"
+    },
+    {
+     "name": "Samarovsky Yam",
+     "modern": "Khanty-Mansiysk",
+     "lat": 61.0,
+     "lon": 69.0,
+     "exact": true,
+     "when": "late July 1692",
+     "say": "The boats go down the Irtysh to this posting station, where the Irtysh meets the Ob. From here the embassy works its way up the Ob past Surgut and Narym, then up the Ket.",
+     "psg": [],
+     "place_id": null
+    },
+    {
+     "name": "Yeniseisk",
+     "modern": null,
+     "lat": 58.46666667,
+     "lon": 92.13333333,
+     "exact": true,
+     "when": "12 October 1692",
+     "say": "After five hungry weeks on the Ket, with the river about to freeze, Ides crosses overland from Makovsk to Yeniseisk. He waits here until the roads are frozen hard enough for sledges.",
+     "psg": [],
+     "place_id": "yeniseisk"
+    },
+    {
+     "name": "Irkutsk",
+     "modern": null,
+     "lat": 52.2892,
+     "lon": 104.28,
+     "exact": true,
+     "when": "February 1693",
+     "say": "He travels by sledge up the Tunguska and Angara rivers, passing the fort at Bratsk on 1 February, and rests a short while at Irkutsk.",
+     "psg": [],
+     "place_id": "irkutsk"
+    },
+    {
+     "name": "Lake Baikal",
+     "modern": "Southern Lake Baikal",
+     "lat": 51.9,
+     "lon": 105.4,
+     "exact": false,
+     "when": "10 March 1693",
+     "say": "Ides leaves Irkutsk on 1 March and finds the lake frozen hard. He crosses the ice by sledge to the eastern shore and goes on to Udinsk, where he waits until 6 April for camels and horses.",
+     "psg": [],
+     "place_id": "baikal"
+    },
+    {
+     "name": "Nerchinsk",
+     "modern": "Nerchinsk, Zabaykalsky Krai",
+     "lat": 51.99444444,
+     "lon": 116.55555556,
+     "exact": true,
+     "when": "20 May to 18 July 1693",
+     "say": "The embassy stays some weeks to gather camels, horses, oxen and food for the crossing to China. Ides describes the mounted Tungus around the town, their yurts and their mare's milk spirit.",
+     "psg": [
+      "W006-11",
+      "W006-12"
+     ],
+     "place_id": "nerchinsk"
+    },
+    {
+     "name": "Argun River",
+     "modern": "Argun river, on the border of Russia and China",
+     "lat": 51.0,
+     "lon": 119.5,
+     "exact": false,
+     "when": "3 to 8 August 1693",
+     "say": "Ides reaches Argunsk, the last Russian fort, on 3 August and fords the Argun on 8 August. On the road from Nerchinsk he notes many old, fallen stone castles in the valleys.",
+     "psg": [
+      "W006-07"
+     ],
+     "place_id": "argun"
+    },
+    {
+     "name": "Tsitsihar",
+     "modern": "Qiqihar, Heilongjiang",
+     "lat": 47.35,
+     "lon": 123.92,
+     "exact": false,
+     "when": "September 1693",
+     "say": "After crossing the Khingan hills by the Yal river, he is met by a Chinese official near the Naun river. He rests among the Daur people at the place he calls Xixigar and leaves on 28 September.",
+     "psg": [],
+     "place_id": null
+    },
+    {
+     "name": "Taimingzingh",
+     "modern": "Probably the ruined Liao city at Ningcheng, Inner Mongolia",
+     "lat": 41.57,
+     "lon": 119.15,
+     "exact": false,
+     "when": "October 1693",
+     "say": "Riding south for days without seeing a house, the embassy passes two deserted walled cities. At the second Ides studies a tall eight-sided brick tower with carved figures, and stone lions and tortoises lying among the ruins.",
+     "psg": [
+      "W006-08",
+      "W006-09",
+      "W006-10"
+     ],
+     "place_id": null
+    },
+    {
+     "name": "Great Wall",
+     "modern": "Probably the Xifengkou pass, Hebei",
+     "lat": 40.42,
+     "lon": 118.32,
+     "exact": false,
+     "when": "27 October 1693",
+     "say": "Ides sees the wall from watchtowers on the rocks and passes through its gates the same day. He calls it one of the wonders of the world.",
+     "psg": [],
+     "place_id": "great-wall"
+    },
+    {
+     "name": "Peking",
+     "modern": "Beijing",
+     "lat": 39.90666667,
+     "lon": 116.3975,
+     "exact": true,
+     "when": "3 November 1693 to 19 February 1694",
+     "say": "Ides enters the city with ninety riders and is received by the Kangxi emperor, who has a gold cup of kumis handed to him. He stays the winter, sees the New Year festival, and notes that Manchu 'Tartars' live inside the walls.",
+     "psg": [
+      "W006-13",
+      "W006-14",
+      "W006-15"
+     ],
+     "place_id": "beijing"
+    },
+    {
+     "name": "Nerchinsk",
+     "modern": "Nerchinsk, Zabaykalsky Krai",
+     "lat": 51.99444444,
+     "lon": 116.55555556,
+     "exact": true,
+     "when": "summer 1694",
+     "say": "The return goes back by the Naun and the Argun. A grass fire and a barren stretch of steppe cost the caravan many animals before it reaches Nerchinsk.",
+     "psg": [],
+     "place_id": "nerchinsk"
+    },
+    {
+     "name": "Tobolsk",
+     "modern": null,
+     "lat": 58.2,
+     "lon": 68.26666667,
+     "exact": true,
+     "when": "29 October 1694",
+     "say": "From Nerchinsk he returns by Udinsk, Irkutsk, Yeniseisk, the Ket and the Ob. He rests three weeks at Tobolsk and then takes the winter road over the Urals by Verkhoturye.",
+     "psg": [],
+     "place_id": "tobolsk"
+    },
+    {
+     "name": "Moscow",
+     "modern": null,
+     "lat": 55.75583333,
+     "lon": 37.61777778,
+     "exact": true,
+     "when": "1 January 1695",
+     "say": "Ides arrives by sledge, by his own count two years and ten months after he left.",
+     "psg": [],
+     "place_id": "moscow"
+    }
+   ],
+   "left_out": [
+    {
+     "id": "W006-17",
+     "why": "Ides did not cross the Baraba steppe on this journey. He went by the Ob both ways. This comes from the survey of Siberia he added after the travel account, and rests on what he was told."
+    },
+    {
+     "id": "W006-18",
+     "why": "Same Baraba section of the added survey of Siberia. Hearsay about a people who were not on his route."
+    },
+    {
+     "id": "W006-16",
+     "why": "From the added survey, describing the Khalkha Mongol lands as a whole. His road ran east of them, and the remark is not tied to any place he stopped."
+    }
+   ],
+   "doubts": [
+    "All dates are as printed in the 1706 English edition, which follows the old Russian calendar. Some day numbers are damaged in the scan I checked, so a few are given only to the month.",
+    "The day he left Peking reads as the 19th of February 1694 in the scanned text, but the digit is damaged. Some reference works give his return to Moscow as 1 February 1695, while the 1706 text says the first of January.",
+    "Taimingzingh is placed at the ruined Liao Central Capital at Ningcheng (Daming), which has a tall eight-sided brick pagoda with carved figures and a smaller one. The name and the towers fit, but Ides's count of travel days from the Naun seems short for that distance, so the match is likely rather than certain.",
+    "Ides does not name the gate where he passed the Great Wall. The towns he names next, which look like Jizhou and Tongzhou, point to the Xifengkou road, but this is my inference. On the return he says he went out by 'Galgan', so the two crossings may not be the same.",
+    "His 'Xixigar' was a frontier settlement beside the newly built town on the Naun river. I have placed it at modern Qiqihar, which is approximate.",
+    "The Vogul landing place on the Chusovaya is not named. It was some days below Utka, so the point is a rough position on the middle river.",
+    "The passage calling the emperor an 'East Tartar' comes from the closing survey (page 109), not the Peking chapters. I put it at Peking because it is Ides's own remark about the emperor and the city.",
+    "The date of the audience with the emperor is unclear in the scan (11th or 12th to 14th of November 1693), so the stop gives no day for it.",
+    "There are 18 stops, two over the suggested 16, because the return leg needed at least two waypoints to keep the line on the real route."
+   ]
+  },
+  {
+   "key": "bell",
+   "rec": "W001",
+   "who": "John Bell",
+   "title": "A Scottish doctor rides to Peking",
+   "years": "1719 to 1722",
+   "one_line": "John Bell travels with a Russian embassy from St Petersburg across Siberia and Mongolia to the emperor of China at Peking, and back.",
+   "about": "John Bell was a Scottish doctor in Russian service. Peter the Great sent Lev Izmailov as ambassador to the Kangxi emperor, and Bell asked to go in his train. They crossed Siberia by boat and sledge, waited a summer on the Mongolian border, crossed the Gobi to Peking, and got back to Moscow in January 1722.",
+   "route_note": "The towns and dates come from Bell's own journal, but the Baraba, Tola and Gobi stops are rough positions, the line from Kazan to Tobolsk skips his road by Solikamsk and Verkhoturye, and the return leg is drawn only through Surgut, though he also came back through Kalgan, Selenginsk, Irkutsk, Yeniseisk and Tobolsk.",
+   "stops": [
+    {
+     "name": "St Petersburg",
+     "modern": null,
+     "lat": 59.9375,
+     "lon": 30.30861111,
+     "exact": true,
+     "when": "14 July 1719",
+     "say": "Bell sets out for Moscow with two companions, to join the embassy of Lev Izmailov to China. The ambassador travels separately and passes them on the road.",
+     "psg": [],
+     "place_id": "st-petersburg"
+    },
+    {
+     "name": "Moscow",
+     "modern": null,
+     "lat": 55.75583333,
+     "lon": 37.61777778,
+     "exact": true,
+     "when": "30 July to 9 September 1719",
+     "say": "Bell joins the ambassador at Moscow. The party spends five weeks getting boats and supplies ready, then rows down the Moskva and Oka rivers to the Volga.",
+     "psg": [],
+     "place_id": "moscow"
+    },
+    {
+     "name": "Kazan",
+     "modern": null,
+     "lat": 55.79638889,
+     "lon": 49.10888889,
+     "exact": true,
+     "when": "20 October to 28 November 1719",
+     "say": "Bell knew Kazan from his earlier journey to Persia. With frost coming on, the embassy leaves its boats here, waits about five weeks for snow and takes to sledges for the road north-east over the Urals.",
+     "psg": [],
+     "place_id": "kazan"
+    },
+    {
+     "name": "Tobolsk",
+     "modern": null,
+     "lat": 58.2,
+     "lon": 68.26666667,
+     "exact": true,
+     "when": "16 December 1719 to 9 January 1720",
+     "say": "The embassy rests at the capital of Siberia. Bell describes the Russian town on the hill and the Tatar streets below, and buys scrolls said to come from the Seven Palaces far up the Irtysh, a ruin he hears about but does not see.",
+     "psg": [
+      "W001-07",
+      "W001-03"
+     ],
+     "place_id": "tobolsk"
+    },
+    {
+     "name": "Tara, on the Irtysh",
+     "modern": null,
+     "lat": 56.9,
+     "lon": 74.37,
+     "exact": true,
+     "when": "15 January 1720",
+     "say": "The sledges follow the banks of the Irtysh from one Tatar village to the next and reach Tara in six days. On the way the party sleeps in Tatar log huts, where a pane of ice serves as the window.",
+     "psg": [
+      "W001-02"
+     ],
+     "place_id": "tara"
+    },
+    {
+     "name": "Baraba steppe",
+     "modern": "between Tara and the Ob, Russia",
+     "lat": 55.75,
+     "lon": 78.0,
+     "exact": false,
+     "when": "19 to 29 January 1720",
+     "say": "The party takes ten days to cross the Baraba to the Ob. On the way it visits a well known woman shaman, and Bell watches her bring out her spirit image and drum.",
+     "psg": [
+      "W001-11"
+     ],
+     "place_id": "baraba-steppe"
+    },
+    {
+     "name": "Tomsk",
+     "modern": null,
+     "lat": 56.5,
+     "lon": 84.96666667,
+     "exact": true,
+     "when": "4 to 12 February 1720",
+     "say": "At Tomsk Bell hears of the grave mounds on the plain eight or ten days to the south, which people dig each summer for gold and silver. He sees some of the finds himself.",
+     "psg": [
+      "W001-04"
+     ],
+     "place_id": "tomsk"
+    },
+    {
+     "name": "Yeniseisk",
+     "modern": "Yeniseysk, Russia",
+     "lat": 58.46666667,
+     "lon": 92.13333333,
+     "exact": true,
+     "when": "23 to 27 February 1720",
+     "say": "A halt of four days on the Yenisei. From here the sledges run on the ice of the Yenisei and then the Tunguska, as Bell calls the lower Angara.",
+     "psg": [],
+     "place_id": "yeniseisk"
+    },
+    {
+     "name": "Ilimsk",
+     "modern": "site now under the Ust-Ilimsk reservoir, Irkutsk Oblast, Russia",
+     "lat": 56.77,
+     "lon": 103.79,
+     "exact": true,
+     "when": "9 to 12 March 1720",
+     "say": "The party leaves the Tunguska and goes up the Ilim to this small town. It then cuts through thick woods to the Angara and follows that river up to Irkutsk.",
+     "psg": [],
+     "place_id": null
+    },
+    {
+     "name": "Irkutsk",
+     "modern": null,
+     "lat": 52.2892,
+     "lon": 104.28,
+     "exact": true,
+     "when": "18 March to 15 May 1720",
+     "say": "The embassy reaches Irkutsk at the end of winter and waits for the ice on Lake Baikal to break up. In the middle of May it crosses the lake by boat and goes up the Selenga.",
+     "psg": [],
+     "place_id": "irkutsk"
+    },
+    {
+     "name": "Selenginsk",
+     "modern": "Novoselenginsk, Buryatia, Russia",
+     "lat": 51.1,
+     "lon": 106.65,
+     "exact": true,
+     "when": "29 May to 9 September 1720",
+     "say": "The party waits all summer at this border town for a guide from Peking and leave to enter China. In this part of his book Bell describes the Mongols, who live in tents and keep no houses, and the three great princes between the Volga and the Great Wall.",
+     "psg": [
+      "W001-05",
+      "W001-18"
+     ],
+     "place_id": null
+    },
+    {
+     "name": "The Tola river",
+     "modern": "near Ulaanbaatar, Mongolia",
+     "lat": 47.92194444,
+     "lon": 106.91527778,
+     "exact": false,
+     "when": "2 to 4 October 1720",
+     "say": "The embassy fords the Tola river in the lands of the Tushetu Khan and changes horses and camels. Bell did not see the Urga, the moving tent city of the prince and the high lama, but he had written down at Selenginsk what Mongols told him about it.",
+     "psg": [
+      "W001-16"
+     ],
+     "place_id": "urga"
+    },
+    {
+     "name": "The Gobi",
+     "modern": "south-eastern Mongolia",
+     "lat": 44.3,
+     "lon": 111.0,
+     "exact": false,
+     "when": "October 1720",
+     "say": "About four weeks of travel from well to well across the dry, treeless plain that Bell calls the Hungry Desert, on the caravan line toward the Great Wall.",
+     "psg": [],
+     "place_id": null
+    },
+    {
+     "name": "The Great Wall at Kalgan",
+     "modern": "Zhangjiakou, Hebei, China",
+     "lat": 40.77,
+     "lon": 114.88,
+     "exact": true,
+     "when": "2 to 5 November 1720",
+     "say": "Bell first sees the wall on 2 November, running along the mountain tops. On 5 November the embassy passes through a great guarded gate and lodges at the town of Kalgan a few miles on.",
+     "psg": [],
+     "place_id": null
+    },
+    {
+     "name": "Peking",
+     "modern": "Beijing, China",
+     "lat": 39.90666667,
+     "lon": 116.3975,
+     "exact": true,
+     "when": "18 November 1720 to 2 March 1721",
+     "say": "The embassy enters Peking on 18 November 1720 and lodges in the Tartar city. The Kangxi emperor first receives the ambassador on 28 November, and over the winter Bell walks the streets and writes down what he is told of Chinese history.",
+     "psg": [
+      "W001-08",
+      "W001-12",
+      "W001-17"
+     ],
+     "place_id": "beijing"
+    },
+    {
+     "name": "Surgut, on the Ob",
+     "modern": "Surgut, Russia",
+     "lat": 61.25,
+     "lon": 73.42,
+     "exact": true,
+     "when": "11 to 12 September 1721",
+     "say": "On the way home the party goes back through Siberia by boat, down the Angara, the Ket and the Ob to Surgut. The commandant here gives Bell a mammoth tusk, and Bell writes about the tusks found in Siberia and the stories told about the animal.",
+     "psg": [
+      "W001-15"
+     ],
+     "place_id": null
+    },
+    {
+     "name": "Moscow",
+     "modern": null,
+     "lat": 55.75583333,
+     "lon": 37.61777778,
+     "exact": true,
+     "when": "5 January 1722",
+     "say": "After waiting at Tobolsk for snow, the embassy goes on by sledge and arrives back at Moscow, where the court then was. The journey ends here.",
+     "psg": [],
+     "place_id": "moscow"
+    }
+   ],
+   "left_out": [
+    {
+     "id": "W001-01",
+     "why": "From Bell's earlier journey to Persia (1716, Saratov), not the Peking journey"
+    },
+    {
+     "id": "W001-06",
+     "why": "From Bell's earlier journey to Persia (winter of 1715 to 1716 at Kazan), not the Peking journey"
+    },
+    {
+     "id": "W001-09",
+     "why": "From Bell's earlier journey to Persia (1716, Volga Kalmyks), not the Peking journey"
+    },
+    {
+     "id": "W001-10",
+     "why": "From Bell's earlier journey to Persia (1716, Volga Kalmyks), not the Peking journey"
+    },
+    {
+     "id": "W001-14",
+     "why": "From Bell's earlier journey to Persia (1716, Astrakhan steppe), not the Peking journey"
+    },
+    {
+     "id": "W001-13",
+     "why": "From the 1722 Derbent campaign with Peter the Great, after the Peking journey had ended"
+    }
+   ],
+   "doubts": [
+    "All day-level dates are Bell's own, read from the 1763 Glasgow edition, and are presumably in the Old Style calendar used in Russia at the time. A few were checked in a second scan because the first was badly printed (9 September 1719, 9 January 1720, 9 March 1720).",
+    "Bell gives 5 January 1722 for the arrival at Moscow. The Dictionary of National Biography gives 6 January. The stop follows Bell.",
+    "Some modern summaries give 18 December 1720 for the entry into Peking. Bell's text gives 18 November 1720, which fits his 'exactly sixteen months' from July 1719 and his date of 28 November for the first audience.",
+    "Bell is usually described as the embassy's doctor. In the book he says only that he asked to make the journey in the ambassador's train, so the text does not call him the embassy's physician.",
+    "Bell did not see the Seven Palaces (Semipalatinsk). He heard about the ruin and bought the scrolls at Tobolsk, so that passage sits at Tobolsk, not on the upper Irtysh.",
+    "Bell does not say he saw the Urga. He places it about six days south-east of Selenginsk and describes it from hearsay in his Selenginsk chapter (page 280 of volume 1). The embassy forded the Tola on 3 October 1720, but the exact ford is not known, and the Urga was a moving camp, so the modern Ulaanbaatar point is only a rough position for both.",
+    "The Gobi point is a rough mid-point on the line from the Tola to Kalgan, not a documented camp. It is not the gazetteer's Gobi point, which lies far to the west of the route. Bell names many wells on the way, but they were not located.",
+    "Bell does not name the gate where he passed the Great Wall. He says only that Kalgan lay about four miles beyond it, so the stop is placed at Kalgan (Zhangjiakou).",
+    "The Baraba point is the middle of the steppe. Bell does not say where on the ten day crossing the shaman lived.",
+    "Ilimsk was flooded by the Ust-Ilimsk reservoir in the 1970s. The point given is the old town site.",
+    "The mammoth passage is in Bell's entry for Surgut (11 September 1721), but the stories of the living animal were told to him by Tatars in the Baraba, and he saw tusks in many towns between Tobolsk and Yeniseisk.",
+    "Selenginsk is placed at modern Novoselenginsk. The old town stood on the opposite, eastern bank of the Selenga a short distance away.",
+    "With Ilimsk added there are 17 stops, one more than the suggested 16. The return leg is still drawn as one jump from Peking to Surgut and one from Surgut to Moscow."
+   ]
+  }
+ ]
+}
