@@ -121,6 +121,13 @@ check(len(on) >= 12 and not bad and len(dj['stops']) == len(on) + len(DL['early'
       f"dial: {len(on)} maps, each a Library of Congress sheet with 25 or more matched places, its bent picture in the site and its Tartary lettering on the sheet ({bad[:4]})")
 check([s['y'] for s in dj['stops']] == sorted(s['y'] for s in dj['stops']) and all(0 <= s['p'] <= 1 for s in dj['stops']) and dl.count('class="dial-stop') == len(dj['stops']), 'dial: the stops run in date order along the scale')
 check('—' not in json.dumps(DL, ensure_ascii=False) and '–' not in json.dumps([[m['says'], m.get('uncertain'), m['head']] for m in DL['maps']] + DL['early'], ensure_ascii=False), 'dial: no dash in the words a visitor reads')
+lands = [(m['key'], ln) for m in on for ln in m.get('lands', [])]
+badl = [k for k, ln in lands if len(ln.get('frame') or []) < 3 or ln.get('basis') not in ('border', 'colour', 'lettering', 'sheet') or ln.get('sure') not in ('firm', 'fair', 'loose')
+        or not ln.get('km2') or (ln.get('inside') and ln['inside'] not in [o['name'] for kk, o in lands if kk == k])]
+check(len(lands) >= 40 and not badl and all('lands' in m for m in on) and dl.count('class="dland-c"') == len(lands) and dl.count('<a class="dial-cell') == len(on),
+      f"dial: {len(lands)} outlines, each carried onto the earth, measured, with how its limit was found, drawn on the dial and on the wall of outlines ({badl[:4]})")
+ps = [s_['p'] for s_ in dj['stops']]
+check(min(b - a for a, b in zip(ps, ps[1:])) > 0.02 and 'class="today"' in dl and 'Keep earlier outlines' in dl, "dial: no two stops crowd each other on the scale; today's countries lie under the sheet")
 check('class="dial-door-a"' in front and 'Turn the dial' in (D/'maps/index.html').read_text() and 'Turn the dial' in (D/'labels/index.html').read_text() and 'Turn the dial' in (D/'archive/index.html').read_text(),
       'dial: doors on the front page, the map room, the many Tartarys and the vault')
 # 4. em dashes

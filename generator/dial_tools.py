@@ -3,22 +3,26 @@
 
 Reads data/dial.json. Every map there names its Library of Congress picture, a list of matched places (a point on
 the sheet in full-resolution pixels and the same place on the real earth) and the labels lettered on it (a line
-through the lettering and its height). From the matched places a smooth bend (a thin plate spline) is fitted, the
-sheet is redrawn on one shared sheet of the real earth, and each label's footprint is carried across with it.
+through the lettering and its height) and the lands it gives to each Tartary name (a ring round the ground, and
+whether the limit is a drawn border, a colour or only the spread of the lettering). From the matched places a smooth bend (a thin plate spline) is fitted, the
+sheet is redrawn on one shared sheet of the real earth, and each label's footprint and each land's ring is carried across with it. Each land is then
+measured and laid over today's countries (static/basemap/countries.json).
 
 Only Library of Congress pictures are bent, because the results are copied into the site (static/dial/).
 
-Needs Pillow, numpy, scipy and OpenCV.
+Needs Pillow, numpy, scipy, OpenCV and shapely.
 
   python3 generator/dial_tools.py view  <key|iiif base> x y w h out.jpg    a piece of a sheet with a pixel grid drawn on it
   python3 generator/dial_tools.py check <work.json>                        fit one map, print how well, draw two check pictures
-  python3 generator/dial_tools.py build                                    bend every map in data/dial.json into static/dial/
+  python3 generator/dial_tools.py build [key ...]                          bend every map in data/dial.json (or the named ones) into static/dial/
+  python3 generator/dial_tools.py countries <ne_50m_admin_0_countries.geojson>   write static/basemap/countries.json
 """
 import json
 import math
 import pathlib
 import subprocess
 import sys
+import time
 
 import cv2
 import numpy as np
@@ -64,17 +68,19 @@ def unproject(px, py):
     return np.degrees(th / N_CONE + LAM0), np.degrees(G_CONE - rho / R_KM)
 
 
-def curl(url, out, tries=4):
+def curl(url, out, tries=6):
     out = pathlib.Path(out)
     out.parent.mkdir(parents=True, exist_ok=True)
-    for _ in range(tries):
-        subprocess.run(["curl", "-sS", "-m", "180", "--retry", "2", "-A", UA, "-o", str(out), url], capture_output=True)
+    for k in range(tries):
+        # the library's picture server drops HTTP/2 streams under load, so ask plainly and wait longer each time
+        subprocess.run(["curl", "-sS", "--http1.1", "-m", "180", "--retry", "2", "-A", UA, "-o", str(out), url], capture_output=True)
         if out.exists() and out.stat().st_size > 2000:
             try:
-                Image.open(out).verify()
+                Image.open(out).load()
                 return out
             except Exception:
                 pass
+        time.sleep(3 + 6 * k)
     raise SystemExit(f"could not fetch {url}")
 
 
@@ -181,38 +187,58 @@ def source_picture(m):
     out = CACHE / "src" / f"{key}.jpg"
     if not (out.exists() and out.stat().st_size > 50000):
         # the library blurs a picture it is asked to enlarge, so a small scan is taken at its own size
-        size = "full" if max(m["size"]) <= SRC_MAX else f"!{SRC_MAX},{SRC_MAX}"
-        curl(f"{m['iiif'].rstrip('/')}/full/{size}/0/default.jpg", out)
+        x, y, w, h = src_box(m)
+        size = "full" if max(w, h) <= SRC_MAX else f"!{SRC_MAX},{SRC_MAX}"
+        region = "full" if (w, h) == tuple(m["size"]) else f"{x},{y},{w},{h}"
+        curl(f"{m['iiif'].rstrip('/')}/{region}/{size}/0/default.jpg", out)
     return out
 
 
-def neat_mask(m, shape, k):
+def src_box(m):
+    """The part of the scan that is bent: the whole of it, or `crop` (x, y, w, h) when the map is a small part of
+    a large scan, as on a wall map with a border of pictures."""
+    c = m.get("crop")
+    return tuple(int(v) for v in c) if c else (0, 0, int(m["size"][0]), int(m["size"][1]))
+
+
+def src_scale(m, width):
+    """Sheet pixels to pixels of the copy: (x - ox) * k."""
+    x, y, w, h = src_box(m)
+    return width / w, x, y
+
+
+def neat_mask(m, shape, k, ox=0, oy=0):
     """What part of the copy is map: the neat line if one is given, else the whole sheet."""
     mask = np.zeros(shape[:2], np.uint8)
+    off = np.array([ox, oy])
+
+    def box(b):
+        x0, y0, x1, y1 = b
+        return max(0, round((x0 - ox) * k)), max(0, round((y0 - oy) * k)), max(0, round((x1 - ox) * k)), max(0, round((y1 - oy) * k))
     neat = m.get("neat")
     if not neat:
         mask[:] = 255
     elif isinstance(neat[0], (list, tuple)):
-        cv2.fillPoly(mask, [np.round(np.array(neat) * k).astype(np.int32)], 255)
+        cv2.fillPoly(mask, [np.round((np.array(neat) - off) * k).astype(np.int32)], 255)
     else:
-        x0, y0, x1, y1 = [round(v * k) for v in neat]
+        x0, y0, x1, y1 = box(neat)
         mask[y0:y1, x0:x1] = 255
     for hole in m.get("holes", []):                  # cartouches and tables that cover the sea of another sheet
         if isinstance(hole[0], (list, tuple)):
-            cv2.fillPoly(mask, [np.round(np.array(hole) * k).astype(np.int32)], 0)
+            cv2.fillPoly(mask, [np.round((np.array(hole) - off) * k).astype(np.int32)], 0)
         else:
-            x0, y0, x1, y1 = [round(v * k) for v in hole]
+            x0, y0, x1, y1 = box(hole)
             mask[y0:y1, x0:x1] = 0
     return mask
 
 
 def warp(m, fit):
     src = cv2.imread(str(source_picture(m)))
-    k = src.shape[1] / m["size"][0]
+    k, ox, oy = src_scale(m, src.shape[1])
     mx, my = fit.grid()
-    mask = neat_mask(m, src.shape, k)
-    img = cv2.remap(src, mx * k, my * k, cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT, borderValue=(0, 0, 0))
-    a = cv2.remap(mask, mx * k, my * k, cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT, borderValue=0)
+    mask = neat_mask(m, src.shape, k, ox, oy)
+    img = cv2.remap(src, (mx - ox) * k, (my - oy) * k, cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT, borderValue=(0, 0, 0))
+    a = cv2.remap(mask, (mx - ox) * k, (my - oy) * k, cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT, borderValue=0)
     # where the bend folds back on itself the sheet is not drawn
     jx = np.gradient(mx, axis=1) * np.gradient(my, axis=0) - np.gradient(mx, axis=0) * np.gradient(my, axis=1)
     a[jx <= 0] = 0
@@ -275,6 +301,112 @@ def band(label, n=9):
     return p, np.vstack([up, dn[::-1]])
 
 
+def dense_ring(ring, step):
+    """A ring with a point at least every `step` sheet pixels, so a long straight side bends with the sheet."""
+    p = np.array(ring, dtype=float)
+    if len(p) > 1 and np.allclose(p[0], p[-1]):
+        p = p[:-1]
+    out = []
+    for a, b in zip(p, np.roll(p, -1, axis=0)):
+        n = max(1, int(math.ceil(np.hypot(*(b - a)) / step)))
+        out += [a + (b - a) * i / n for i in range(n)]
+    return np.array(out)
+
+
+def land_frame(m, land, grid):
+    """A land's ring carried onto the shared sheet, thinned to one point every few pixels."""
+    fr = to_frame_exact(dense_ring(land["ring"], max(m["size"]) / 160), grid)
+    out = []
+    for x, y, _ in fr:
+        if not out or abs(x - out[-1][0]) + abs(y - out[-1][1]) >= 3:
+            out.append([round(x, 1), round(y, 1)])
+    return out
+
+
+def equal_area(lon, lat):
+    """Lambert's equal-area sheet centred on the middle of Asia, in km, for measuring a land."""
+    lam, phi = np.radians(np.asarray(lon, dtype=float)) - LAM0, np.radians(np.asarray(lat, dtype=float))
+    kk = np.sqrt(2 / (1 + math.sin(PHI0) * np.sin(phi) + math.cos(PHI0) * np.cos(phi) * np.cos(lam)))
+    return R_KM * kk * np.cos(phi) * np.sin(lam), R_KM * kk * (math.cos(PHI0) * np.sin(phi) - math.sin(PHI0) * np.cos(phi) * np.cos(lam))
+
+
+_TODAY = None
+
+
+def today():
+    """Today's countries and today's land, as shapes on the equal-area sheet."""
+    global _TODAY
+    if _TODAY is None:
+        from shapely.geometry import shape
+        from shapely.ops import transform, unary_union
+
+        def ea(g):
+            return transform(lambda x, y, z=None: equal_area(np.where(np.asarray(x) < -60, np.asarray(x) + 360, x), y), g).buffer(0)
+        cs = json.loads((ROOT / "static" / "basemap" / "countries.json").read_text())
+        countries = [(f["properties"]["name"], ea(shape(f["geometry"]))) for f in cs["features"]]
+        _TODAY = countries, unary_union([g for _, g in countries])
+    return _TODAY
+
+
+def measure_land(frame):
+    """How large a land is on the real earth and which of today's countries lie under it. Only the part on
+    today's dry land is counted, since an old coast seldom sits where the real one does."""
+    from shapely.geometry import Polygon
+    lon, lat = unproject([q[0] for q in frame], [q[1] for q in frame])
+    poly = Polygon(np.stack(equal_area(lon, lat), axis=1))
+    if not poly.is_valid:                           # a ring the bend has made cross itself: keep every part of it
+        from shapely.validation import make_valid
+        from shapely.ops import unary_union
+        parts = make_valid(poly)
+        poly = unary_union([g for g in getattr(parts, "geoms", [parts]) if g.geom_type in ("Polygon", "MultiPolygon")])
+    countries, land = today()
+    dry = poly.intersection(land)
+    out = {"km2": int(round(dry.area, -3)), "today": []}
+    if dry.area <= 0:
+        return out
+    for name, g in countries:
+        if g.area <= 0:
+            continue
+        a = dry.intersection(g).area
+        if a / dry.area >= 0.02 or a / g.area >= 0.3:
+            out["today"].append({"name": name, "of_land": round(a / dry.area, 3), "of_country": round(a / g.area, 3)})
+    out["today"].sort(key=lambda c: -c["of_land"])
+    return out
+
+
+def write_countries(src):
+    """static/basemap/countries.json from Natural Earth's 1:50m countries: the ones on the shared sheet, thinned."""
+    from shapely.geometry import shape, mapping, box
+    d = json.loads(pathlib.Path(src).read_text())
+    keep = []
+    for f in d["features"]:
+        p = f["properties"]
+        g = shape(f["geometry"]).buffer(0)
+        lon0, lat0, lon1, lat1 = g.bounds
+        cx, cy = project(p["LABEL_X"], p["LABEL_Y"])
+        x, y = project(*np.array(g.representative_point().coords[0]))
+        if not ((-150 < float(cx) < FRAME_W + 150 and -150 < float(cy) < FRAME_H + 150) or (0 < float(x) < FRAME_W and 0 < float(y) < FRAME_H)):
+            continue
+        if lat1 < -12:
+            continue
+        g = g.simplify(0.04, preserve_topology=True)
+        gj = json.loads(json.dumps(mapping(g)))
+
+        def rnd(c):
+            return [rnd(v) for v in c] if isinstance(c[0], (list, tuple)) else [round(c[0], 2), round(c[1], 2)]
+        gj["coordinates"] = rnd(gj["coordinates"])
+        keep.append({"type": "Feature", "properties": {"name": p["NAME"], "rank": p["LABELRANK"], "at": [round(p["LABEL_X"], 2), round(p["LABEL_Y"], 2)],
+                                                         "km2": int(round(transform_area(g), -3))}, "geometry": gj})
+    out = ROOT / "static" / "basemap" / "countries.json"
+    out.write_text(json.dumps({"type": "FeatureCollection", "features": keep}, ensure_ascii=False, separators=(",", ":")))
+    print(f"{len(keep)} countries, {out.stat().st_size // 1024} KB")
+
+
+def transform_area(g):
+    from shapely.ops import transform
+    return transform(lambda x, y, z=None: equal_area(np.where(np.asarray(x) < -60, np.asarray(x) + 360, x), y), g).buffer(0).area
+
+
 def coast_layer():
     """The modern coast on the shared sheet, for checking."""
     land = json.loads((ROOT / "static" / "basemap" / "land.json").read_text())
@@ -314,21 +446,31 @@ def check(path):
     print(f"  the bent sheet covers {covered * 100:.0f}% of the shared sheet")
     # picture 1: the sheet itself with the matched places and labels
     src = Image.open(source_picture(m)).convert("RGB")
-    k = src.width / m["size"][0]
+    k, ox, oy = src_scale(m, src.width)
+    off = np.array([ox, oy])
     d = ImageDraw.Draw(src, "RGBA")
     f = font(max(14, src.width // 150))
     r = max(5, src.width // 400)
     for i, p in enumerate(pts):
-        x, y = p["xy"][0] * k, p["xy"][1] * k
+        x, y = (p["xy"][0] - ox) * k, (p["xy"][1] - oy) * k
         d.ellipse([x - r, y - r, x + r, y + r], outline=(255, 0, 0, 255), width=3)
         d.text((x + r + 2, y - r - 2), f"{i + 1} {p['name']}", fill=(200, 0, 0, 255), font=f, stroke_width=2, stroke_fill=(255, 255, 255, 230))
     for lb in m.get("labels", []) + m.get("also", []):
         _, poly = band(lb)
         col = (0, 90, 255, 255) if lb in m.get("labels", []) else (0, 150, 60, 255)
-        d.line([tuple(q * k) for q in np.vstack([poly, poly[:1]])], fill=col, width=3)
-        d.text(tuple(np.array(lb["spine"][0]) * k + [0, -lb["h"] * k]), lb["reads"], fill=col, font=f, stroke_width=2, stroke_fill=(255, 255, 255, 230))
+        d.line([tuple((q - off) * k) for q in np.vstack([poly, poly[:1]])], fill=col, width=3)
+        d.text(tuple((np.array(lb["spine"][0]) - off) * k + [0, -lb["h"] * k]), lb["reads"], fill=col, font=f, stroke_width=2, stroke_fill=(255, 255, 255, 230))
+    for ln in m.get("lands", []):
+        ring = np.array(ln["ring"], dtype=float)
+        d.polygon([tuple((q - off) * k) for q in ring], fill=(255, 0, 200, 40))
+        d.line([tuple((q - off) * k) for q in np.vstack([ring, ring[:1]])], fill=(255, 0, 200, 255), width=5)
+        for j, q in enumerate(ring):
+            x, y = (q - off) * k
+            d.ellipse([x - 5, y - 5, x + 5, y + 5], fill=(255, 0, 200, 255))
+        cx, cy = (ring.mean(axis=0) - off) * k
+        d.text((cx, cy), f"LAND: {ln['name']} ({ln.get('basis', '?')})", fill=(170, 0, 140, 255), font=font(max(18, src.width // 110)), stroke_width=3, stroke_fill=(255, 255, 255, 240))
     if m.get("neat") and not isinstance(m["neat"][0], (list, tuple)):
-        x0, y0, x1, y1 = [v * k for v in m["neat"]]
+        x0, y0, x1, y1 = [(v - o) * k for v, o in zip(m["neat"], (ox, oy, ox, oy))]
         d.rectangle([x0, y0, x1, y1], outline=(255, 160, 0, 255), width=3)
     src.thumbnail((2400, 2400))
     CACHE.joinpath("check").mkdir(parents=True, exist_ok=True)
@@ -358,19 +500,28 @@ def check(path):
         fr = to_frame_exact(poly, grid)
         col = (0, 60, 255, 255) if lb in m.get("labels", []) else (0, 140, 60, 255)
         d.line([(q[0], q[1]) for q in fr + fr[:1]], fill=col, width=2)
+    for ln in m.get("lands", []):
+        fr = land_frame(m, ln, grid)
+        d.polygon([tuple(q) for q in fr], fill=(255, 0, 200, 45))
+        d.line([tuple(q) for q in fr + fr[:1]], fill=(255, 0, 200, 255), width=3)
+        try:
+            ms = measure_land(fr)
+            print(f"  land {ln['name']}: about {ms['km2']:,} sq km of today's dry land; under it: " + ", ".join(f"{c['name']} ({c['of_country'] * 100:.0f}% of it)" for c in ms["today"][:9]))
+        except Exception as e:
+            print(f"  land {ln['name']}: could not be measured ({e})")
     p2 = CACHE / "check" / f"{key}-warp.jpg"
     im.save(p2, quality=85)
-    print(f"  look at {p1} (the sheet: red rings are matched places, blue outlines Tartary labels, green other names)")
-    print(f"  and at {p2} (the sheet bent onto the earth: the cyan line is the real coast, red dots are where each place really is)")
+    print(f"  look at {p1} (the sheet: red rings are matched places, blue outlines Tartary labels, green other names, magenta rings the lands)")
+    print(f"  and at {p2} (the sheet bent onto the earth: the cyan line is the real coast, red dots are where each place really is, magenta the lands carried onto the earth)")
 
 
-def build():
+def build(only=()):
     path = ROOT / "data" / "dial.json"
     dial = json.loads(path.read_text())
     OUT.mkdir(parents=True, exist_ok=True)
     total = 0
     for m in dial["maps"]:
-        if not m.get("iiif"):
+        if not m.get("iiif") or (only and m["key"] not in only):
             continue
         if "loc.gov" not in m["iiif"]:
             raise SystemExit(f"{m['key']} is not a Library of Congress picture; bent sheets are copied into the site, so check its terms first")
@@ -396,6 +547,9 @@ def build():
                 lb["mid"] = [[round(q[0], 1), round(q[1], 1)] for q in mid]
                 lon, lat = unproject(np.mean([q[0] for q in mid]), np.mean([q[1] for q in mid]))
                 lb["at"] = [round(float(lon), 1), round(float(lat), 1)]
+        for ln in m.get("lands", []):
+            ln["frame"] = land_frame(m, ln, grid)
+            ln.update(measure_land(ln["frame"]))
         print(f"{m['key']}: {len(fit.pts)} places, median {m['drawn']['median_km']} km, {out.stat().st_size // 1024} KB")
     dial["frame"] = {"w": FRAME_W, "h": FRAME_H, "km_per_px": KM_PX, "projection": "equidistant conic, standard parallels 30 N and 60 N, centred 88 E 46 N"}
     path.write_text(json.dumps(dial, indent=1, ensure_ascii=False) + "\n")
@@ -413,7 +567,9 @@ def main():
     elif a and a[0] == "check":
         check(a[1])
     elif a and a[0] == "build":
-        build()
+        build(a[1:])
+    elif a and a[0] == "countries":
+        write_countries(a[1])
     else:
         print(__doc__)
 

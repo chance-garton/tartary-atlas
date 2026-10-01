@@ -1336,6 +1336,7 @@
     var sheets = {};
     arr(el.querySelectorAll('.dial-sheet')).forEach(function (im) { sheets[+im.getAttribute('data-i')] = im; });
     var groups = arr(el.querySelectorAll('.dial-g')), cards = arr(el.querySelectorAll('.dial-card')), ticks = arr(el.querySelectorAll('.dial-stop'));
+    var cells = arr(el.querySelectorAll('.dial-cell')), lift = el.querySelector('[data-lift]');
     var cur = data.first, pos = S[cur].p, raf = 0, timer = 0, playing = false, ghosts = false, dragging = false;
 
     // the sheet scrolls sideways on a narrow screen, so the whole of Asia stays readable
@@ -1356,6 +1357,7 @@
       // what changes only when the dial comes to rest on a new map: the words under the sheet
       cards.forEach(function (c, k) { c.classList.toggle('on', k === i); });
       ticks.forEach(function (t, k) { t.classList.toggle('on', k === i); });
+      cells.forEach(function (c) { c.classList.toggle('on', +c.getAttribute('data-go') === i); });
       prev.disabled = i <= 0;
       next.disabled = i >= n - 1;
       knob.setAttribute('aria-valuenow', S[i].y);
@@ -1469,17 +1471,18 @@
       var was = btn && btn.getAttribute('aria-pressed') === 'true';
       unpick();
       if (was) return;
-      var hot = arr(g.querySelectorAll('.dn[data-n="' + key + '"]'));
+      var hot = arr(g.querySelectorAll('[data-n="' + key + '"]'));
       if (!hot.length) return;
       g.classList.add('pick');
       hot.forEach(function (d) { d.classList.add('hot'); });
       if (btn) btn.setAttribute('aria-pressed', 'true');
       // say its name beside it, and bring it into view on a narrow screen
-      var sr = stage.getBoundingClientRect(), r = hot[0].getBoundingClientRect();
+      // a flag already says a lettered name; an outline or one of the other names gets a slip
+      var sr = stage.getBoundingClientRect(), r = (g.querySelector('.dland[data-n="' + key + '"], .dn[data-n="' + key + '"]') || hot[0]).getBoundingClientRect();
       tip.textContent = btn ? btn.querySelector('b').textContent : '';
       tip.style.left = Math.max(60, Math.min(sr.width - 60, r.left + r.width / 2 - sr.left)) + 'px';
       tip.style.top = Math.max(34, r.top - sr.top) + 'px';
-      tip.hidden = !tip.textContent;
+      tip.hidden = !tip.textContent || (key.charAt(0) === 't' && !stage.classList.contains('lifted'));
       if (scroller.scrollWidth > scroller.clientWidth + 4) {
         scroller.scrollTo({ left: scroller.scrollLeft + r.left + r.width / 2 - scroller.getBoundingClientRect().left - scroller.clientWidth / 2, behavior: reduced() ? 'auto' : 'smooth' });
       }
@@ -1487,9 +1490,13 @@
     }
     arr(el.querySelectorAll('.dial-name')).forEach(function (b) { b.setAttribute('aria-pressed', 'false'); });
     el.addEventListener('click', function (e) {
-      var t = e.target.closest ? e.target.closest('[data-go], [data-prev], [data-next], [data-play], [data-lift], [data-ghost], .dial-name, .dn') : null;
+      var t = e.target.closest ? e.target.closest('[data-go], [data-prev], [data-next], [data-play], [data-lift], [data-ghost], [data-n]') : null;
       if (!t) return;
-      if (t.hasAttribute('data-go')) { setPlay(false); go(+t.getAttribute('data-go')); }
+      if (t.hasAttribute('data-go')) {
+        setPlay(false); go(+t.getAttribute('data-go'));
+        // a still from the wall of outlines: turn the dial to it and bring the sheet back into view
+        if (t.classList.contains('dial-cell')) { e.preventDefault(); scroller.scrollIntoView({ block: 'start', behavior: reduced() ? 'auto' : 'smooth' }); }
+      }
       else if (t.hasAttribute('data-prev')) { setPlay(false); go(cur - 1); }
       else if (t.hasAttribute('data-next')) { setPlay(false); go(cur + 1); }
       else if (t.hasAttribute('data-play')) setPlay(!playing);
@@ -1497,6 +1504,8 @@
         var up = t.getAttribute('aria-pressed') !== 'true';
         t.setAttribute('aria-pressed', up ? 'true' : 'false');
         stage.classList.toggle('lifted', up);
+        t.textContent = up ? 'Lay the sheet back' : 'Lift the old sheet';
+        unpick();
       } else if (t.hasAttribute('data-ghost')) {
         ghosts = t.getAttribute('aria-pressed') !== 'true';
         t.setAttribute('aria-pressed', ghosts ? 'true' : 'false');
