@@ -1499,8 +1499,9 @@
         dlg.className = 'cardshot';
         dlg.setAttribute('aria-label', 'The card as a picture');
         dlg.innerHTML = '<div class="cardshot-in"><img alt="' + esc(p.h + ': a card from the Tartary Atlas deck') + '" src="' + url + '">' +
-          '<p>Press and hold the picture to save it on a phone.</p>' +
-          '<div class="cardshot-acts"><a class="btn primary" href="' + url + '" download="' + name + '">Download the picture</a>' +
+          '<p>' + (PREVIEW ? 'Right-click the picture to save it, or press and hold it on a phone.' : 'Press and hold the picture to save it on a phone.') + '</p>' +
+          // the preview runs where a page may not hand over a file, so the button is left out there
+          '<div class="cardshot-acts">' + (PREVIEW ? '' : '<a class="btn primary" href="' + url + '" download="' + name + '">Download the picture</a>') +
           '<button type="button" class="btn" data-x>Close</button></div></div>';
         document.body.appendChild(dlg);
         dlg.addEventListener('click', function (e) { if (e.target === dlg || (e.target.closest && e.target.closest('[data-x]'))) dlg.close(); });
