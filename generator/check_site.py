@@ -110,6 +110,19 @@ dd = json.loads(re.search(r'data-module="deck"><script type="application/json">(
 check(len(dd['spread']) == 3 and deck.count('data-card') == 3 and set(dd['suits']) == {'cities', 'architecture', 'customs', 'names', 'outliers'}
       and all((D/'assets/cuts/ornaments'/(v['k'] + '.png')).exists() for v in dd['suits'].values()), 'deck: three places in the spread and a suit drawing for each of the five trails')
 check('class="deck-door-a"' in front and 'draw three from the deck' in (D/'passages/index.html').read_text(), 'deck: a door on the front page and on the passages page')
+# 3g. the time dial
+DL = json.load(open(ROOT/'data/dial.json'))
+dl = (D/'dial/index.html').read_text()
+on = [m for m in DL['maps'] if not m.get('off')]
+dj = json.loads(re.search(r'data-module="dial"><script type="application/json">(.*?)</script>', dl, re.S).group(1))
+bad = [m['key'] for m in on if not (D/'assets/dial'/(m['key'] + '.webp')).exists() or 'loc.gov' not in m['iiif'] or len([p for p in m['points'] if not p.get('skip')]) < 25
+       or any(not (0 <= x <= 1600 and 0 <= y <= 1000) for lb in m['labels'] for x, y in lb['mid'])]
+check(len(on) >= 12 and not bad and len(dj['stops']) == len(on) + len(DL['early']) and dl.count('<article class="dial-card') == len(dj['stops']),
+      f"dial: {len(on)} maps, each a Library of Congress sheet with 25 or more matched places, its bent picture in the site and its Tartary lettering on the sheet ({bad[:4]})")
+check([s['y'] for s in dj['stops']] == sorted(s['y'] for s in dj['stops']) and all(0 <= s['p'] <= 1 for s in dj['stops']) and dl.count('class="dial-stop') == len(dj['stops']), 'dial: the stops run in date order along the scale')
+check('—' not in json.dumps(DL, ensure_ascii=False) and '–' not in json.dumps([[m['says'], m.get('uncertain'), m['head']] for m in DL['maps']] + DL['early'], ensure_ascii=False), 'dial: no dash in the words a visitor reads')
+check('class="dial-door-a"' in front and 'Turn the dial' in (D/'maps/index.html').read_text() and 'Turn the dial' in (D/'labels/index.html').read_text() and 'Turn the dial' in (D/'archive/index.html').read_text(),
+      'dial: doors on the front page, the map room, the many Tartarys and the vault')
 # 4. em dashes
 em_titles = [str(f.relative_to(D)) for f in D.rglob('*.html') if '—' in re.search(r'<title>(.*?)</title>', f.read_text(), re.S).group(1)]
 check(not em_titles, f'no em dash in any page title ({len(list(D.rglob("*.html")))} pages)')

@@ -1323,6 +1323,197 @@
     setTimeout(fromScroll, TA.restoring ? 400 : 0);
   };
 
+  /* ------------------------------------------------------------ the time dial
+     Old maps bent onto one sheet of the real earth. The wheel on the scale is the dial: dragging it fades each
+     sheet into the next, with the lettering of Tartary outlined on every one. Let go and it settles on the
+     nearest map. Nothing is claimed about the years between two maps; the fade is only a way of turning the page. */
+  TA.modules.dial = function (el) {
+    var data = JSON.parse(el.querySelector('script[type="application/json"]').textContent);
+    var S = data.stops, n = S.length;
+    var stage = el.querySelector('[data-stage]'), track = el.querySelector('[data-track]'), knob = el.querySelector('[data-knob]');
+    var yearEl = el.querySelector('[data-year]'), tip = el.querySelector('[data-tip]');
+    var prev = el.querySelector('[data-prev]'), next = el.querySelector('[data-next]'), play = el.querySelector('[data-play]');
+    var sheets = {};
+    arr(el.querySelectorAll('.dial-sheet')).forEach(function (im) { sheets[+im.getAttribute('data-i')] = im; });
+    var groups = arr(el.querySelectorAll('.dial-g')), cards = arr(el.querySelectorAll('.dial-card')), ticks = arr(el.querySelectorAll('.dial-stop'));
+    var cur = data.first, pos = S[cur].p, raf = 0, timer = 0, playing = false, ghosts = false, dragging = false;
+
+    // the sheet scrolls sideways on a narrow screen, so the whole of Asia stays readable
+    var scroller = document.createElement('div');
+    scroller.className = 'dial-scroll';
+    stage.parentNode.insertBefore(scroller, stage);
+    scroller.appendChild(stage);
+
+    function load(i) { var im = sheets[i]; if (im && !im.getAttribute('src')) im.setAttribute('src', im.getAttribute('data-src')); }
+    function ease(u) { return u < 0.5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2; }
+    function bracket(p) {
+      if (p <= S[0].p) return [0, 0, 0];
+      if (p >= S[n - 1].p) return [n - 1, n - 1, 0];
+      for (var k = 0; k < n - 1; k++) if (p <= S[k + 1].p) return [k, k + 1, (p - S[k].p) / (S[k + 1].p - S[k].p)];
+      return [n - 1, n - 1, 0];
+    }
+    function settle(i) {
+      // what changes only when the dial comes to rest on a new map: the words under the sheet
+      cards.forEach(function (c, k) { c.classList.toggle('on', k === i); });
+      ticks.forEach(function (t, k) { t.classList.toggle('on', k === i); });
+      prev.disabled = i <= 0;
+      next.disabled = i >= n - 1;
+      knob.setAttribute('aria-valuenow', S[i].y);
+      knob.setAttribute('aria-valuetext', S[i].w + ', ' + S[i].by);
+      unpick();
+      TA.mem.set('dial', i);
+    }
+    function render(p) {
+      pos = p;
+      var b = bracket(p), a = b[0], z = b[1], f = b[2], e = ease(f);
+      var near = f < 0.5 ? a : z;
+      load(a); load(z); load(Math.min(n - 1, z + 1));
+      // the coming sheet fades in over the going one, then the going one leaves
+      var wa = a === z ? 1 : (e < 0.5 ? 1 : 1 - (e - 0.5) * 2), wz = a === z ? 1 : Math.min(1, e * 2);
+      for (var i = 0; i < n; i++) {
+        var w = i === a ? wa : i === z ? wz : 0;
+        if (sheets[i]) sheets[i].style.opacity = w;
+        var g = groups[i], wn = i === a && a !== z ? 1 - e : i === z ? (a === z ? 1 : e) : 0;
+        var ghost = ghosts && i < near && wn < 0.05;
+        g.classList.toggle('ghost', ghost);
+        g.classList.toggle('on', !ghost && i === near);
+        g.style.opacity = ghost ? '' : wn;
+      }
+      knob.style.left = (p * 100) + '%';
+      knob.style.setProperty('--turn', (p * 1080).toFixed(1) + 'deg');
+      var y = a === z ? S[a].y : Math.round(S[a].y + (S[z].y - S[a].y) * f);
+      yearEl.textContent = y;
+      if (near !== cur) { cur = near; settle(cur); }
+    }
+    function stop() { if (raf) cancelAnimationFrame(raf); raf = 0; }
+    function glide(to, done) {
+      stop();
+      var from = pos, d = Math.abs(to - from);
+      if (reduced() || d < 0.0005) { render(to); if (done) done(); return; }
+      var dur = Math.max(450, Math.min(1500, d * 9000)), t0 = null;
+      var step = function (t) {
+        if (t0 == null) t0 = t;
+        var u = Math.min(1, (t - t0) / dur);
+        render(from + (to - from) * (u < 0.5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2));
+        if (u < 1) raf = requestAnimationFrame(step); else { raf = 0; if (done) done(); }
+      };
+      raf = requestAnimationFrame(step);
+    }
+    function go(i, done) { i = Math.max(0, Math.min(n - 1, i)); load(i); glide(S[i].p, done); }
+    function nearest(p) {
+      var best = 0;
+      for (var k = 1; k < n; k++) if (Math.abs(S[k].p - p) < Math.abs(S[best].p - p)) best = k;
+      return best;
+    }
+    function setPlay(on) {
+      playing = on;
+      clearTimeout(timer);
+      play.setAttribute('aria-pressed', on ? 'true' : 'false');
+      play.textContent = on ? 'Pause' : 'Let it run';
+      if (!on) return;
+      var tickOn = function () {
+        if (!playing) return;
+        if (cur >= n - 1) { setPlay(false); return; }
+        go(cur + 1, function () { timer = setTimeout(tickOn, 3200); });
+      };
+      if (cur >= n - 1) { stop(); render(S[0].p); timer = setTimeout(tickOn, 1600); } else tickOn();
+    }
+
+    // dragging the wheel, or pressing anywhere on the scale
+    function fromX(x) {
+      var r = track.getBoundingClientRect();
+      return Math.max(S[0].p, Math.min(S[n - 1].p, (x - r.left) / r.width));
+    }
+    var onDown = function (e) {
+      if (e.button != null && e.button > 0) return;
+      var t = e.target.closest ? e.target.closest('.dial-stop') : null;
+      if (t) return;                       // a mark on the scale is a button of its own
+      e.preventDefault();
+      setPlay(false); stop();
+      dragging = true;
+      el.classList.add('dragging');
+      try { track.setPointerCapture(e.pointerId); } catch (err) { /* older browsers */ }
+      render(fromX(e.clientX));
+    };
+    var onMove = function (e) { if (dragging) render(fromX(e.clientX)); };
+    var onUp = function () {
+      if (!dragging) return;
+      dragging = false;
+      el.classList.remove('dragging');
+      go(nearest(pos));
+    };
+    track.addEventListener('pointerdown', onDown);
+    track.addEventListener('pointermove', onMove);
+    track.addEventListener('pointerup', onUp);
+    track.addEventListener('pointercancel', onUp);
+    knob.addEventListener('keydown', function (e) {
+      var k = e.key, i = null;
+      if (k === 'ArrowRight' || k === 'ArrowUp' || k === 'PageUp') i = cur + 1;
+      else if (k === 'ArrowLeft' || k === 'ArrowDown' || k === 'PageDown') i = cur - 1;
+      else if (k === 'Home') i = 0;
+      else if (k === 'End') i = n - 1;
+      if (i == null) return;
+      e.preventDefault();
+      setPlay(false);
+      go(i);
+    });
+
+    // a name under the sheet, or its outline on the sheet, picks that lettering out
+    function unpick() {
+      groups.forEach(function (g) { g.classList.remove('pick'); arr(g.querySelectorAll('.hot')).forEach(function (d) { d.classList.remove('hot'); }); });
+      arr(el.querySelectorAll('.dial-name[aria-pressed="true"]')).forEach(function (b) { b.setAttribute('aria-pressed', 'false'); });
+      tip.hidden = true;
+    }
+    function pick(key) {
+      var g = groups[cur], card = cards[cur], btn = card.querySelector('.dial-name[data-n="' + key + '"]');
+      var was = btn && btn.getAttribute('aria-pressed') === 'true';
+      unpick();
+      if (was) return;
+      var hot = arr(g.querySelectorAll('.dn[data-n="' + key + '"]'));
+      if (!hot.length) return;
+      g.classList.add('pick');
+      hot.forEach(function (d) { d.classList.add('hot'); });
+      if (btn) btn.setAttribute('aria-pressed', 'true');
+      // say its name beside it, and bring it into view on a narrow screen
+      var sr = stage.getBoundingClientRect(), r = hot[0].getBoundingClientRect();
+      tip.textContent = btn ? btn.querySelector('b').textContent : '';
+      tip.style.left = Math.max(60, Math.min(sr.width - 60, r.left + r.width / 2 - sr.left)) + 'px';
+      tip.style.top = Math.max(34, r.top - sr.top) + 'px';
+      tip.hidden = !tip.textContent;
+      if (scroller.scrollWidth > scroller.clientWidth + 4) {
+        scroller.scrollTo({ left: scroller.scrollLeft + r.left + r.width / 2 - scroller.getBoundingClientRect().left - scroller.clientWidth / 2, behavior: reduced() ? 'auto' : 'smooth' });
+      }
+      if (stage.getBoundingClientRect().top < 0) stage.scrollIntoView({ block: 'nearest', behavior: reduced() ? 'auto' : 'smooth' });
+    }
+    arr(el.querySelectorAll('.dial-name')).forEach(function (b) { b.setAttribute('aria-pressed', 'false'); });
+    el.addEventListener('click', function (e) {
+      var t = e.target.closest ? e.target.closest('[data-go], [data-prev], [data-next], [data-play], [data-lift], [data-ghost], .dial-name, .dn') : null;
+      if (!t) return;
+      if (t.hasAttribute('data-go')) { setPlay(false); go(+t.getAttribute('data-go')); }
+      else if (t.hasAttribute('data-prev')) { setPlay(false); go(cur - 1); }
+      else if (t.hasAttribute('data-next')) { setPlay(false); go(cur + 1); }
+      else if (t.hasAttribute('data-play')) setPlay(!playing);
+      else if (t.hasAttribute('data-lift')) {
+        var up = t.getAttribute('aria-pressed') !== 'true';
+        t.setAttribute('aria-pressed', up ? 'true' : 'false');
+        stage.classList.toggle('lifted', up);
+      } else if (t.hasAttribute('data-ghost')) {
+        ghosts = t.getAttribute('aria-pressed') !== 'true';
+        t.setAttribute('aria-pressed', ghosts ? 'true' : 'false');
+        render(pos);
+      } else if (t.getAttribute('data-n')) pick(t.getAttribute('data-n'));
+    });
+
+    el.classList.add('live');
+    var back = TA.restoring ? TA.mem.get('dial') : undefined;
+    if (typeof back === 'number' && back >= 0 && back < n) cur = back;
+    var start = cur;
+    cur = -1;
+    render(S[start].p);
+    if (scroller.scrollWidth > scroller.clientWidth + 4) scroller.scrollLeft = (scroller.scrollWidth - scroller.clientWidth) * 0.42;
+    TA.cleanups.push(function () { stop(); clearTimeout(timer); playing = false; });
+  };
+
   /* ------------------------------------------------------------ the deck
      Three cards dealt from the strongest passages: a place, a people, a marvel. Each trail is a suit with a
      drawing cut from one of the maps. A card turns when pressed and its passage is set out in full below,

@@ -376,6 +376,7 @@ class Site:
         self.orn = {c["key"]: c for c in cuts.get("ornaments", []) if c.get("size")}
         self.front = self.optional("front_map.json")
         self.journeys = self.optional("journeys.json").get("journeys", [])
+        self.dial = self.optional("dial.json")
         corr_path = DATA / "corrections.json"
         self.corrections = json.loads(corr_path.read_text()) if corr_path.exists() else []
         self.apply_corrections()
@@ -1040,7 +1041,7 @@ def page_home(site, ctx):
               f'<li><a href="{ctx.link("archive")}">The rest of the vault</a><span>Places, peoples, and how the atlas was made.</span></li></ul></section>')
 
     rides = rides_band(site, ctx) or places
-    body = (f'{hero}<div class="page home">{names}{orn_rule(site, ctx, "tents")}{trails}{deck_band(site, ctx)}{orn_rule(site, ctx, "compass-star")}{maps_band}'
+    body = (f'{hero}<div class="page home">{names}{dial_band(site, ctx)}{orn_rule(site, ctx, "tents")}{trails}{deck_band(site, ctx)}{orn_rule(site, ctx, "compass-star")}{maps_band}'
             f'{orn_rule(site, ctx, "rider")}{rides}{orn_rule(site, ctx, "archer")}{witnesses}{orn_rule(site, ctx, "ship")}{deeper}</div>')
     desc = (f"What {n_written} historical texts and {n_maps} maps say about Tartary (Tartaria): {num(n_psg)} quoted passages on cities, "
             f"buildings, daily life and legends, each linked to its page.")
@@ -1130,7 +1131,9 @@ def page_maps(site, ctx):
     holders = collections.Counter(site.holder(r["id"]).split(" (")[0] for r in shown)
     credit = "; ".join(f"{h} ({n})" for h, n in holders.most_common())
     head = page_head("Map room", "Tartary on the old maps",
-                     f'{len(shown)} maps, oldest first. Open one and look closer.', ornament=orn(site, ctx, "ship", "head"))
+                     f'{len(shown)} maps, oldest first. Open one and look closer.',
+                     extra=(f'<p class="hero-actions"><a class="btn primary" href="{ctx.link("dial")}">Turn the dial: watch the name move</a></p>' if dial_stops(site) else ""),
+                     ornament=orn(site, ctx, "ship", "head"))
     rest_html = ""
     if rest:
         rest_html = (f'<section class="section"><h2>{len(rest)} more maps, no picture yet</h2>'
@@ -1153,6 +1156,7 @@ def page_archive(site, ctx):
     n_m = len(site.records) - n_w
     items = [
         ("labels", "The many Tartarys", "Great, Little, Chinese, Independent, Muscovite: when each name shows up, and when it stops."),
+        ("dial", "Turn the dial", "Old maps laid on the real earth, one after another. Watch the name move."),
         ("meanings", "Who counted as a Tartar?", "The same word, different peoples, century by century."),
         ("lineage", "Who copied whom", "Which maps copied, reissued or corrected which."),
         ("records", "Every book and map", f"All {n_w} written sources and {n_m} maps, in date order."),
@@ -1161,7 +1165,7 @@ def page_archive(site, ctx):
         ("method", "How it was made", "How the dating, plotting, choosing and checking were done, and what the atlas does not claim."),
         ("corrections", "Spot a mistake?", "Send a correction, and see the ones already made."),
     ]
-    lis = "".join(f'<li><a href="{ctx.link(k)}">{esc(t)}</a><span>{esc(d)}</span></li>' for k, t, d in items)
+    lis = "".join(f'<li><a href="{ctx.link(k)}">{esc(t)}</a><span>{esc(d)}</span></li>' for k, t, d in items if k != "dial" or dial_stops(site))
     head = page_head("Everything behind the passages", "The vault",
                      "Check a date, trace a map, or see it all at once.", ornament=orn(site, ctx, "khan", "head"))
     return dict(title="The vault", description="The Tartary Atlas catalogue and research tools: records, places, peoples, label timelines, map lineage, method and corrections.",
@@ -1641,7 +1645,8 @@ def page_labels(site, ctx):
             f"Great Tartary reaches the maps in {first_map('great-tartary')}. Chinese Tartary follows in {first_map('chinese-tartary')}, "
             f"Muscovite Tartary in {first_map('muscovite-tartary')}, Independent Tartary in {first_map('independent-tartary')} "
             f"and Little Tartary in {first_map('little-tartary')}. Each name covered a region whose edges moved from map to map.")
-    head = page_head("The vault", "The many Tartarys", lede)
+    head = page_head("The vault", "The many Tartarys", lede,
+                     extra=(f'<p class="hero-actions"><a class="btn primary" href="{ctx.link("dial")}">Turn the dial: see it on the maps</a></p>' if dial_stops(site) else ""))
     mid = 1700
     body = (f'<div class="page">{head}<div data-module="labels">'
             f'<div class="figure"><div class="slider-row"><label for="lab-y" class="small">Which names were in use around</label>'
@@ -2304,6 +2309,279 @@ def deck_band(site, ctx):
             f'<span class="btn primary">Deal me in</span></span></a></section>')
 
 
+# ------------------------------------------------ The time dial
+
+DIAL_Y0, DIAL_Y1 = 1250, 1900
+DIAL_BREAK = (1500, 0.15)       # the years before 1500 take the first part of the scale: few maps, long wait
+DIAL_FIRST = "delisle-1706"     # the sheet shown when the page script does not run
+DIAL_KINDS = {"land": "A country", "people": "A people", "sea": "A sea"}
+
+
+def dial_pos(y):
+    """Where a year sits on the scale, from 0 to 1."""
+    yb, fb = DIAL_BREAK
+    if y <= yb:
+        return (y - DIAL_Y0) / (yb - DIAL_Y0) * fb
+    return fb + (y - yb) / (DIAL_Y1 - yb) * (1 - fb)
+
+
+class DialSheet:
+    """The shared sheet of the real earth that every old map on the dial is bent onto: an equidistant conic of
+    Asia. The same arithmetic as generator/dial_tools.py, which draws the bent sheets."""
+    R = 6371.0
+    P1, P2, P0, L0 = math.radians(30), math.radians(60), math.radians(46), math.radians(88)
+    N = (math.cos(P1) - math.cos(P2)) / (P2 - P1)
+    G = math.cos(P1) / N + P1
+    RHO0 = R * (G - P0)
+    KM = (-5000.0, -2900.0, 5000.0, 3350.0)
+    W = 1600
+    K = (KM[2] - KM[0]) / W
+    H = round((KM[3] - KM[1]) / K)
+
+    @classmethod
+    def xy(cls, lon, lat):
+        if lon < -60:
+            lon += 360
+        rho = cls.R * (cls.G - math.radians(lat))
+        th = cls.N * (math.radians(lon) - cls.L0)
+        return (rho * math.sin(th) - cls.KM[0]) / cls.K, (cls.KM[3] - (cls.RHO0 - rho * math.cos(th))) / cls.K
+
+    @classmethod
+    def path(cls, rings, close):
+        m = 260
+        out = []
+        for ring in rings:
+            pts = [cls.xy(p[0], p[1]) for p in ring if p[1] > -35]
+            if len(pts) < 2 or max(p[0] for p in pts) < -m or min(p[0] for p in pts) > cls.W + m or max(p[1] for p in pts) < -m or min(p[1] for p in pts) > cls.H + m:
+                continue
+            run, last = [], None
+            for x, y in pts:
+                if last is None or abs(x - last[0]) + abs(y - last[1]) > 1.1:
+                    run.append(f"{x:.1f} {y:.1f}")
+                    last = (x, y)
+            if len(run) >= (3 if close else 2):
+                out.append("M" + "L".join(run) + ("Z" if close else ""))
+        return "".join(out)
+
+    @classmethod
+    def land(cls):
+        rings = []
+        for g in RideMap.base()["land"]["geometries"]:
+            polys = g["coordinates"] if g["type"] == "MultiPolygon" else [g["coordinates"]]
+            for poly in polys:
+                for ring in poly:
+                    lons = [p[0] for p in ring]
+                    if max(lons) < -25 and min(lons) > -168:      # the Americas are off this sheet
+                        continue
+                    rings.append(ring)
+        return cls.path(rings, True)
+
+    @classmethod
+    def lakes(cls):
+        rings = []
+        for f in RideMap.base()["lakes"]["features"]:
+            g = f["geometry"]
+            if g:
+                for poly in (g["coordinates"] if g["type"] == "MultiPolygon" else [g["coordinates"]]):
+                    rings += poly
+        return cls.path(rings, True)
+
+    @classmethod
+    def rivers(cls):
+        lines = []
+        for f in RideMap.base()["rivers"]["features"]:
+            g = f["geometry"]
+            if g:
+                lines += g["coordinates"] if g["type"] == "MultiLineString" else [g["coordinates"]]
+        return cls.path(lines, False)
+
+    @classmethod
+    def graticule(cls):
+        out = []
+        for lon in range(20, 181, 20):
+            out.append("M" + "L".join("%.1f %.1f" % cls.xy(lon, lat) for lat in range(0, 89, 4)))
+        for lat in range(10, 81, 10):
+            out.append("M" + "L".join("%.1f %.1f" % cls.xy(lon, lat) for lon in range(0, 201, 4)))
+        return "".join(out)
+
+
+def dial_stops(site):
+    d = site.dial or {}
+    stops = [dict(s, early=True) for s in d.get("early", [])] + [m for m in d.get("maps", []) if not m.get("off") and m.get("drawn")]
+    return sorted(stops, key=lambda s: s["year"])
+
+
+def dial_names(m, group):
+    """The lettering on a sheet, one entry per name: a name set on two lines is one name with two outlines."""
+    out = collections.OrderedDict()
+    for lb in m.get(group, []):
+        if not lb.get("frame"):
+            continue
+        e = out.setdefault(lb["reads"], {"reads": lb["reads"], "plain": lb.get("plain") or "", "kind": lb.get("kind", "land"), "parts": []})
+        e["parts"].append(lb)
+    return list(out.values())
+
+
+def poly_d(pts):
+    return "M" + "L".join(f"{x:.0f} {y:.0f}" for x, y in pts) + "Z"
+
+
+def dial_thumb(site, ctx):
+    """A small still of the dial for the doors that lead to it."""
+    S = DialSheet
+    m = next((s for s in dial_stops(site) if s["key"] == DIAL_FIRST), None)
+    bands = "".join(f'<path class="dn" d="{poly_d(lb["frame"])}"/>' for lb in (m or {}).get("labels", []) if lb.get("kind", "land") == "land" and lb.get("frame"))
+    return (f'<svg class="dial-thumb" viewBox="0 0 {S.W} {S.H}" aria-hidden="true"><rect class="sea" width="{S.W}" height="{S.H}"/>'
+            f'<path class="land" d="{S.land()}"/>{bands}</svg>')
+
+
+def dial_band(site, ctx):
+    stops = dial_stops(site)
+    if not stops:
+        return ""
+    n = sum(1 for s in stops if not s.get("early"))
+    wheel = site.orn.get("compass-wheel")
+    return (f'<section class="band dial-door"><a class="dial-door-a" href="{ctx.link("dial")}">'
+            f'<span class="dial-door-pic">{dial_thumb(site, ctx)}{cut(site, ctx, wheel, "ornaments", "dial-door-wheel") if wheel else ""}</span>'
+            f'<span class="dial-door-body"><span class="dial-door-t">Turn the dial</span>'
+            f'<span class="dial-door-p">{n} old maps laid on the real earth, from {min(s["year"] for s in stops if not s.get("early"))} to {stops[-1]["year"]}. Watch the word Tartary arrive, swell, split and fade.</span>'
+            f'<span class="btn primary">Watch the name move</span></span></a></section>')
+
+
+def page_dial(site, ctx):
+    S = DialSheet
+    stops = dial_stops(site)
+    maps = [s for s in stops if not s.get("early")]
+    first = next((i for i, s in enumerate(stops) if s["key"] == DIAL_FIRST), len(stops) - 1)
+    land = S.land()
+    base = (f'<svg class="dial-earth" viewBox="0 0 {S.W} {S.H}" preserveAspectRatio="xMidYMid slice" aria-hidden="true">'
+            f'<defs><path id="dial-land" d="{land}" fill-rule="evenodd"/></defs>'
+            f'<rect class="sea" width="{S.W}" height="{S.H}"/><path class="grat" d="{S.graticule()}"/>'
+            + "".join(f'<use class="shore s{k}" href="#dial-land"/>' for k in (3, 2, 1))
+            + f'<use class="land" href="#dial-land"/><path class="lake" d="{S.lakes()}"/><path class="river" d="{S.rivers()}"/></svg>')
+    sheets, names, cards, ticks, data = [], [], [], [], []
+    for i, s in enumerate(stops):
+        pos = dial_pos(s["year"])
+        on = " on" if i == first else ""
+        who = s["who"]
+        ticks.append(f'<button type="button" class="dial-stop{" early" if s.get("early") else ""}{on}" data-go="{i}" style="left:{pos * 100:.2f}%" '
+                     f'aria-label="{esc(s["when"])}: {esc(who)}, {esc(s["sheet"])}"><span>{s["year"]}</span></button>')
+        rec = site.rec.get(s.get("rec") or "")
+        links = []
+        g = [f'<g class="dial-g{on}" data-i="{i}">']
+        if s.get("early"):
+            data.append({"y": s["year"], "p": round(pos, 4), "w": s["when"], "by": who})
+            j = next((j for j in site.journeys if j["key"] == s.get("ride")), None)
+            if j:
+                line = "M" + "L".join("%.1f %.1f" % S.xy(st["lon"], st["lat"]) for st in j["stops"])
+                x0, y0 = S.xy(j["stops"][0]["lon"], j["stops"][0]["lat"])
+                far = max(j["stops"], key=lambda st: st["lon"])
+                x1, y1 = S.xy(far["lon"], far["lat"])
+                g.append(f'<path class="dial-road" d="{line}"/><circle class="dial-town" cx="{x0:.0f}" cy="{y0:.0f}" r="7"/>'
+                         f'<circle class="dial-town" cx="{x1:.0f}" cy="{y1:.0f}" r="7"/>'
+                         f'<text class="dial-town-t" x="{x1 + 14:.0f}" y="{y1 + 6:.0f}">{esc(far["name"])}</text>')
+                links.append(f'<a class="btn primary" href="{ctx.link("ride/" + j["key"])}">Ride his road</a>')
+            if rec:
+                links.append(f'<a class="btn" href="{ctx.link(site.rkey(rec))}">{"Meet the witness" if rec["kind"] == "written" else "Open this map"}</a>')
+            lists = ""
+            fit = '<p class="dial-fit">No sheet lies on the earth at this stop.</p>' if not j else '<p class="dial-fit">The line joins the stops of his journey. It is not the exact road.</p>'
+            unsure = ""
+        else:
+            data.append({"y": s["year"], "p": round(pos, 4), "w": s["when"], "by": who, "k": s["key"]})
+            sheets.append(f'<img class="dial-sheet{on}" data-i="{i}" alt="" {"src" if i == first else "data-src"}="{ctx.asset("dial/" + s["key"] + ".webp")}" '
+                          f'width="{S.W}" height="{S.H}" decoding="async">')
+            tart, also = dial_names(s, "labels"), dial_names(s, "also")
+            for n_i, e in enumerate(tart):
+                for lb in e["parts"]:
+                    g.append(f'<path class="dn k-{e["kind"]}" data-n="t{n_i}" d="{poly_d(lb["frame"])}"><title>{esc(e["reads"])}</title></path>')
+            for n_i, e in enumerate(also):
+                for lb in e["parts"]:
+                    g.append(f'<path class="dn also" data-n="a{n_i}" d="{poly_d(lb["frame"])}"><title>{esc(e["reads"])}</title></path>')
+
+            def chips(entries, pre, cls):
+                return "".join(
+                    f'<li><button type="button" class="dial-name {cls} k-{e["kind"]}" data-n="{pre}{k}"><b>{esc(e["reads"])}</b>'
+                    f'<span>{esc(e["plain"])}</span></button></li>' for k, e in enumerate(entries))
+            lands = [e for e in tart if e["kind"] == "land"]
+            if tart:
+                head_t = f'Tartary lettered {plural(len(tart), "time").replace("1 time", "once")} on this sheet'
+                lists = f'<h3>{head_t}</h3><ul class="dial-names">{chips(tart, "t", "tart")}</ul>'
+                if not lands:
+                    lists = f'<h3>No country called Tartary on this sheet</h3><p class="small muted">The word is left in {plural(len(tart), "small name")}:</p><ul class="dial-names">{chips(tart, "t", "tart")}</ul>'
+            else:
+                lists = '<h3>Tartary is not lettered on this sheet</h3>'
+            if also:
+                lists += f'<h3 class="quiet">Other big names in the same country</h3><ul class="dial-names">{chips(also, "a", "also")}</ul>'
+            dr = s["drawn"]
+            fit = (f'<p class="dial-fit">Laid on the earth by {dr["places"]} matched places. Left out one at a time, a place lands about '
+                   f'{num(dr["median_km"])} km from where it belongs; the worst lands {num(dr["worst_km"])} km off. That is the mapmaker\'s error, kept on purpose.</p>')
+            if s.get("item"):
+                links.append(f'<a class="btn" href="{esc(s["item"])}" rel="noopener">The whole sheet at the Library of Congress</a>')
+            if rec:
+                links.append(f'<a class="btn" href="{ctx.link(site.rkey(rec))}">This map in the atlas</a>')
+            notes = s.get("uncertain") or []
+            unsure = ""
+            if notes:
+                unsure = (f'<details class="dial-doubts"><summary>What is uncertain ({plural(len(notes), "note")})</summary>'
+                          f'<ul>{"".join("<li>" + esc(no_em(x)) + "</li>" for x in notes)}</ul></details>')
+        g.append("</g>")
+        names.append("".join(g))
+        title = s.get("title")
+        as_lettered = f'<p class="dial-title">{esc(short_title(title, 150))}</p>' if title and not s.get("early") else ""
+        cards.append(
+            f'<article class="dial-card{on}" data-i="{i}" id="dial-{s["year"]}"><div class="dial-card-main">'
+            f'<p class="eyebrow"><span class="mono">{esc(s["when"])}</span> · {esc(who)} · {esc(s["sheet"])}</p>'
+            f'<h2>{esc(s["head"])}</h2>{as_lettered}<p class="dial-says">{esc(no_em(s["says"]))}</p>'
+            f'<p class="dial-links">{"".join(links)}</p>{fit}{unsure}</div>'
+            f'<div class="dial-card-side">{lists}</div></article>')
+    # the ruled scale under the sheet
+    marks = []
+    for y in range(DIAL_Y0, DIAL_Y1 + 1, 10):
+        big = y % 100 == 0 or y == DIAL_Y0
+        if y < DIAL_BREAK[0] and y % 50:
+            continue
+        marks.append(f'<i class="{("big e" if DIAL_Y0 < y < DIAL_BREAK[0] else "big") if big else ("mid" if y % 50 == 0 else "")}" style="left:{dial_pos(y) * 100:.2f}%">{f"<b>{y}</b>" if big else ""}</i>')
+    wheel = site.orn.get("compass-wheel") or site.orn.get("compass-star")
+    knob = cut(site, ctx, wheel, "ornaments", "dial-wheel") if wheel else ""
+    cur = stops[first]
+    js = json.dumps({"stops": data, "first": first}, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
+    stage = (f'<div class="dial-stage" data-stage style="aspect-ratio:{S.W}/{S.H}">{base}'
+             f'<div class="dial-sheets" data-sheets>{"".join(sheets)}</div>'
+             f'<svg class="dial-over" viewBox="0 0 {S.W} {S.H}" preserveAspectRatio="xMidYMid slice" data-over>{"".join(names)}</svg>'
+             f'<p class="dial-year" data-year aria-hidden="true">{cur["year"]}</p>'
+             f'<p class="dial-tip" data-tip hidden></p></div>')
+    scale = (f'<div class="dial-scale"><div class="dial-track" data-track>'
+             f'<div class="dial-rule" aria-hidden="true">{"".join(marks)}</div>{"".join(ticks)}'
+             f'<div class="dial-knob" data-knob role="slider" tabindex="0" aria-label="Year" aria-valuemin="{stops[0]["year"]}" aria-valuemax="{stops[-1]["year"]}" '
+             f'aria-valuenow="{cur["year"]}" aria-valuetext="{esc(cur["when"])}, {esc(cur["who"])}" style="left:{dial_pos(cur["year"]) * 100:.2f}%">{knob}</div></div>'
+             f'<div class="dial-bar"><button type="button" class="btn icon" data-prev aria-label="The map before">←</button>'
+             f'<button type="button" class="btn primary" data-play aria-pressed="false">Let it run</button>'
+             f'<button type="button" class="btn icon" data-next aria-label="The next map">→</button>'
+             f'<span class="dial-toggles"><button type="button" class="pill" data-lift aria-pressed="false">Lift the old sheet</button>'
+             f'<button type="button" class="pill" data-ghost aria-pressed="false">Keep earlier names</button></span></div></div>')
+    legend = ('<p class="dial-legend"><span><i class="sw t"></i>Tartary, as a country</span><span><i class="sw p"></i>Tartars, as a people or a sea</span>'
+              '<span><i class="sw a"></i>Other big names</span><span class="muted">Press a name to find it on the sheet.</span></p>')
+    head = page_head("The many Tartarys in motion", "Turn the dial",
+                     f"{len(maps)} old maps laid on the real earth, from {maps[0]['year']} to {maps[-1]['year']}. Drag the wheel and watch where each mapmaker "
+                     f"lettered the word Tartary: it arrives, swells, splits, shrinks and is gone.",
+                     ornament=orn(site, ctx, "compass-star", "head"))
+    how = (f'<section class="section dial-how"><h2>How the dial was made</h2>'
+           f'<p>Each sheet is a Library of Congress picture of a printed map. On every one, between {min(m["drawn"]["places"] for m in maps)} and {max(m["drawn"]["places"] for m in maps)} '
+           f'places were matched by an AI reader to where they really are: river mouths, capes, lakes and towns the mapmaker could have known from report. '
+           f'The sheet was then bent, stiffly, so those places fall as near their true spots as the sheet allows. A stiff bend keeps the map looking like itself, '
+           f'so its mistakes stay visible: an oval Caspian, a Siberia squeezed short, towns from Marco Polo set down by guess.</p>'
+           f'<p>The coloured outlines mark where the word is lettered, traced on each sheet and carried across with it. Where a sheet rests on hearsay, the outline is only as '
+           f'good as the sheet. Between two stops the dial fades one sheet into the next; nothing is known about the years in between. '
+           f'No person has checked the matched places or the readings yet. '
+           f'<a href="{ctx.link("labels")}">The many Tartarys</a> counts every map and book in the atlas that uses each name, and '
+           f'<a href="{ctx.link("method")}">How it was made</a> explains the rest.</p></section>')
+    body = (f'<div class="page dial-page">{head}<div class="dial" data-module="dial"><script type="application/json">{js}</script>'
+            f'{stage}{scale}{legend}<div class="dial-cards" aria-live="polite">{"".join(cards)}</div></div>{how}</div>')
+    desc = (f"Watch the word Tartary (Tartaria) move across {len(maps)} old maps laid on the real earth, from {maps[0]['year']} to {maps[-1]['year']}: "
+            f"where each mapmaker lettered it, how it split into Muscovite, Independent and Chinese Tartary, and when it left the map.")
+    return dict(title="Turn the dial: Tartary on the map, year by year", description=desc, body=body, nav="maps", modules=["dial"])
+
+
 # ------------------------------------------------ About, Method, Corrections
 
 def page_about(site, ctx):
@@ -2503,6 +2781,8 @@ def all_pages(site, ctx_factory):
                   ("about", page_about), ("method", page_method), ("corrections", page_corrections)]:
         yield k, fn(site, ctx_factory(k))
     yield "deck", page_deck(site, ctx_factory("deck"))
+    if dial_stops(site):
+        yield "dial", page_dial(site, ctx_factory("dial"))
     if site.journeys:
         yield "ride", page_rides(site, ctx_factory("ride"))
         for j in site.journeys:
@@ -2534,6 +2814,8 @@ def write_static(site):
     shutil.copy(STATIC / "vendor" / "maplibre-gl.css", OUT / "assets" / "maplibre-gl.css")
     if (STATIC / "cuts").exists():
         shutil.copytree(STATIC / "cuts", OUT / "assets" / "cuts")
+    if (STATIC / "dial").exists():
+        shutil.copytree(STATIC / "dial", OUT / "assets" / "dial")
     write_basemap(OUT / "assets" / "basemap.json")
     write_passage_assets(site, OUT / "assets")
     (OUT / "assets" / "eurasia.svg").write_text(f'<svg xmlns="http://www.w3.org/2000/svg">{build_land_svg()}</svg>')
@@ -2578,6 +2860,8 @@ def write_preview(site):
     # A Claude artifact cannot load pictures from other sites, so the preview carries its own copies.
     if (STATIC / "cuts").exists():
         shutil.copytree(STATIC / "cuts", PREVIEW / "assets" / "cuts")
+    if (STATIC / "dial").exists():
+        shutil.copytree(STATIC / "dial", PREVIEW / "assets" / "dial")
     front = ["front.jpg"] if site.front else []
     for sub, names in [("maps", [f"{rid}-{k}.jpg" for rid in site.map_img for k in MAP_PX]), ("pics", [f"{k}.jpg" for k in site.pics] + front)]:
         (PREVIEW / "assets" / sub).mkdir()

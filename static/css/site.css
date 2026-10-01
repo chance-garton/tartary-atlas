@@ -1073,3 +1073,135 @@ dialog.cardshot::backdrop { background: rgba(8, 12, 13, 0.72); }
   .deck-door-a { grid-template-columns: minmax(0, 1fr); text-align: center; }
   .deck-door-body { justify-items: center; }
 }
+
+/* ------------------------------------------------------------ the time dial
+   Old maps bent onto one sheet of the real earth, one after another. The wheel on the ruled scale is the dial:
+   drag it and the sheets fade into each other, with the lettering of Tartary outlined in carmine on each. */
+.dial-page .page-top { margin-bottom: 28px; }
+.dial { display: grid; gap: 14px; min-width: 0; overflow-x: clip; }
+.dial-scroll { min-width: 0; }
+.dial-stage { position: relative; overflow: hidden; background: var(--map-water); border-radius: var(--radius); box-shadow: 0 0 0 1px var(--ink-3), 0 0 0 5px var(--panel), 0 0 0 6px var(--rule), var(--shadow); margin: 6px; isolation: isolate; }
+.dial-earth, .dial-over, .dial-sheets, .dial-sheet { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.dial-earth .sea { fill: var(--map-water); }
+.dial-earth .grat { fill: none; stroke: var(--map-coast); stroke-opacity: 0.25; stroke-width: 1; }
+.dial-earth .shore { fill: none; stroke: var(--map-coast); stroke-linejoin: round; }
+.dial-earth .shore.s3 { stroke-width: 12; stroke-opacity: 0.09; }
+.dial-earth .shore.s2 { stroke-width: 7; stroke-opacity: 0.13; }
+.dial-earth .shore.s1 { stroke-width: 3.5; stroke-opacity: 0.2; }
+.dial-earth .land { fill: var(--map-land); stroke: var(--map-coast); stroke-width: 1.2; }
+.dial-earth .lake { fill: var(--map-water); stroke: var(--map-coast); stroke-width: 0.9; }
+.dial-earth .river { fill: none; stroke: var(--map-river); stroke-width: 1; }
+.dial-sheets { transition: opacity 0.45s; }
+.dial-sheet { object-fit: cover; opacity: 0; filter: drop-shadow(0 2px 5px rgba(19, 27, 30, 0.35)); will-change: opacity; }
+.dial-sheet.on { opacity: 1; }
+.dial-stage.lifted .dial-sheets { opacity: 0.1; }
+.dial-g { opacity: 0; pointer-events: none; }
+.dial-g.on { opacity: 1; pointer-events: auto; }
+.dial-over .dn { fill: var(--dial-t-fill); stroke: var(--dial-t); stroke-width: 3; stroke-linejoin: round; paint-order: stroke; cursor: pointer; transition: fill-opacity 0.2s, stroke-opacity 0.2s, opacity 0.2s; filter: drop-shadow(0 0 2px rgba(255, 253, 246, 0.9)) drop-shadow(0 0 1px rgba(255, 253, 246, 0.9)); }
+.dial-over .dn.k-people, .dial-over .dn.k-sea { fill: var(--dial-p-fill); stroke: var(--dial-p); stroke-width: 2.4; stroke-dasharray: 7 4; }
+.dial-over .dn.also { fill: none; stroke: var(--dial-a); stroke-width: 1.7; stroke-opacity: 0.75; }
+.dial-over .dn:hover { fill-opacity: 0.6; }
+.dial-g.pick .dn { opacity: 0.25; }
+.dial-g.pick .dn.hot { opacity: 1; stroke-width: 4.5; }
+.dial-g.ghost { opacity: 1; pointer-events: none; }
+.dial-g.ghost .dn { fill: none; stroke: var(--dial-t); stroke-opacity: 0.38; stroke-width: 1.6; stroke-dasharray: none; filter: none; }
+.dial-g.ghost .dn.also, .dial-g.ghost .dn.k-people, .dial-g.ghost .dn.k-sea, .dial-g.ghost .dial-road, .dial-g.ghost .dial-town, .dial-g.ghost .dial-town-t { display: none; }
+.dial-road { fill: none; stroke: var(--carmine); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 2 9; }
+.dial-town { fill: var(--pin-halo); stroke: var(--carmine); stroke-width: 3; }
+.dial-town-t { font-family: var(--font-body); font-size: 26px; font-weight: 650; fill: var(--ink); paint-order: stroke; stroke: var(--map-land); stroke-width: 6px; }
+:root { --dial-t: #9f2a45; --dial-t-fill: rgba(190, 40, 80, 0.26); --dial-p: #8a5a00; --dial-p-fill: rgba(214, 160, 30, 0.26); --dial-a: #0f5a78; }
+.dial-year { position: absolute; left: 14px; bottom: 6px; margin: 0; font-family: var(--font-mark); font-size: clamp(2.2rem, 7vw, 5rem); line-height: 1; color: #fffdf6; text-shadow: 0 1px 0 rgba(19, 27, 30, 0.9), 0 0 14px rgba(19, 27, 30, 0.75), 0 0 3px rgba(19, 27, 30, 0.9); letter-spacing: 0.02em; pointer-events: none; font-variant-numeric: tabular-nums; }
+.dial-tip { position: absolute; z-index: 3; margin: 0; transform: translate(-50%, calc(-100% - 12px)); background: var(--pin-tip); color: var(--pin-tip-ink); font-size: 0.8125rem; font-weight: 600; line-height: 1.25; padding: 5px 9px; border-radius: 4px; pointer-events: none; white-space: nowrap; max-width: 80%; overflow: hidden; text-overflow: ellipsis; }
+
+.dial-scale { display: grid; gap: 12px; padding-inline: 6px; }
+.dial:not(.live) .dial-scale, .dial:not(.live) .dial-legend .muted { display: none; }
+.dial-track { position: relative; height: 76px; margin-inline: 22px; cursor: pointer; touch-action: none; user-select: none; -webkit-user-select: none; }
+.dial-rule { position: absolute; left: -22px; right: -22px; top: 30px; height: 36px; background: var(--panel); border: 1px solid var(--ink-3); border-radius: 4px; box-shadow: inset 0 -10px 14px -12px rgba(19, 27, 30, 0.25); }
+.dial-rule i { position: absolute; top: 0; width: 1px; height: 8px; background: var(--ink-3); margin-left: 22px; }
+.dial-rule i.mid { height: 12px; }
+.dial-rule i.big { height: 16px; background: var(--ink); }
+.dial-rule i b { position: absolute; top: 17px; left: 0; transform: translateX(-50%); font-family: var(--font-mono); font-size: 0.6875rem; font-weight: 500; font-style: normal; color: var(--ink-2); }
+.dial-stop { position: absolute; top: 2px; width: 26px; height: 30px; margin-left: -13px; padding: 0; border: 0; background: none; cursor: pointer; }
+.dial-stop::before { content: ""; position: absolute; left: 50%; top: 7px; width: 11px; height: 11px; margin-left: -5.5px; transform: rotate(45deg); background: var(--panel); border: 1.5px solid var(--ink-2); transition: background-color 0.2s, border-color 0.2s, transform 0.2s; }
+.dial-stop::after { content: ""; position: absolute; left: 50%; top: 21px; width: 1px; height: 9px; background: var(--ink-3); }
+.dial-stop.early::before { border-radius: 50%; }
+.dial-stop:hover::before, .dial-stop:focus-visible::before { border-color: var(--carmine); }
+.dial-stop.on::before { background: var(--carmine); border-color: var(--carmine); transform: rotate(45deg) scale(1.25); }
+.dial-stop span { position: absolute; left: 50%; bottom: calc(100% - 2px); transform: translateX(-50%); font-family: var(--font-mono); font-size: 0.6875rem; background: var(--pin-tip); color: var(--pin-tip-ink); padding: 2px 6px; border-radius: 3px; opacity: 0; pointer-events: none; transition: opacity 0.15s; z-index: 4; }
+.dial-stop:hover span, .dial-stop:focus-visible span { opacity: 1; }
+.dial-knob { position: absolute; top: 20px; width: 56px; height: 56px; margin-left: -28px; border-radius: 50%; background: var(--panel); border: 1.5px solid var(--ink); box-shadow: 0 0 0 3px var(--paper), 0 3px 10px -2px rgba(19, 27, 30, 0.5); display: grid; place-items: center; cursor: grab; touch-action: none; z-index: 5; color: var(--ink); }
+.dial-knob:active, .dial.dragging .dial-knob { cursor: grabbing; border-color: var(--carmine); }
+.dial-knob:focus-visible { outline: 2px solid var(--verdigris); outline-offset: 4px; }
+.dial-knob .cut { display: block; width: 46px; height: 46px; transform: rotate(var(--turn, 0deg)); }
+.dial-knob::after { content: ""; position: absolute; left: 50%; top: -9px; margin-left: -5px; border: 5px solid transparent; border-top: 8px solid var(--carmine); }
+.dial-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.dial-toggles { display: flex; flex-wrap: wrap; gap: 8px; margin-left: auto; }
+.dial-bar .btn[disabled] { opacity: 0.4; cursor: default; }
+.dial-legend { display: flex; flex-wrap: wrap; gap: 6px 20px; font-size: var(--step--1); color: var(--ink-2); padding-inline: 6px; }
+.dial-legend span { display: inline-flex; align-items: center; gap: 7px; }
+.dial-legend .sw { width: 26px; height: 12px; border-radius: 2px; border: 2px solid var(--dial-t); background: var(--dial-t-fill); }
+.dial-legend .sw.p { border: 2px dashed var(--dial-p); background: var(--dial-p-fill); }
+.dial-legend .sw.a { border: 2px solid var(--dial-a); background: none; }
+
+.dial-cards { min-width: 0; }
+.dial-card { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: 20px 48px; align-items: start; padding: 26px 6px 34px; border-top: 1px solid var(--rule); }
+.dial.live .dial-card { display: none; border-top: 0; padding-top: 14px; }
+.dial.live .dial-card.on { display: grid; }
+.dial-card-main { display: grid; gap: 12px; min-width: 0; }
+.dial-card h2 { font-family: var(--font-display); font-weight: 500; font-size: var(--step-3); letter-spacing: -0.012em; line-height: 1.15; }
+.dial-title { font-family: var(--font-display); font-style: italic; color: var(--ink-3); font-size: var(--step-0); }
+.dial-says { font-family: var(--font-display); font-size: var(--step-1); line-height: 1.5; color: var(--ink); max-width: 40rem; }
+.dial-links { display: flex; flex-wrap: wrap; gap: 10px; }
+.dial-fit { font-size: var(--step--1); color: var(--ink-3); max-width: 40rem; }
+.dial-doubts { font-size: var(--step--1); color: var(--ink-2); max-width: 40rem; }
+.dial-doubts summary { cursor: pointer; font-weight: 600; color: var(--ink-2); }
+.dial-doubts ul { margin: 10px 0 0; padding-left: 20px; display: grid; gap: 8px; }
+.dial-card-side { display: grid; gap: 10px; min-width: 0; align-content: start; }
+.dial-card-side h3 { font-family: var(--font-body); font-size: var(--step--1); font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--carmine); }
+.dial-card-side h3.quiet { color: var(--ink-3); margin-top: 10px; }
+.dial-names { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.dial-name { display: grid; gap: 1px; text-align: left; font: inherit; padding: 7px 12px; border-radius: 8px; border: 1.5px solid var(--dial-t); background: var(--panel); color: var(--ink); cursor: pointer; transition: background-color 0.15s, box-shadow 0.15s; }
+.dial-name b { font-family: var(--font-display); font-weight: 600; font-size: 1rem; letter-spacing: 0.02em; }
+.dial-name span { font-size: 0.8125rem; color: var(--ink-3); }
+.dial-name.k-people, .dial-name.k-sea { border: 1.5px dashed var(--dial-p); }
+.dial-name.also { border: 1.5px solid var(--rule); }
+.dial-name.also b { font-weight: 500; }
+.dial-name:hover { box-shadow: 0 0 0 2px var(--rule); }
+.dial-name[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); border-style: solid; color: var(--panel); }
+.dial-name[aria-pressed="true"] span { color: inherit; opacity: 0.75; }
+.dial:not(.live) .dial-name { cursor: default; }
+.dial-how { max-width: 46rem; margin-top: 40px; display: grid; gap: 14px; }
+.dial-how h2 { font-family: var(--font-display); font-weight: 500; font-size: var(--step-2); }
+.dial-how p { color: var(--ink-2); }
+
+/* the door to the dial */
+.dial-door-a { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 20px 40px; align-items: center; padding: 22px; border-radius: var(--radius-l); background: var(--panel); border: 1px solid var(--rule); box-shadow: var(--shadow); color: inherit; text-decoration: none; }
+.dial-door-a:hover { border-color: var(--carmine); }
+.dial-door-pic { position: relative; display: block; border-radius: var(--radius); overflow: hidden; box-shadow: 0 0 0 1px var(--ink-3); }
+.dial-thumb { display: block; width: 100%; height: auto; }
+.dial-thumb .sea { fill: var(--map-water); }
+.dial-thumb .land { fill: var(--map-land); stroke: var(--map-coast); stroke-width: 2; }
+.dial-thumb .dn { fill: var(--dial-t-fill); stroke: var(--dial-t); stroke-width: 5; }
+.dial-door-wheel { position: absolute; right: 4%; bottom: 6%; width: 22%; height: auto; aspect-ratio: 1; color: var(--ink); transition: transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1); }
+.dial-door-a:hover .dial-door-wheel { transform: rotate(120deg); }
+.dial-door-body { display: grid; gap: 10px; justify-items: start; }
+.dial-door-t { font-family: var(--font-display); font-weight: 500; font-size: var(--step-3); letter-spacing: -0.012em; }
+.dial-door-p { color: var(--ink-2); max-width: 34rem; }
+
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --dial-t: #ff8fa8; --dial-t-fill: rgba(255, 110, 150, 0.3); --dial-p: #f1c45a; --dial-p-fill: rgba(241, 196, 90, 0.26); --dial-a: #7fd0ea; } }
+:root[data-theme="dark"] { --dial-t: #ff8fa8; --dial-t-fill: rgba(255, 110, 150, 0.3); --dial-p: #f1c45a; --dial-p-fill: rgba(241, 196, 90, 0.26); --dial-a: #7fd0ea; }
+@media (max-width: 900px) {
+  .dial-card { grid-template-columns: minmax(0, 1fr); }
+  .dial-door-a { grid-template-columns: minmax(0, 1fr); }
+  .dial-toggles { margin-left: 0; }
+}
+@media (max-width: 640px) {
+  .dial-scroll { overflow-x: auto; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; padding-bottom: 4px; }
+  .dial-scroll .dial-stage { width: 680px; }
+  .dial-rule i.e b { display: none; }
+  .dial-stop { width: 14px; margin-left: -7px; }
+  .dial-stop::before { width: 9px; height: 9px; margin-left: -4.5px; }
+  .dial-track { margin-inline: 18px; }
+  .dial-rule i:not(.big):not(.mid) { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .dial-sheets, .dial-door-wheel { transition: none; } }
