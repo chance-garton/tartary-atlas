@@ -109,7 +109,7 @@
   }
   // The quote with who said it, the page and the link: ready to paste into notes or a slide.
   TA.citation = function (card) {
-    var bq = card.querySelector('blockquote'), orig = bq.querySelector('.orig');
+    var bq = card.querySelector('blockquote'), orig = card.querySelector('.orig');
     var link = card.querySelector('.psg-links a'), who = card.querySelector('.who');
     var page = (link.textContent.match(/\(p\. (.+)\)/) || [])[1];
     var out = '“' + bq.querySelector('p').textContent.trim() + '”';
@@ -208,6 +208,26 @@
     if (o.source !== false) {
       tale = '<a class="psg-tale" href="' + TA.href('w/' + p.r) + '"><span class="psg-tale-k">Continue in this source</span>' +
         '<span class="psg-tale-t">' + esc(p.sr) + '</span><span class="psg-tale-n">' + esc(p.sw) + ' · ' + numText(p.sn) + ' passage' + (p.sn === 1 ? '' : 's') + '</span></a>';
+    }
+    // The book is opt-in on the homepage; every other passage keeps its shared card layout.
+    if (o.book) {
+      var original = p.t ? '<details class="book-original"><summary>Original wording</summary><p class="orig" dir="auto">' + esc(p.q) + '</p></details>' : '';
+      var reading = '<blockquote><p dir="auto">' + esc(p.t || p.q) + '</p>' + (p.t ? '<p class="q-tag">Working translation</p>' : '') + '</blockquote>';
+      return '<article class="psg book-entry" id="p-' + esc(p.i) + '" data-th="' + esc(p.th) + '" data-b="' + esc(p.b) + '">' +
+        '<div class="book-binding"><div class="book-spread">' +
+        '<div class="book-page book-verso"><p class="book-running">Leaves from the archive</p>' +
+        '<h3 class="book-source-title">' + esc(p.sr) + '</h3>' +
+        (p.w ? '<p class="book-date">' + esc(p.w) + '</p>' : '') +
+        '<p class="who book-byline">' + esc(p.s) + '</p><span class="book-fleuron" aria-hidden="true">❦</span>' +
+        '<section class="book-editorial"><h4>Editor’s introduction</h4><p class="gloss">' + esc(p.g) + '</p></section>' +
+        '<span class="book-colophon" aria-hidden="true">Collected in the Tartary Atlas</span></div>' +
+        '<div class="book-page book-recto"><p class="book-running">In their own words</p><h4 class="book-passage-title">' + esc(p.h) + '</h4>' + reading +
+        '<span class="book-endmark" aria-hidden="true">❦</span></div></div></div>' +
+        '<div class="book-apparatus"><div class="book-actions"><div class="psg-links">' + links + '</div>' +
+        '<a class="book-source-link" href="' + TA.href('w/' + p.r) + '">Read this source <span aria-hidden="true">↗</span></a></div>' +
+        '<div class="book-catalogue"><div class="psg-meta">' + meta + '</div>' +
+        '<div class="book-evidence"><div class="psg-foot"><span class="book-evidence-label">How the author knew</span><button type="button" class="basis ' + esc(p.b) + '" data-basis aria-expanded="false" title="' + esc(b[1]) + '">' + esc(b[0]) + '</button></div></div></div>' +
+        (p.pe ? '<p class="psg-people"><span>About</span> ' + esc(p.pe) + '</p>' : '') + original + notes + '</div></article>';
     }
     return '<article class="psg' + (o.cls ? ' ' + o.cls : '') + '" id="p-' + esc(p.i) + '" data-th="' + esc(p.th) + '" data-b="' + esc(p.b) + '" data-y="' + (p.y == null ? '' : p.y) + '">' +
       '<div class="psg-meta">' + meta + '</div><h3>' + esc(p.h) + '</h3><p class="gloss"><span class="psg-label">Editorial context</span>' + esc(p.g) + '</p>' + quote +
@@ -464,7 +484,7 @@
   };
 
   /* The front door: Ortelius's map with the passage beside it. A different passage opens on every visit,
-     "Draw another" takes the next from a fresh shuffle, and a reader who comes Back finds the passage they left.
+     "Turn the page" takes the next from a fresh shuffle, and a reader who comes Back finds the passage they left.
      When the passage is about a place Ortelius lettered, the map travels there. A dot on the map is a place the
      sources wrote about; a diamond is something the mapmaker wrote on the sheet. Without the map viewer the
      still picture stays and the passages work as before. */
@@ -472,27 +492,68 @@
     var D = JSON.parse(el.querySelector('script[type="application/json"]').textContent);
     var slot = el.querySelector('[data-slot]'), btn = el.querySelector('[data-next]'), at = el.querySelector('[data-at]');
     var LAST = 'ta:feature-last', queue = [], cur = null, curPin = null;
+    var book = el.querySelector('.passage-book'), status = el.querySelector('[data-book-status]');
+    var turning = false, finishTurn = null;
+    // Decorative copies never contain active controls, duplicate IDs or screen-reader content.
+    function pageCopy(page, cls) {
+      var copy = page.cloneNode(true);
+      copy.classList.add(cls);
+      copy.setAttribute('aria-hidden', 'true');
+      copy.setAttribute('inert', '');
+      copy.removeAttribute('id');
+      arr(copy.querySelectorAll('[id]')).forEach(function (n) { n.removeAttribute('id'); });
+      arr(copy.querySelectorAll('a, button, summary, [tabindex]')).forEach(function (n) { n.setAttribute('tabindex', '-1'); });
+      return copy;
+    }
+    function turn(oldCard, newCard, oldHeight, p) {
+      turning = true;
+      btn.setAttribute('aria-disabled', 'true');
+      slot.setAttribute('aria-busy', 'true');
+      newCard.style.minHeight = Math.max(oldHeight, newCard.getBoundingClientRect().height) + 'px';
+      var leaf = document.createElement('div'), still = pageCopy(oldCard.querySelector('.book-verso'), 'book-turn-still');
+      leaf.className = 'book-turn-leaf';
+      leaf.setAttribute('aria-hidden', 'true');
+      leaf.setAttribute('inert', '');
+      var singlePage = window.matchMedia && window.matchMedia('(max-width: 760px)').matches;
+      leaf.appendChild(pageCopy(singlePage ? oldCard : oldCard.querySelector('.book-recto'), 'book-turn-front'));
+      leaf.appendChild(pageCopy(newCard.querySelector('.book-verso'), 'book-turn-back'));
+      newCard.appendChild(still);
+      newCard.appendChild(leaf);
+      book.classList.add('is-turning');
+      var timer;
+      var done = function () {
+        if (!turning) return;
+        turning = false;
+        clearTimeout(timer);
+        leaf.remove(); still.remove();
+        newCard.style.minHeight = '';
+        book.classList.remove('is-turning');
+        btn.removeAttribute('aria-disabled');
+        slot.removeAttribute('aria-busy');
+        finishTurn = null;
+        if (status) status.textContent = 'Page turned. ' + p.h;
+      };
+      finishTurn = done;
+      leaf.addEventListener('animationend', function (e) { if (e.target === leaf) done(); });
+      // Also finish if motion settings change, CSS cannot animate, or the tab is backgrounded.
+      timer = setTimeout(done, 1450);
+    }
+    TA.cleanups.push(function () { if (finishTurn) finishTurn(); });
     var M = D.map, pinById = {};
     if (M) M.pins.forEach(function (pin) { pinById[pin.i] = pin; });
     D.p.forEach(function (p) { TA.srcMeta(p, D.src); });
     function lastSeen() { try { return window.localStorage.getItem(LAST); } catch (e) { return null; } }
     function draw(p, moved) {
+      if (finishTurn) finishTurn();
+      var oldCard = slot.querySelector('.book-spread');
+      var oldHeight = oldCard ? oldCard.getBoundingClientRect().height : 0;
       cur = p.i;
-      slot.innerHTML = TA.card(p, { cls: 'big' });
-      // Only the homepage folds the editorial summary; the original words and citation stay visible.
-      var gloss = slot.querySelector('.gloss'), context = document.createElement('details');
-      context.className = 'front-context';
-      context.innerHTML = '<summary>Read the context</summary>';
-      gloss.parentNode.insertBefore(context, gloss);
-      context.appendChild(gloss);
+      slot.innerHTML = TA.card(p, { book: true });
       slot.setAttribute('data-ready', '');
       TA.mem.set('feature', p.i);
       try { window.localStorage.setItem(LAST, p.i); } catch (e) { /* storage is off: still random, may repeat */ }
-      if (moved && !reduced()) {
-        var card = slot.firstChild;
-        card.classList.add('dealt');
-        setTimeout(function () { card.classList.remove('dealt'); }, 400);
-      }
+      if (moved && oldCard && book && !reduced()) turn(oldCard, slot.querySelector('.book-spread'), oldHeight, p);
+      else if (moved && status) status.textContent = 'Page turned. ' + p.h;
       curPin = p.pn && pinById[p.pn] ? p.pn : null;
       if (at) {
         if (curPin) {
@@ -654,7 +715,8 @@
     var back = TA.restoring ? TA.mem.get('feature') : null;
     var kept = back && D.p.filter(function (p) { return p.i === back; })[0];
     draw(kept || next());
-    btn.addEventListener('click', function () { closeSlip(); draw(next(), true); });
+    btn.hidden = false;
+    btn.addEventListener('click', function () { if (turning) return; closeSlip(); draw(next(), true); });
   };
 
   /* "Surprise me": open one source at random. */
