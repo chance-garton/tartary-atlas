@@ -85,6 +85,7 @@
 .atlas-home .feature-slot .psg-tale::after { background: transparent; color: var(--verdigris); }
 .atlas-home .home { max-width: 1360px; }
 .atlas-home .home .hand-list li, .atlas-home .home .hand-list .cut { max-width: 100%; }
+.atlas-home .home .hand-list a { grid-template-columns: minmax(0, 1fr); }
 .atlas-home .home .band-head h2 { font-family: var(--font-display); font-size: 2.1rem; font-weight: 400; }
 .atlas-home .home :is(.trail, .mapcard, .witness, .ridecard) { background: #f9efd73b; border-radius: 1px; box-shadow: none; }
 .atlas-home .home .orn-rule { color: var(--gamboge); }
