@@ -1380,9 +1380,10 @@ button.basis { min-height: 32px; }
 @media (max-width: 640px) {
   .dial-workbench { padding: 12px 6px; }
   .dial-console { column-gap: 10px; }
+  .dial-console .dial-current { grid-row: 1 / 3; }
   .dial-current-year { font-size: 1.8rem; }
   .dial-current h2 { font-size: 1.05rem; }
-  .dial-console .dial-bar { grid-template-columns: 36px minmax(0, 1fr) 36px; gap: 3px; }
+  .dial-console .dial-bar { grid-column: 1 / -1; grid-template-columns: 44px minmax(0, 1fr) 44px; gap: 6px; }
   .dial-console .dial-bar .btn { font-size: .82rem; padding: 6px 2px; }
   .dial-console .dial-toggles .pill { font-size: .84rem; padding-inline: 6px; }
   .dial-pan-hint { display: block; padding-inline: 6px; }
