@@ -2977,6 +2977,8 @@ def full_title(pg):
 def static_page(site, key, pg):
     ctx = Ctx("static", key)
     title = full_title(pg)
+    # Keep the redesigned dial's markup and controls together in returning browsers.
+    revision = "?v=dial-3" if key == "dial" else ""
     url = f'{CONFIG["base_url"]}/{key + "/" if key else ""}'
     head = [
         '<!doctype html><html lang="en"><head><meta charset="utf-8">',
@@ -2988,7 +2990,7 @@ def static_page(site, key, pg):
         f'<meta property="og:type" content="website"><meta property="og:url" content="{url}"><meta property="og:site_name" content="{CONFIG["site_name"]}">',
         '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>',
         f'<link rel="stylesheet" href="{CONFIG["fonts"]}">',
-        f'<link rel="stylesheet" href="{ctx.asset("site.css")}">',
+        f'<link rel="stylesheet" href="{ctx.asset("site.css")}{revision}">',
     ]
     if pg.get("maplibre"):
         head.append(f'<link rel="stylesheet" href="{ctx.asset("maplibre-gl.css")}">')
@@ -2998,7 +3000,7 @@ def static_page(site, key, pg):
     if pg.get("homepage"):
         head.append(f'<link rel="stylesheet" href="{ctx.asset("home.css")}">')
     head.append('<script>document.documentElement.className += " js";</script>')
-    head.append(f'<script src="{ctx.asset("site.js")}" defer></script>')
+    head.append(f'<script src="{ctx.asset("site.js")}{revision}" defer></script>')
     if pg.get("jsonld"):
         head.append('<script type="application/ld+json">' + json.dumps({k: v for k, v in pg["jsonld"].items() if v is not None}, ensure_ascii=False).replace("</", "<\\/") + "</script>")
     head.append("</head>")

@@ -142,8 +142,9 @@ check(not em_any, 'no em dash anywhere in the generated HTML')
 missing = set()
 for f in D.rglob('index.html'):
     for h in re.findall(r'href="(\.[^"#]*)"', f.read_text()):
-        target = (f.parent / h).resolve()
-        if h.endswith('/'): target = target / 'index.html'
+        path = h.split('?', 1)[0]
+        target = (f.parent / path).resolve()
+        if path.endswith('/'): target = target / 'index.html'
         if not target.exists(): missing.add(str(h))
 check(not missing, f'all internal links resolve ({list(missing)[:5]})')
 print('ALL PASS' if ok else 'SOME FAILED')
