@@ -200,20 +200,21 @@
     var notes = '';
     if (p.c) notes += '<p>' + esc(p.c) + '</p>';
     if (p.n) notes += '<p>' + esc(p.n) + '</p>';
-    if (notes) notes = '<details class="psg-notes"><summary>' + (p.c ? 'Keep in mind' : 'A note on this quote') + '</summary>' + notes + '</details>';
+    if (notes) notes = '<details class="psg-notes"' + (p.c ? ' open' : '') + '><summary>' + (p.c ? 'Keep in mind' : 'A note on this quote') + '</summary>' + notes + '</details>';
     var b = BASIS[p.b] || [p.b, ''];
     var links = '<a href="' + esc(p.u) + '" rel="noopener">See the original page' + (p.p ? ' (p. ' + esc(p.p) + ')' : '') + '</a>';
     links += '<button type="button" class="psg-copy" data-copy>Copy quote</button>';
     var tale = '';
     if (o.source !== false) {
-      tale = '<a class="psg-tale" href="' + TA.href('w/' + p.r) + '"><span class="psg-tale-k">Explore this Tartaria tale</span>' +
+      tale = '<a class="psg-tale" href="' + TA.href('w/' + p.r) + '"><span class="psg-tale-k">Continue in this source</span>' +
         '<span class="psg-tale-t">' + esc(p.sr) + '</span><span class="psg-tale-n">' + esc(p.sw) + ' · ' + numText(p.sn) + ' passage' + (p.sn === 1 ? '' : 's') + '</span></a>';
     }
     return '<article class="psg' + (o.cls ? ' ' + o.cls : '') + '" id="p-' + esc(p.i) + '" data-th="' + esc(p.th) + '" data-b="' + esc(p.b) + '" data-y="' + (p.y == null ? '' : p.y) + '">' +
-      '<div class="psg-meta">' + meta + '</div><h3>' + esc(p.h) + '</h3><p class="gloss">' + esc(p.g) + '</p>' + quote +
+      '<div class="psg-meta">' + meta + '</div><h3>' + esc(p.h) + '</h3><p class="gloss"><span class="psg-label">Editorial context</span>' + esc(p.g) + '</p>' + quote +
       '<div class="psg-foot"><button type="button" class="basis ' + esc(p.b) + '" data-basis aria-expanded="false" title="' + esc(b[1]) + '">' + esc(b[0]) + '</button><span class="who">' + esc(p.s) + '</span></div>' +
+      '<div class="psg-links">' + links + '</div>' +
       (p.pe ? '<p class="psg-people"><span>About</span> ' + esc(p.pe) + '</p>' : '') +
-      notes + tale + '<div class="psg-links">' + links + '</div></article>';
+      notes + tale + '</article>';
   };
   function bestOrder(a, b) { return (b.st - a.st) || (a.x - b.x) || (a.i < b.i ? -1 : 1); }
   function shuffled(list) {
@@ -983,14 +984,14 @@
           paint: { 'circle-radius': rad(0), 'circle-opacity': 0, 'circle-stroke-width': 1.6, 'circle-stroke-color': '#a8304a' } });
         map.addLayer({ id: 'river', type: 'circle', source: 'places', filter: on('river'),
           layout: { 'circle-sort-key': ['-', 0, ['get', 'n']] },
-          paint: { 'circle-radius': rad(0), 'circle-color': '#5f9c95', 'circle-stroke-width': 1, 'circle-stroke-color': '#fff' } });
+          paint: { 'circle-radius': rad(0), 'circle-color': '#99804c', 'circle-stroke-width': 1, 'circle-stroke-color': '#fff' } });
         map.addLayer({ id: 'capital-ring', type: 'circle', source: 'places', filter: on('capital'),
           paint: { 'circle-radius': rad(3.5), 'circle-opacity': 0, 'circle-stroke-width': 1.2, 'circle-stroke-color': '#1a2327' } });
         map.addLayer({ id: 'capital', type: 'circle', source: 'places', filter: on('capital'),
           paint: { 'circle-radius': rad(0), 'circle-color': '#1a2327', 'circle-stroke-width': 1.5, 'circle-stroke-color': '#fff' } });
         map.addLayer({ id: 'exact', type: 'circle', source: 'places', filter: on('exact'),
           layout: { 'circle-sort-key': ['-', 0, ['get', 'n']] },
-          paint: { 'circle-radius': rad(0), 'circle-color': '#1d6a63', 'circle-stroke-width': 1.2, 'circle-stroke-color': '#fff' } });
+          paint: { 'circle-radius': rad(0), 'circle-color': '#79551f', 'circle-stroke-width': 1.2, 'circle-stroke-color': '#fff' } });
         map.addLayer({ id: 'sel', type: 'circle', source: 'places', filter: ['==', ['get', 'id'], ''],
           paint: { 'circle-radius': rad(5), 'circle-opacity': 0, 'circle-stroke-width': 2.2, 'circle-stroke-color': '#000' } });
         paintAll();

@@ -4,10 +4,10 @@
   --paper: #f1e5c9; --panel: #f8efd9; --sunk: #e8dab9; --frame: #e4d2aa;
   --ink: #30271c; --ink-2: #514636; --ink-3: #695b45;
   --rule: #b9a581; --rule-soft: #d3c09a;
-  --verdigris: #345b4d; --verdigris-soft: #e1e3ce;
+  --verdigris: #79551f; --verdigris-soft: #eee0bd;
   --carmine: #843d36; --carmine-soft: #efdbca;
   --gamboge: #765322; --gamboge-soft: #eaddb8;
-  --pin: #305a4c; --pin-sight: #843d36; --pin-halo: #fcf0d3;
+  --pin: #79551f; --pin-sight: #843d36; --pin-halo: #fcf0d3;
   --header-bg: #f1e5c9; --radius: 2px; --radius-l: 2px;
   --shadow: 0 2px 3px #4e351a12, 0 14px 24px -18px #4e351a66;
   color-scheme: light;
@@ -137,3 +137,7 @@
   .atlas-home *, .atlas-home *::before, .atlas-home *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
   .atlas-home .feature-slot:not([data-ready]) { visibility: visible; }
 }
+
+.atlas-home .front-intro h1 { font-family: var(--font-heading); }
+.atlas-home .feature-slot blockquote::before { display: none; }
+.atlas-home .feature-slot .psg-foot, .atlas-home .feature-slot .psg-links { padding-left: 0; }

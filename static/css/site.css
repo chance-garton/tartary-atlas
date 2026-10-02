@@ -1,47 +1,44 @@
-/* The Tartary Atlas
-   Layout concept: a reading room with the maps on the wall. Pictures of the maps lead; the words sit in
-   quiet white cards beneath them; the catalogue ledger stays one step behind.
-   Palette: pigments of hand-coloured early modern maps (verdigris, carmine, gamboge) on a cool chart paper.
-   Approximate things wear carmine and dashes; surveyed things wear solid ink.
-   Type: Newsreader for headings and the sources' own words, Public Sans for everything the atlas says,
-   IBM Plex Mono for dates and record numbers, IM Fell English SC for the wordmark only. */
+/* The Tartary Atlas: warm vellum, iron-gall ink, brass and oxblood.
+   Historical images retain their original colours. The legacy --verdigris token
+   is retained as an API for the map code; it now means the brass link accent. */
 
 :root {
-  --paper: #f5f6f3;
-  --panel: #ffffff;
-  --sunk: #eaede9;
-  --frame: #e9e5d8;
-  --ink: #131b1e;
-  --ink-2: #3c494e;
-  --ink-3: #566468;
-  --rule: #d3dad7;
-  --rule-soft: #e5e9e6;
-  --verdigris: #12615a;
-  --verdigris-soft: #dcebe7;
-  --carmine: #9f2a45;
-  --carmine-soft: #f6e3e7;
+  --paper: #f1e5c9;
+  --panel: #fbf3e1;
+  --sunk: #e8d9b9;
+  --frame: #e4d2aa;
+  --ink: #30271c;
+  --ink-2: #514636;
+  --ink-3: #6b5b43;
+  --rule: #bcaa87;
+  --rule-soft: #d9c7a5;
+  --verdigris: #79551f;
+  --verdigris-soft: #eee0bd;
+  --carmine: #843d36;
+  --carmine-soft: #efdbca;
   --gamboge: #7d5508;
   --gamboge-soft: #f4ecd8;
   --mark: #fbe29a;
-  --header-bg: rgba(245, 246, 243, 0.86);
+  --header-bg: rgba(241, 229, 201, 0.96);
   --shadow: 0 1px 2px rgba(19, 27, 30, 0.06), 0 10px 28px -14px rgba(19, 27, 30, 0.22);
-  --map-water: #d4e3e5;
-  --map-land: #eeefe8;
-  --map-coast: #8ea2a5;
-  --map-river: #9dbfc4;
-  --map-point: #12615a;
-  --map-river-point: #5f9c95;
-  --map-capital: #131b1e;
-  --map-approx: #9f2a45;
-  --map-halo: #ffffff;
+  --map-water: #d6d7cc;
+  --map-land: #e8dcc0;
+  --map-coast: #a89879;
+  --map-river: #b1b7aa;
+  --map-point: #79551f;
+  --map-river-point: #99804c;
+  --map-capital: #30271c;
+  --map-approx: #843d36;
+  --map-halo: #fbf3e1;
   --icon-filter: none;
-  --pin: #0d554f;
-  --pin-sight: #9f2a45;
+  --pin: #79551f;
+  --pin-sight: #843d36;
   --pin-halo: #fffdf6;
-  --pin-tip: #131b1e;
-  --pin-tip-ink: #f5f6f3;
+  --pin-tip: #30271c;
+  --pin-tip-ink: #f1e5c9;
   --stage-shade: rgba(19, 27, 30, 0.34);
   --font-display: "Newsreader", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --font-heading: "IM Fell English", "Newsreader", Georgia, serif;
   --font-mark: "IM Fell English SC", "Newsreader", "Palatino Linotype", Palatino, Georgia, serif;
   --font-body: "Public Sans", "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
@@ -52,74 +49,76 @@
   --step-3: 1.9375rem;
   --step-4: 2.5rem;
   --step-5: clamp(2.2rem, 1.35rem + 3vw, 3.5rem);
-  --radius: 8px;
-  --radius-l: 14px;
+  --radius: 2px;
+  --radius-l: 2px;
   --gutter: clamp(16px, 3.5vw, 40px);
   --header-h: 64px;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --paper: #0d1315;
-    --panel: #151d20;
-    --sunk: #090e10;
-    --frame: #1c2528;
-    --ink: #e4ebe9;
-    --ink-2: #b1bebb;
-    --ink-3: #8a9996;
-    --rule: #2a3639;
-    --rule-soft: #1f292c;
-    --verdigris: #6bcabd;
-    --verdigris-soft: #173230;
-    --carmine: #f28da2;
-    --carmine-soft: #3a1c24;
+    --paper: #1c1813;
+    --panel: #272119;
+    --sunk: #17130f;
+    --frame: #32291e;
+    --ink: #f1e3c7;
+    --ink-2: #d5c4a5;
+    --ink-3: #b6a284;
+    --rule: #5b4a34;
+    --rule-soft: #403425;
+    --verdigris: #dbb875;
+    --verdigris-soft: #3c301f;
+    --carmine: #e2a092;
+    --carmine-soft: #422821;
     --gamboge: #e3b861;
     --gamboge-soft: #2e2613;
     --mark: #5c4a14;
-    --header-bg: rgba(13, 19, 21, 0.84);
+    --header-bg: rgba(28, 24, 19, 0.96);
     --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 30px -14px rgba(0, 0, 0, 0.75);
-    --map-water: #0b1214;
-    --map-land: #1c2629;
-    --map-coast: #3f5558;
-    --map-river: #2c4e54;
-    --map-point: #6bcabd;
-    --map-river-point: #3f8a82;
-    --map-capital: #e4ebe9;
-    --map-approx: #f28da2;
-    --map-halo: #151d20;
+    --map-water: #24231d;
+    --map-land: #383123;
+    --map-coast: #796b51;
+    --map-river: #5d6253;
+    --map-point: #dbb875;
+    --map-river-point: #ab915f;
+    --map-capital: #f1e3c7;
+    --map-approx: #e2a092;
+    --map-halo: #272119;
     --icon-filter: invert(1) hue-rotate(180deg);
+    --paper-wash: #1c1813ef;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --paper: #0d1315;
-  --panel: #151d20;
-  --sunk: #090e10;
-  --frame: #1c2528;
-  --ink: #e4ebe9;
-  --ink-2: #b1bebb;
-  --ink-3: #8a9996;
-  --rule: #2a3639;
-  --rule-soft: #1f292c;
-  --verdigris: #6bcabd;
-  --verdigris-soft: #173230;
-  --carmine: #f28da2;
-  --carmine-soft: #3a1c24;
+  --paper: #1c1813;
+  --panel: #272119;
+  --sunk: #17130f;
+  --frame: #32291e;
+  --ink: #f1e3c7;
+  --ink-2: #d5c4a5;
+  --ink-3: #b6a284;
+  --rule: #5b4a34;
+  --rule-soft: #403425;
+  --verdigris: #dbb875;
+  --verdigris-soft: #3c301f;
+  --carmine: #e2a092;
+  --carmine-soft: #422821;
   --gamboge: #e3b861;
   --gamboge-soft: #2e2613;
   --mark: #5c4a14;
-  --header-bg: rgba(13, 19, 21, 0.84);
+  --header-bg: rgba(28, 24, 19, 0.96);
   --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 30px -14px rgba(0, 0, 0, 0.75);
-  --map-water: #0b1214;
-  --map-land: #1c2629;
-  --map-coast: #3f5558;
-  --map-river: #2c4e54;
-  --map-point: #6bcabd;
-  --map-river-point: #3f8a82;
-  --map-capital: #e4ebe9;
-  --map-approx: #f28da2;
-  --map-halo: #151d20;
+  --map-water: #24231d;
+  --map-land: #383123;
+  --map-coast: #796b51;
+  --map-river: #5d6253;
+  --map-point: #dbb875;
+  --map-river-point: #ab915f;
+  --map-capital: #f1e3c7;
+  --map-approx: #e2a092;
+  --map-halo: #272119;
   --icon-filter: invert(1) hue-rotate(180deg);
-  color-scheme: dark;
+  --paper-wash: #1c1813ef;
+    color-scheme: dark;
 }
 *, *::before, *::after { box-sizing: border-box; }
 [hidden] { display: none !important; }
@@ -127,6 +126,8 @@ html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0;
   background: var(--paper);
+  background-image: linear-gradient(var(--paper-wash, #f4eacfbb), var(--paper-wash, #f4eacfbb)), url("home-parchment.webp");
+  background-size: auto, 760px 760px;
   color: var(--ink);
   font-family: var(--font-body);
   font-size: var(--step-0);
@@ -986,11 +987,11 @@ h2.divider { font-size: 0.8125rem; text-transform: uppercase; letter-spacing: 0.
 }
 
 /* ------------------------------------------------------------------
-   The deck: passages as cards on a green table. The cards are things, so they keep their own paper and ink
+   The deck: passages as cards on a walnut writing desk. The cards are things, so they keep their own paper and ink
    in both themes. The back is a mapmaker's lettering over a compass; each trail is a suit with its own drawing. */
-:root { --table: #1b4a44; --table-2: #153b36; --table-ink: #e6efe9; --card: #fbf6e6; --card-ink: #1a2124; --card-ink-2: #4a5558; --card-back: #862a40; --card-line: #f3e7c9; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --table: #10302c; --table-2: #0b2421; } }
-:root[data-theme="dark"] { --table: #10302c; --table-2: #0b2421; }
+:root { --table: #58402b; --table-2: #33261c; --table-ink: #f2e4c8; --card: #fbf6e6; --card-ink: #30271c; --card-ink-2: #695b45; --card-back: #783e32; --card-line: #f3e7c9; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --table: #35271c; --table-2: #211910; } }
+:root[data-theme="dark"] { --table: #35271c; --table-2: #211910; }
 .pc { display: block; aspect-ratio: 5 / 7; border-radius: 10px; position: relative; }
 .pc-back, .pc-face { position: absolute; inset: 0; border-radius: inherit; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 18px -8px rgba(0, 0, 0, 0.5); }
 .pc-back { background: var(--card-back); padding: 6.5%; display: grid; }
@@ -1140,7 +1141,7 @@ dialog.cardshot::backdrop { background: rgba(8, 12, 13, 0.72); }
 .dial-road { fill: none; stroke: var(--carmine); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 2 9; }
 .dial-town { fill: var(--pin-halo); stroke: var(--carmine); stroke-width: 3; }
 .dial-town-t { font-family: var(--font-body); font-size: 26px; font-weight: 650; fill: var(--ink); paint-order: stroke; stroke: var(--map-land); stroke-width: 6px; }
-:root { --dial-t: #a3213f; --dial-m: #1f5a9c; --dial-i: #2c6e2e; --dial-c: #b0500c; --dial-l: #6f3a9a; --dial-o: #5d5246; --dial-p: #7a5200; --dial-a: #3c494e; --dial-case: #fffdf6; --dial-on: #ffffff; }
+:root { --dial-t: #a3213f; --dial-m: #1f5a9c; --dial-i: #2c6e2e; --dial-c: #b0500c; --dial-l: #6f3a9a; --dial-o: #5d5246; --dial-p: #7a5200; --dial-a: #514636; --dial-case: #fffdf6; --dial-on: #fbf3e1; }
 .dial-year { position: absolute; left: 14px; bottom: 6px; margin: 0; font-family: var(--font-mark); font-size: clamp(2.2rem, 7vw, 5rem); line-height: 1; color: #fffdf6; text-shadow: 0 1px 0 rgba(19, 27, 30, 0.9), 0 0 14px rgba(19, 27, 30, 0.75), 0 0 3px rgba(19, 27, 30, 0.9); letter-spacing: 0.02em; pointer-events: none; font-variant-numeric: tabular-nums; }
 .dial-tip { position: absolute; z-index: 3; margin: 0; transform: translate(-50%, calc(-100% - 12px)); background: var(--pin-tip); color: var(--pin-tip-ink); font-size: 0.8125rem; font-weight: 600; line-height: 1.25; padding: 5px 9px; border-radius: 4px; pointer-events: none; white-space: nowrap; max-width: 80%; overflow: hidden; text-overflow: ellipsis; }
 
@@ -1264,3 +1265,72 @@ dialog.cardshot::backdrop { background: rgba(8, 12, 13, 0.72); }
   .dial-rule i:not(.big):not(.mid) { display: none; }
 }
 @media (prefers-reduced-motion: reduce) { .dial-sheets, .dial-door-wheel { transition: none; } }
+
+/* Step 2: the shared reading room. Fine rules and paper, rather than UI pills. */
+h1 { font-family: var(--font-heading); font-weight: 400; }
+h2 { font-family: var(--font-display); font-weight: 500; font-size: 1.65rem; }
+h3 { font-family: var(--font-display); }
+.site-header { backdrop-filter: none; -webkit-backdrop-filter: none; }
+.site-nav { font-family: var(--font-display); font-size: 1.05rem; }
+.site-nav a { border-radius: 1px; }
+.site-nav a[aria-current="page"] { color: var(--ink); background: transparent; box-shadow: inset 0 -2px var(--gamboge); }
+.page-head h1 { font-size: clamp(2.4rem, 4vw, 3.3rem); }
+.page-head { gap: 16px; }
+.eyebrow, .psg-meta .ttag { letter-spacing: .14em; }
+.btn, summary.btn, .pill, .trailtabs a, button.basis { border-radius: 2px; }
+.btn, summary.btn { font-family: var(--font-display); font-size: 1.06rem; font-weight: 500; box-shadow: inset 0 0 0 3px var(--panel), inset 0 0 0 4px var(--rule-soft); }
+.btn.primary { box-shadow: inset 0 0 0 3px var(--ink), inset 0 0 0 4px var(--rule); }
+.btn.quiet { box-shadow: none; }
+.trailtabs { gap: 0; border-block: 3px double var(--rule); padding-block: 8px; }
+.trailtabs a { background: transparent; border-color: transparent; font-family: var(--font-display); font-size: 1.08rem; font-weight: 500; }
+.trailtabs a[aria-current="page"] { background: var(--ink); }
+.filterbar input, .filterbar select { border-color: var(--rule); border-radius: 2px; background-color: var(--panel); }
+.px-side { padding: 18px; border: 1px solid var(--rule); background: var(--panel); box-shadow: 3px 3px 0 -1px var(--paper), 3px 3px 0 var(--rule-soft); }
+.px-layout { gap: 28px 42px; }
+.psg-list { gap: 32px; }
+.psg { position: relative; gap: 16px; padding: 28px 32px; border: 1px solid var(--rule); border-top: 3px double var(--rule); background: var(--panel); box-shadow: 3px 4px 0 -1px var(--paper), 3px 4px 0 var(--rule-soft), 0 14px 24px -24px #30271c99; }
+.psg-meta { font-size: .79rem; }
+.psg-meta .ttag { font-size: .7rem; }
+.psg h3 { font-size: 1.8rem; line-height: 1.16; font-weight: 500; max-width: 34ch; }
+.psg .gloss { font-size: .94rem; line-height: 1.65; }
+.psg-label { display: block; font-family: var(--font-body); font-size: .65rem; font-weight: 600; text-transform: uppercase; letter-spacing: .14em; color: var(--ink-3); margin-bottom: 8px; }
+.psg blockquote { position: relative; margin: 2px 0 0; padding: 22px 0 6px 24px; border: 0; border-top: 1px solid var(--rule-soft); border-left: 2px solid var(--gamboge); border-radius: 0; background: transparent; }
+.psg blockquote p, .psg.big blockquote p { font-size: 1.34rem; line-height: 1.55; }
+.psg blockquote::before { content: "“"; position: absolute; top: -2px; left: 20px; font: 2.7rem var(--font-display); color: var(--gamboge); }
+.psg-foot { padding-left: 24px; gap: 9px 12px; }
+.psg-foot .who { flex-basis: 100%; font-family: var(--font-display); font-size: 1.05rem; line-height: 1.4; }
+.basis { font-size: .68rem; }
+button.basis { min-height: 32px; }
+.psg-links { padding: 0 0 16px 24px; border-top: 0; border-bottom: 1px solid var(--rule-soft); gap: 10px 16px; font-size: .8rem; }
+.psg-copy { min-height: 34px; padding: 5px 10px; border: 1px solid var(--rule); text-decoration: none; border-radius: 2px; }
+.psg-copy:hover { background: var(--sunk); text-decoration: none; }
+.psg-notes { padding: 12px 15px; border-left: 2px solid var(--carmine); background: var(--carmine-soft); color: var(--ink-2); }
+.psg-notes summary { color: var(--carmine); }
+.psg-notes summary::before { border: 0; border-radius: 0; }
+.psg-notes p { padding-left: 0; border: 0; line-height: 1.65; }
+.psg-tale { border: 0; border-top: 3px double var(--rule); border-radius: 0; background: transparent; padding: 16px 0 0; }
+.psg-tale-k { font-size: .65rem; text-transform: uppercase; letter-spacing: .12em; font-weight: 600; }
+.psg-tale-t { font-size: 1.2rem; }
+.psg-tale-n { font-size: .75rem; }
+.psg-tale::after { border-radius: 0; background: transparent; border: 1px solid var(--rule); color: var(--verdigris); }
+.psg-tale:hover { box-shadow: none; }
+.psg-people { font-size: .8rem; }
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .btn, .psg-copy { transition: box-shadow .2s, background-color .2s, transform .2s; }
+  .btn:hover, .psg-copy:hover { transform: translateY(-1px); }
+  .btn:active, .psg-copy:active { transform: translateY(0); }
+  .psg { transition: box-shadow .25s; }
+  .psg:focus-within { box-shadow: 3px 4px 0 -1px var(--paper), 3px 4px 0 var(--rule), 0 16px 28px -22px #30271c66; }
+}
+@media (max-width: 700px) {
+  .psg { padding: 22px 18px; gap: 14px; }
+  .psg h3, .psg.big h3 { font-size: 1.55rem; }
+  .psg blockquote { padding-left: 16px; }
+  .psg blockquote p, .psg.big blockquote p { font-size: 1.22rem; }
+  .psg-foot, .psg-links { padding-left: 0; }
+  .psg-copy { margin-left: 0; }
+  .trailtabs a { padding: 10px 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
