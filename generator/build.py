@@ -33,7 +33,7 @@ CONFIG = {
     "podcast_url": "https://innerversepodcast.com",
     "maplibre_js": "https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/4.7.1/maplibre-gl.js",
     "osd_js": "https://cdnjs.cloudflare.com/ajax/libs/openseadragon/4.1.0/openseadragon.min.js",
-    "fonts": "https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400..500&family=IBM+Plex+Mono:wght@400;500&family=Public+Sans:wght@400..700&display=swap",
+    "fonts": "https://fonts.googleapis.com/css2?family=IM+Fell+English&family=IM+Fell+English+SC&family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400..500&family=IBM+Plex+Mono:wght@400;500&family=Public+Sans:wght@400..700&display=swap",
 }
 
 LABEL_IDS = ["tartary", "great-tartary", "little-tartary", "chinese-tartary",
@@ -756,7 +756,7 @@ def tale_meta(site, rid):
 
 def tale_link(href, title, n, when):
     """The way from one passage into its source's whole page. The page script builds the same markup in TA.card."""
-    return (f'<a class="psg-tale" href="{href}"><span class="psg-tale-k">Explore this Tartaria tale</span>'
+    return (f'<a class="psg-tale" href="{href}"><span class="psg-tale-k">Continue in this source</span>'
             f'<span class="psg-tale-t">{esc(title)}</span>'
             f'<span class="psg-tale-n">{esc(when)} · {plural(n, "passage")}</span></a>')
 
@@ -785,7 +785,7 @@ def psg_card(site, ctx, p, theme_tag=True, source=True, cls=""):
     if qn:
         notes.append(f"<p>{esc(qn)}</p>")
     notes_label = "Keep in mind" if p.get("caution") else "A note on this quote"
-    notes_html = f'<details class="psg-notes"><summary>{notes_label}</summary>{"".join(notes)}</details>' if notes else ""
+    notes_html = f'<details class="psg-notes"{" open" if p.get("caution") else ""}><summary>{notes_label}</summary>{"".join(notes)}</details>' if notes else ""
     people = f'<p class="psg-people"><span>About</span> {esc(p["people"])}</p>' if p.get("people") else ""
     page = "See the original page" + (f' (p. {esc(p["p"])})' if p.get("p") else "")
     links = [f'<a href="{esc(p["url"])}" rel="noopener">{page}</a>', COPY_BTN]
@@ -794,9 +794,9 @@ def psg_card(site, ctx, p, theme_tag=True, source=True, cls=""):
     return (f'<article class="psg{(" " + cls) if cls else ""}" id="p-{p["id"]}" data-th="{p["theme"]}" data-b="{p["basis"]}" data-y="{"" if y is None else y}">'
             f'<div class="psg-meta">{"".join(meta)}</div>'
             f'<h3>{esc(p["headline"])}</h3>'
-            f'<p class="gloss">{esc(p["gloss"])}</p>{quote}'
+            f'<p class="gloss"><span class="psg-label">Editorial context</span>{esc(p["gloss"])}</p>{quote}'
             f'<div class="psg-foot">{basis_chip(p["basis"], button=True)}<span class="who">{esc(p["speaker"])}</span></div>'
-            f'{people}{notes_html}{tale}<div class="psg-links">{"".join(links)}</div></article>')
+            f'<div class="psg-links">{"".join(links)}</div>{people}{notes_html}{tale}</article>')
 
 
 def psg_note(p):
@@ -985,8 +985,8 @@ def page_home(site, ctx):
     card = ""
     if first:
         excerpt = psg_card(site, ctx, first, cls="big")
-        excerpt = excerpt.replace(f'<p class="gloss">{esc(first["gloss"])}</p>',
-                                  f'<details class="front-context"><summary>Read the context</summary><p class="gloss">{esc(first["gloss"])}</p></details>')
+        excerpt = excerpt.replace(f'<p class="gloss"><span class="psg-label">Editorial context</span>{esc(first["gloss"])}</p>',
+                                  f'<details class="front-context"><summary>Read the context</summary><p class="gloss"><span class="psg-label">Editorial context</span>{esc(first["gloss"])}</p></details>')
         card = (f'<div class="hero-card" id="front-passage"><div class="hero-card-head"><h2>One passage from the record</h2>'
                 f'<button type="button" class="btn" data-next>Draw another <span aria-hidden="true">↻</span></button></div>'
                 f'<p class="front-at" data-at hidden></p>'
@@ -3072,7 +3072,7 @@ def write_preview(site):
     for key, pg in all_pages(site, lambda k: Ctx("preview", k)):
         pages[key] = {"t": full_title(pg), "h": pg["body"], "n": nav_group(pg["nav"])}
     ctx = Ctx("preview", "")
-    css = (STATIC / "vendor" / "maplibre-gl.css").read_text() + "\n" + (STATIC / "css" / "site.css").read_text()
+    css = (STATIC / "vendor" / "maplibre-gl.css").read_text() + "\n" + (STATIC / "css" / "site.css").read_text().replace('url("home-parchment.webp")', 'url("assets/home-parchment.webp")')
     css += "\n" + (STATIC / "css" / "home.css").read_text().replace('url("home-parchment.webp")', 'url("assets/home-parchment.webp")')
     js = (STATIC / "js" / "site.js").read_text()
     pages_json = json.dumps(pages, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
