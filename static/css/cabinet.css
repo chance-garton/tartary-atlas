@@ -12,6 +12,7 @@
 .cabinet { font-family: var(--font-display); font-size: 1.1rem; line-height: 1.6; }
 .cabinet h1, .cabinet h2, .cabinet h3 { font-family: var(--font-heading); font-weight: 400; }
 .cabinet h1 { line-height: 1.06; }
+.cabinet :is(#explore, #front-passage, [id^="p-W"]) { scroll-margin-top: calc(var(--header-h) + 24px); }
 .cabinet :is(button, input, select) { font: inherit; }
 .cabinet :is(.eyebrow, .small, .psg-meta, .psg-links, .pills, .filterbar label, .basis, .chip, .collection-note, .search-status, .global-search-label) { font-family: var(--font-body); }
 .cabinet :is(button, a, input, select, summary):focus-visible { outline: 3px solid #a66f24; outline-offset: 4px; }

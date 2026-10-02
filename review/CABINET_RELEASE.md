@@ -34,5 +34,8 @@ All 3D objects and interactions use CSS transforms and DOM controls. There is no
 - Homepage page turning still uses inert decorative leaves, rapid-click protection, and reduced-motion support.
 - Browser review covers desktop, tablet and 390/320 px frames, navigation, reading desk, card reveal, global search, and major feature layouts. A narrow-gallery overflow was found and fixed. Screenshots and final review links are attached to the pull request when available.
 - JavaScript syntax and git whitespace checks pass. `data/`, `static/dial/`, `static/cuts/`, source image URLs and the private corpus are unchanged.
+- Final browser confirmation: the map gallery and expanded menu fit a 305 px content viewport; phone reading opens with the quotation before the introduction; the rotary End key selects 1894, stop 29 of 29. Section and saved-passage links allow for the sticky header.
+
+Review screenshots: `cabinet-desktop-1790978931347.jpg` and `cabinet-rooms-1790978963492.jpg` in this directory.
 
 Limits: reduced motion is verified with simulated media preferences in the integration checks and CSS inspection, not an OS setting in the cloud browser. The responsive harness uses an iframe; actual touch hardware has not been tested. Historical image services and fonts retain their existing external dependencies. Saved collections are browser-local, not synchronized across devices.
