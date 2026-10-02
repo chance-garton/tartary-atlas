@@ -147,7 +147,7 @@
       var id = card.dataset.passageId || card.id;
       var record = (id.match(/W\d+/) || [])[0];
       if (!record) return null;
-      return { id: id, t: text('.book-passage-title, h3', card), k: 'Passage', d: text('.who', card), u: 'w/' + record + '/#' + id };
+      return { id: id, t: text('.reader-right h3', card) || text('.book-passage-title, h3', card), k: 'Passage', d: text('.who', card), u: 'w/' + record + '/#' + id };
     }
     function addPassageTools(root) {
       var cards = root.matches && root.matches('.psg') ? [root] : $$('.psg', root);
@@ -195,6 +195,7 @@
 
     /* A reading desk, built from the current exact passage DOM and its sources. */
     var reader = $('#atlas-reader'), readerCards = [], readerIndex = 0;
+    reader.insertBefore($('.reader-nav', reader), $('[data-reader-body]', reader));
     function copy(el) {
       if (!el) return null;
       var c = el.cloneNode(true); c.removeAttribute('id');
@@ -210,9 +211,12 @@
       var sourceTitle = text('.psg-tale-t', original) || text('h1') || 'From the archive';
       left.append(node('h3', '', sourceTitle));
       var who = copy($('.who', original)); if (who) left.append(who);
-      var context = copy($('.psg-context', original)); if (context) { context.open = false; left.append(context); }
+      var context = $('.psg-context', original);
+      if (context) { var introduction = node('section', 'reader-introduction'); introduction.append(node('h4', '', 'Editor’s introduction')); var gloss = copy($('.gloss', context)); if (gloss) introduction.append(gloss); left.append(introduction); }
       right.append(node('p', 'reader-running', 'In their own words'));
       var title = copy($('h3', original)), quote = copy($('blockquote', original));
+      var originalWording = quote && copy($('details', quote));
+      if (originalWording) $('details', quote).remove();
       if (title) right.append(title); if (quote) right.append(quote);
       spread.append(left, right); article.append(spread);
       var apparatus = node('div', 'reader-apparatus');
@@ -220,6 +224,7 @@
         var c = copy($(selector, original));
         if (c) { $$('[data-open-reader]', c).forEach(function (b) { b.remove(); }); apparatus.append(c); }
       });
+      if (originalWording) apparatus.append(originalWording);
       article.append(apparatus);
       $('[data-reader-body]').replaceChildren(article);
       $('[data-reader-prev]').disabled = readerIndex === 0;

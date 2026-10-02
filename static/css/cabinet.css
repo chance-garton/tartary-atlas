@@ -451,3 +451,25 @@ body:has(.atlas-dialog[open]) { overflow: hidden; }
   .cabinet *, .cabinet *::before, .cabinet *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
   .room-door, .atlas-home .study-map .front-map-mount { transform: none !important; }
 }
+
+.cabinet .reader-dialog .reader-document { background: none; border: 0; padding: 0; box-shadow: none; }
+.cabinet .reader-dialog .reader-document::before { display: none; }
+.cabinet .reader-dialog .reader-document blockquote { padding: 0; margin: 0; border: 0; }
+.journey-itinerary { width: 100%; min-height: 44px; background: #f3e7ca; border: 1px solid #ad9567; color: #4b3522; padding: 8px 12px; border-radius: 0; }
+
+.cabinet .psg blockquote::before { display: none; }
+.reader-introduction { margin-top: 30px; padding-top: 22px; border-top: 1px solid #bda578; text-align: left; }
+.reader-introduction h4 { font: .65rem var(--font-display); text-transform: uppercase; letter-spacing: .14em; color: #745633; margin: 0 0 15px; }
+.reader-introduction .gloss { font: 1.08rem/1.6 var(--font-display); color: #635039; }
+.reader-dialog .reader-nav { position: sticky; top: -26px; z-index: 5; background: #2b2017; margin: -8px -7px 25px; padding: 12px; border: 1px solid #a2834d55; }
+.reader-apparatus > details:not(.psg-notes) { margin-top: 18px; }
+.reader-apparatus > details summary { cursor: pointer; padding-block: 8px; }
+@media(max-width:700px) { .reader-dialog .reader-nav { top: -18px; margin-inline: -2px; } .reader-introduction { margin-top: 22px; } }
+@media (max-width: 600px) {
+  .cabinet .deck-table .spread { display: flex; gap: 18px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 10px 8px 20px; scrollbar-color: #a6874f #2b1d12; scrollbar-width: thin; }
+  .cabinet .deck-table .spread-slot { flex: 0 0 85%; scroll-snap-align: center; }
+  .cabinet .deck-table .spread-k { font-size: .63rem; }
+  .cabinet .deck-acts { display: flex; flex-wrap: wrap; gap: 12px; }
+  .cabinet .deck-table { padding-bottom: 55px; }
+  .cabinet .page-top { margin-bottom: 20px; }
+}
