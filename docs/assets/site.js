@@ -478,6 +478,12 @@
     function draw(p, moved) {
       cur = p.i;
       slot.innerHTML = TA.card(p, { cls: 'big' });
+      // Only the homepage folds the editorial summary; the original words and citation stay visible.
+      var gloss = slot.querySelector('.gloss'), context = document.createElement('details');
+      context.className = 'front-context';
+      context.innerHTML = '<summary>Read the context</summary>';
+      gloss.parentNode.insertBefore(context, gloss);
+      context.appendChild(gloss);
       slot.setAttribute('data-ready', '');
       TA.mem.set('feature', p.i);
       try { window.localStorage.setItem(LAST, p.i); } catch (e) { /* storage is off: still random, may repeat */ }
@@ -489,7 +495,7 @@
       curPin = p.pn && pinById[p.pn] ? p.pn : null;
       if (at) {
         if (curPin) {
-          at.innerHTML = 'On the map: <em>' + esc(pinById[curPin].m) + '</em>';
+          at.innerHTML = 'A place also named on the map: <em>' + esc(pinById[curPin].m) + '</em>';
           at.hidden = false;
         } else at.hidden = true;
       }
@@ -513,19 +519,15 @@
       if (!open) return;
       var vp = viewer.viewport, still = !!now || reduced();
       Object.keys(marks).forEach(function (k) { marks[k].classList.toggle('on', k === curPin); });
-      if (!curPin) {
-        vp.zoomTo(vp.getHomeZoom(), null, still);
-        vp.panTo(pt(0.42, 0.4), still);
-        vp.applyConstraints(still);
+      // Open on the whole sheet. Only an intentional passage draw travels to a place.
+      if (!curPin || now) {
+        vp.goHome(still);
         return;
       }
       var pin = pinById[curPin], size = viewer.container.getBoundingClientRect();
-      var wide = size.width > 900 && !roaming;
       var zoom = Math.max(vp.getHomeZoom(), Math.min(vp.getMaxZoom(), M.w / (size.width * (size.width > 700 ? 1.5 : 2.7))));
-      // on a wide screen the passage card covers the lower right, so the place is held left of centre and high
-      var dx = wide ? 0.16 : 0, dy = roaming ? 0 : 0.1;
       vp.zoomTo(zoom, null, still);
-      vp.panTo(new window.OpenSeadragon.Point(pin.x + dx / zoom, pin.y * M.ar + dy * (size.height / size.width) / zoom), still);
+      vp.panTo(pt(pin.x, pin.y), still);
       vp.applyConstraints(still);
     }
     function closeSlip() { if (slip) { slip.hidden = true; slip.innerHTML = ''; } }
@@ -550,7 +552,12 @@
         return;
       }
       var p = fromPin(pin.i);
-      if (p) draw(p, true);
+      if (p) {
+        draw(p, true);
+        openSlip('<p class="slip-k">From the writings · ' + esc(pin.n) + '</p><h3>' + esc(p.h) + '</h3>' +
+          '<p>' + esc(p.s) + '</p><p class="slip-go"><button type="button" class="btn primary" data-read="' + esc(pin.i) + '">Read below</button>' +
+          '<a class="btn" href="' + TA.href('place/' + pin.i) + '">All passages</a></p>');
+      }
     }
     function pickSight(s) {
       openSlip('<p class="slip-k">Written on the map</p><h3>' + esc(s.t) + '</h3><p>' + esc(s.w) + '</p>' +
@@ -579,6 +586,7 @@
       closeSlip();
       setTimeout(function () { viewer.forceResize(); travel(true); }, 60);
       if (on) stage.querySelector('[data-close]').focus();
+      else stage.querySelector('[data-roam]').focus();
     }
     function startMap() {
       var OSD = window.OpenSeadragon;
@@ -588,8 +596,8 @@
       viewer = OSD({
         element: stage.querySelector('[data-osd]'),
         tileSources: M.tiled ? M.src : { type: 'image', url: M.src },
-        showNavigationControl: false, homeFillsViewer: true, visibilityRatio: 1, constrainDuringPan: true,
-        minZoomImageRatio: 1, maxZoomPixelRatio: 2, animationTime: 1.6, springStiffness: 6.5, minScrollDeltaTime: 0,
+        showNavigationControl: false, homeFillsViewer: false, visibilityRatio: 1, constrainDuringPan: true,
+        minZoomImageRatio: 1, maxZoomPixelRatio: 2, animationTime: reduced() ? 0 : 1.6, springStiffness: 6.5, minScrollDeltaTime: 0,
         gestureSettingsMouse: { scrollToZoom: false, clickToZoom: false, dblClickToZoom: true },
         gestureSettingsTouch: quiet, gestureSettingsPen: JSON.parse(JSON.stringify(quiet))
       });
@@ -618,12 +626,15 @@
         var vp = viewer.viewport;
         if (b.hasAttribute('data-zoom-in')) { vp.zoomBy(1.6); vp.applyConstraints(); }
         else if (b.hasAttribute('data-zoom-out')) { vp.zoomBy(1 / 1.6); vp.applyConstraints(); }
+        else if (b.hasAttribute('data-home')) { closeSlip(); vp.goHome(reduced()); }
         else if (b.hasAttribute('data-roam')) setRoam(true);
         else if (b.hasAttribute('data-close')) setRoam(false);
         else if (b.hasAttribute('data-slip-x')) closeSlip();
         else if (b.hasAttribute('data-read')) {
-          var p = fromPin(b.getAttribute('data-read'));
-          setRoam(false);
+          var pinId = b.getAttribute('data-read');
+          var p = D.p.filter(function (p) { return p.i === cur && p.pn === pinId; })[0] || fromPin(pinId);
+          if (roaming) setRoam(false);
+          closeSlip();
           if (p) { draw(p, true); slot.scrollIntoView({ block: 'center', behavior: reduced() ? 'auto' : 'smooth' }); }
         }
       });
@@ -1751,6 +1762,7 @@
       if (!TA.restoring) { try { history.replaceState({ ta: ++seq }, ''); } catch (e) { /* carry on without */ } }
       TA.destroy();
       main.innerHTML = pg.h;
+      document.body.classList.toggle('atlas-home', !!main.querySelector('.front'));
       document.title = pg.t;
       document.querySelectorAll('.site-nav a').forEach(function (a) {
         if (a.getAttribute('data-nav') === pg.n) a.setAttribute('aria-current', 'page');
