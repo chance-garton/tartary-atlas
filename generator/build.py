@@ -3021,6 +3021,7 @@ def write_static(site):
     write_passage_assets(site, OUT / "assets")
     (OUT / "assets" / "eurasia.svg").write_text(f'<svg xmlns="http://www.w3.org/2000/svg">{build_land_svg()}</svg>')
     (OUT / ".nojekyll").write_text("")
+    (OUT / "CNAME").write_text(CONFIG["base_url"].split("//")[1] + "\n")
     (OUT / "robots.txt").write_text(f'User-agent: *\nAllow: /\nSitemap: {CONFIG["base_url"]}/sitemap.xml\n')
     urls = "".join(f'<url><loc>{CONFIG["base_url"]}/{k + "/" if k else ""}</loc></url>' for k in keys)
     (OUT / "sitemap.xml").write_text(f'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{urls}</urlset>')
