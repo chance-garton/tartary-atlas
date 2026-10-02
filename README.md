@@ -4,6 +4,18 @@ An open explorer of what the historical record says about Tartary: 303 written s
 
 Planned address: `https://tartary.innerversepodcast.com`
 
+## Scholar’s cabinet interface (October 2026)
+
+The current redesign connects six experiences through one responsive Explore menu: the reading room, map room, journeys, time dial, discovery deck, and geographic atlas. The homepage sets the original Ortelius map on a dimensional walnut table. Hand-built CSS objects lead into each experience. Original lettering, witnesses, and catalogue links remain in the expandable cabinet below the anthology.
+
+`generator/experience.py`, `static/css/cabinet.css`, and `static/js/cabinet.js` implement the shared interface. The built-in image generator supplied only the decorative walnut background, `static/textures/scholars-desk.webp`. All maps, quotations, translations, source data, and interpretation labels remain original. See `review/CABINET_RELEASE.md` for the asset prompt and verification notes.
+
+Global search lazily loads a 200 KB public catalogue index, including alternate place and people names and dates. It also links into the existing full-passage search. The reading desk opens any passage as a typeset volume with previous/next leaves. On phones the quotation comes first. Collection buttons store stable passage/source links locally in the visitor’s browser; no account or server write is involved. A source deep link reveals the requested passage even beyond the initial ten.
+
+The new brass rotary control drives the existing time-dial state machine. It supports dragging, arrows, Home/End, and Page Up/Down. The original timeline, selector, playback, lifting and comparison controls remain. Journey pages add an itinerary selector and a progress indicator. Phone deck cards are large enough to read and swipe between.
+
+Build with `python3 generator/build.py --static`, then run `python3 generator/check_site.py`. `review/cabinet-checks.cjs` adds integration checks with jsdom 30 available in `NODE_PATH`. `review/cabinet.html` is a responsive review harness for the generated site. The legacy single-file preview is historical and does not package this new interface; use the static output.
+
 ## What is in this repository
 
 | Path | What it holds |
@@ -72,7 +84,7 @@ Controls shared across pages (all in `static/js/site.js`):
 * The label that says how the author knew ("Saw it", "Heard it") is a button on a card: pressing it spells the label out, for phones.
 * Source pages open with "Read the N passages" and "Open the original book", and end with Keep exploring: the witness before, the witness after (by the years described) and Surprise me (`onward_section`, `TA.modules.lucky`). Map pages end with the maps drawn just before and after. The sources list has Surprise me too.
 * A map picture opens a closer look in the page (`TA.zoom`): zoom with the buttons, the wheel or a tap, drag to move, Esc or Close to leave. The link to the full image at the library stays.
-* The name in the header is lettering cut from one of the maps (`wordmark` in the generator, `TA.wordmark` in the script). One map lends its hand for a whole visit; the next visit draws another. The line under it names the mapmaker and links to the map.
+* The historical header implementation used lettering cut from one of the maps (`wordmark` in the generator, `TA.wordmark` in the script). One map lends its hand for a whole visit; the next visit draws another. The line under it names the mapmaker and links to the map.
 * A cut (`cut`, `orn`, `orn_rule` in the generator; `.cut` in the stylesheet) is a picture of ink alone, painted in the text colour through a CSS mask, so it works on both themes. The picture's address is written in the element's own style, because an address inside a stylesheet variable is read from the stylesheet's folder.
 * A rounded, outlined pill is always something to press. Labels that only say something are flat tags (`span.chip`). The labels on the sources list and the catalogue table are buttons that filter the list.
 * Coming back with Back or Forward puts the filters, the number of cards open and the scroll position back (`TA.mem`, `TA.restoring`).
@@ -98,6 +110,6 @@ Also written: `sitemap.xml`, `robots.txt`, `404.html`, `.nojekyll`.
 * The vegetable lamb engraving is from Henry Lee, The Vegetable Lamb of Tartary (1887), via Wikimedia Commons, public domain.
 * Fonts: Newsreader, Public Sans, IBM Plex Mono, and IM Fell English SC (Igino Marini) for the wordmark, from Google Fonts.
 
-## Names the visitor sees
+## Earlier navigation
 
-The navigation reads In their words (`/passages/`), Map room (`/maps/`), Wander the map (`/map/`), Witnesses (`/sources/`), The vault (`/archive/`), About. Inside the vault: The many Tartarys (`/labels/`), Who counted as a Tartar? (`/meanings/`), Who copied whom (`/lineage/`), Every book and map (`/records/`), Every place (`/places/`), Who's who (`/peoples/`), How it was made (`/method/`), Spot a mistake? (`/corrections/`). Addresses did not change. Visitor-facing copy avoids the project's working words (record, card, catalogue, IIIF, read for passages, profile only); How it was made is the one page that explains the machinery.
+Before the cabinet redesign, the navigation read In their words (`/passages/`), Map room (`/maps/`), Wander the map (`/map/`), Witnesses (`/sources/`), The vault (`/archive/`), About. Inside the vault: The many Tartarys (`/labels/`), Who counted as a Tartar? (`/meanings/`), Who copied whom (`/lineage/`), Every book and map (`/records/`), Every place (`/places/`), Who's who (`/peoples/`), How it was made (`/method/`), Spot a mistake? (`/corrections/`). Addresses did not change. Visitor-facing copy avoids the project's working words (record, card, catalogue, IIIF, read for passages, profile only); How it was made is the one page that explains the machinery.

@@ -218,6 +218,7 @@
       var originalWording = quote && copy($('details', quote));
       if (originalWording) $('details', quote).remove();
       if (title) right.append(title); if (quote) right.append(quote);
+      right.append(node('p', 'reader-mobile-byline', text('.who', original)));
       spread.append(left, right); article.append(spread);
       var apparatus = node('div', 'reader-apparatus');
       ['.psg-meta', '.psg-foot', '.psg-links', '.psg-people', '.psg-notes', '.psg-tale'].forEach(function (selector) {

@@ -473,3 +473,17 @@ body:has(.atlas-dialog[open]) { overflow: hidden; }
   .cabinet .deck-table { padding-bottom: 55px; }
   .cabinet .page-top { margin-bottom: 20px; }
 }
+
+.reader-mobile-byline { display: none; }
+@media (max-width: 700px) {
+  .reader-spread { display: flex; flex-direction: column; }
+  .reader-left { order: 2; border-top: 1px solid #bba57b; border-bottom: 0; }
+  .reader-right { order: 1; }
+  .reader-mobile-byline { display: block; margin-top: 24px; padding-top: 18px; border-top: 1px solid #c5af86; color: #71593c; font: .91rem/1.5 var(--font-display); }
+}
+
+.cabinet .gallery .mapcard { min-width: 0; }
+.cabinet .mapcard-t, .cabinet .mapcard-sub { overflow-wrap: anywhere; }
+.cabinet-menu { width: min(980px, calc(100% - 44px)); }
+@media (max-width:700px) { .cabinet-menu { width: calc(100% - 20px); } }
+@media (max-width:450px) { .cabinet .gallery { grid-template-columns: minmax(0, 1fr); } }

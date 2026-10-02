@@ -92,9 +92,9 @@ def search_index(site):
     for r in site.records:
         profile = site.profiles.get(r["id"], {})
         items.append(dict(t=profile.get("plain_title") or r["title"], k="Map" if r["kind"] == "map" else "Book",
-                          d=r["creator"] or "", u=site.rkey(r) + "/", x=r["title"] + " " + r["id"]))
+                          d=r["creator"] or "", u=site.rkey(r) + "/", x=r["title"] + " " + r["id"] + " " + " ".join(str(v) for v in r.get("date", {}).values() if v is not None)))
     for p in site.places:
-        items.append(dict(t=p["name"], k="Place", d=p.get("type", ""), u="place/" + p["id"] + "/"))
+        items.append(dict(t=p["name"], k="Place", d=p.get("type", ""), u="place/" + p["id"] + "/", x=" ".join(p.get("aliases", []))))
     for p in site.peoples:
-        items.append(dict(t=p["name"], k="People", d="", u="peoples/" + p["id"] + "/"))
+        items.append(dict(t=p["name"], k="People", d="", u="peoples/" + p["id"] + "/", x=" ".join(p.get("aliases", []))))
     return json.dumps(items, ensure_ascii=False, separators=(",", ":"))
