@@ -1349,6 +1349,8 @@
     arr(el.querySelectorAll('.dial-sheet')).forEach(function (im) { sheets[+im.getAttribute('data-i')] = im; });
     var groups = arr(el.querySelectorAll('.dial-g')), cards = arr(el.querySelectorAll('.dial-card')), ticks = arr(el.querySelectorAll('.dial-stop'));
     var cells = arr(el.querySelectorAll('.dial-cell')), lift = el.querySelector('[data-lift]');
+    var select = el.querySelector('[data-select]'), transition = el.querySelector('[data-transition]');
+    var viewState = el.querySelector('[data-view-state]'), loadState = el.querySelector('[data-load-state]');
     var cur = data.first, pos = S[cur].p, raf = 0, timer = 0, playing = false, ghosts = false, dragging = false;
 
     // the sheet scrolls sideways on a narrow screen, so the whole of Asia stays readable
@@ -1358,6 +1360,23 @@
     scroller.appendChild(stage);
 
     function load(i) { var im = sheets[i]; if (im && !im.getAttribute('src')) im.setAttribute('src', im.getAttribute('data-src')); }
+    function sheetState() {
+      if (!loadState || cur < 0) return;
+      var im = sheets[cur];
+      loadState.hidden = !im || (im.complete && im.naturalWidth > 0);
+      loadState.textContent = im && im.complete && !im.naturalWidth ? 'This sheet could not load. Its outlines and source links remain available below.' : 'Loading the historical sheet…';
+    }
+    Object.keys(sheets).forEach(function (key) {
+      sheets[key].addEventListener('load', sheetState);
+      sheets[key].addEventListener('error', sheetState);
+    });
+    function updateView() {
+      if (!viewState || cur < 0) return;
+      var early = !S[cur].k, lifted = stage.classList.contains('lifted');
+      lift.disabled = early;
+      viewState.textContent = (early ? 'Early account: no historical sheet is laid on the earth.' : lifted ? 'Sheet lifted: outlines on today’s map.' : 'Historical sheet with its lettering and outlines.') + (ghosts ? ' Earlier outlines remain visible for comparison.' : '');
+      sheetState();
+    }
     function ease(u) { return u < 0.5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2; }
     function bracket(p) {
       if (p <= S[0].p) return [0, 0, 0];
@@ -1368,12 +1387,20 @@
     function settle(i) {
       // what changes only when the dial comes to rest on a new map: the words under the sheet
       cards.forEach(function (c, k) { c.classList.toggle('on', k === i); });
-      ticks.forEach(function (t, k) { t.classList.toggle('on', k === i); });
-      cells.forEach(function (c) { c.classList.toggle('on', +c.getAttribute('data-go') === i); });
+      ticks.forEach(function (t, k) { t.classList.toggle('on', k === i); t.setAttribute('aria-pressed', k === i ? 'true' : 'false'); });
+      cells.forEach(function (c) { var on = +c.getAttribute('data-go') === i; c.classList.toggle('on', on); if (on) c.setAttribute('aria-current', 'true'); else c.removeAttribute('aria-current'); });
       prev.disabled = i <= 0;
       next.disabled = i >= n - 1;
-      knob.setAttribute('aria-valuenow', S[i].y);
+      knob.setAttribute('aria-valuenow', select ? i + 1 : S[i].y);
       knob.setAttribute('aria-valuetext', S[i].w + ', ' + S[i].by);
+      if (select) {
+        select.value = String(i);
+        el.querySelector('[data-count]').textContent = 'Stop ' + (i + 1) + ' of ' + n;
+        el.querySelector('[data-current-year]').textContent = S[i].w;
+        el.querySelector('[data-current-maker]').textContent = S[i].by;
+        el.querySelector('[data-current-sheet]').textContent = S[i].sheet;
+      }
+      updateView();
       unpick();
       TA.mem.set('dial', i);
     }
@@ -1391,12 +1418,15 @@
         var ghost = ghosts && i < near && wn < 0.05;
         g.classList.toggle('ghost', ghost);
         g.classList.toggle('on', !ghost && i === near);
+        g.setAttribute('aria-hidden', i === near ? 'false' : 'true');
         g.style.opacity = ghost ? '' : wn;
       }
       knob.style.left = (p * 100) + '%';
       knob.style.setProperty('--turn', (p * 1080).toFixed(1) + 'deg');
-      var y = a === z ? S[a].y : Math.round(S[a].y + (S[z].y - S[a].y) * f);
-      yearEl.textContent = y;
+      var between = a !== z && f > 0.001 && f < 0.999;
+      yearEl.textContent = between ? S[a].w + ' → ' + S[z].w : S[near].w;
+      yearEl.classList.toggle('between', between);
+      if (transition) transition.hidden = !between;
       if (near !== cur) { cur = near; settle(cur); }
     }
     function stop() { if (raf) cancelAnimationFrame(raf); raf = 0; }
@@ -1471,6 +1501,7 @@
       setPlay(false);
       go(i);
     });
+    if (select) select.addEventListener('change', function () { setPlay(false); go(+select.value); });
 
     // a name under the sheet, or its outline on the sheet, picks that lettering out
     function unpick() {
@@ -1511,23 +1542,30 @@
       }
       else if (t.hasAttribute('data-prev')) { setPlay(false); go(cur - 1); }
       else if (t.hasAttribute('data-next')) { setPlay(false); go(cur + 1); }
-      else if (t.hasAttribute('data-play')) setPlay(!playing);
+      else if (t.hasAttribute('data-play')) {
+        if (playing) { setPlay(false); stop(); go(nearest(pos)); }
+        else setPlay(true);
+      }
       else if (t.hasAttribute('data-lift')) {
         var up = t.getAttribute('aria-pressed') !== 'true';
         t.setAttribute('aria-pressed', up ? 'true' : 'false');
         stage.classList.toggle('lifted', up);
         t.textContent = up ? 'Lay the sheet back' : 'Lift the old sheet';
+        updateView();
         unpick();
       } else if (t.hasAttribute('data-ghost')) {
         ghosts = t.getAttribute('aria-pressed') !== 'true';
         t.setAttribute('aria-pressed', ghosts ? 'true' : 'false');
         render(pos);
+        updateView();
       } else if (t.getAttribute('data-n')) pick(t.getAttribute('data-n'));
     });
 
     el.classList.add('live');
     var back = TA.restoring ? TA.mem.get('dial') : undefined;
     if (typeof back === 'number' && back >= 0 && back < n) cur = back;
+    var linked = cards.findIndex(function (c) { return '#' + c.id === location.hash; });
+    if (linked >= 0) cur = linked;
     var start = cur;
     cur = -1;
     render(S[start].p);

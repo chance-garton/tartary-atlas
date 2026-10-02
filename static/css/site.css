@@ -1334,3 +1334,58 @@ button.basis { min-height: 32px; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
+
+/* Step 3: map, date and controls share one parchment instrument. */
+.dial-page .page-head { padding-bottom: 20px; }
+.dial-workbench { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 22px; align-items: start; padding: 16px; border: 1px solid var(--rule); background: color-mix(in srgb, var(--panel) 68%, transparent); box-shadow: inset 0 0 0 4px var(--paper), var(--shadow); }
+.dial-map-panel, .dial-console { min-width: 0; }
+.dial-map-panel { display: grid; gap: 12px; }
+.dial-console { display: grid; gap: 12px; padding: 8px 4px 4px 20px; border-left: 1px solid var(--rule); }
+.dial-current { display: grid; gap: 5px; padding-bottom: 12px; border-bottom: 3px double var(--rule); }
+.dial-current .eyebrow { font-size: .68rem; }
+.dial-current-year { font-family: var(--font-heading); font-size: clamp(2rem, 3vw, 2.9rem); line-height: 1.1; color: var(--verdigris); }
+.dial-current h2 { font-family: var(--font-display); font-size: 1.25rem; line-height: 1.15; }
+.dial-current-sheet { font-family: var(--font-display); font-style: italic; font-size: 1rem; line-height: 1.3; color: var(--ink-2); }
+.dial-select-label { font-size: .75rem; font-weight: 650; color: var(--ink-2); }
+.dial-console select { width: 100%; min-width: 0; max-width: 100%; min-height: 44px; font-size: .82rem; padding: 9px 28px 9px 9px; text-overflow: ellipsis; }
+.dial-console .dial-bar { display: grid; grid-template-columns: 44px minmax(0, 1fr) 44px; gap: 6px; }
+.dial-console .dial-bar .btn { min-height: 44px; padding: 8px; }
+.dial-console .dial-toggles { display: grid; gap: 8px; margin: 0; padding-top: 12px; border-top: 1px solid var(--rule); }
+.dial-console .pill { min-height: 40px; width: 100%; text-align: center; }
+.dial-console .pill[aria-pressed="true"] { background: var(--ink); color: var(--panel); border-color: var(--ink); }
+.dial-console button:disabled { opacity: .45; cursor: default; }
+.dial-view-state, .dial-transition, .dial-load-state { font-size: .75rem; line-height: 1.45; color: var(--ink-2); }
+.dial-transition, .dial-load-state { color: var(--carmine); border-left: 2px solid var(--carmine); padding-left: 9px; }
+.dial-scale { gap: 8px; padding: 8px 10px 0; }
+.dial-scale-label, .dial-scale-note, .dial-pan-hint { font-size: .72rem; color: var(--ink-3); line-height: 1.45; }
+.dial-scale-label { color: var(--ink-2); }
+.dial-scale-note { max-width: 38rem; }
+.dial-rule { left: 0; right: 0; border-radius: 1px; }
+.dial-rule i { margin-left: 0; }
+.dial-year { padding: 5px 9px; bottom: 10px; font-size: clamp(1.5rem, 3vw, 2.6rem); background: var(--panel); color: var(--ink); text-shadow: none; border: 1px solid var(--rule); box-shadow: var(--shadow); max-width: calc(100% - 28px); }
+.dial-year.between { font-size: clamp(1rem, 2vw, 1.6rem); }
+.dial-reading-note { padding: 12px 16px; border-left: 3px double var(--carmine); color: var(--ink-2); font-size: .82rem; line-height: 1.55; max-width: 65rem; }
+.dial-legend { font-size: .75rem; gap: 8px 18px; padding: 6px; }
+.dial-pan-hint { display: none; }
+.dial:not(.live) .dial-console, .dial:not(.live) .dial-pan-hint { display: none; }
+.dial:not(.live) .dial-workbench { grid-template-columns: minmax(0, 1fr); }
+.dial-scroll { scroll-margin-top: calc(var(--header-h) + 16px); }
+@media (max-width: 1000px) {
+  .dial-workbench { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .dial-console { grid-row: 1; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 20px; padding: 4px; border-left: 0; }
+  .dial-current { grid-column: 1; grid-row: 1 / 5; border: 0; padding: 0 12px 0 0; border-right: 1px solid var(--rule); align-content: start; }
+  .dial-console .dial-toggles { grid-column: 1 / -1; grid-template-columns: 1fr 1fr; }
+  .dial-view-state, .dial-transition, .dial-load-state { grid-column: 1 / -1; }
+}
+@media (max-width: 640px) {
+  .dial-workbench { padding: 12px 6px; }
+  .dial-console { column-gap: 10px; }
+  .dial-current-year { font-size: 1.8rem; }
+  .dial-current h2 { font-size: 1.05rem; }
+  .dial-console .dial-bar { grid-template-columns: 36px minmax(0, 1fr) 36px; gap: 3px; }
+  .dial-console .dial-bar .btn { font-size: .82rem; padding: 6px 2px; }
+  .dial-console .dial-toggles .pill { font-size: .84rem; padding-inline: 6px; }
+  .dial-pan-hint { display: block; padding-inline: 6px; }
+  .dial-scale { padding-inline: 6px; }
+  .dial-current-sheet { font-size: .9rem; }
+}

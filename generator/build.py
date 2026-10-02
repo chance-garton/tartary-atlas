@@ -2640,7 +2640,7 @@ def page_dial(site, ctx):
         links = []
         g = [f'<g class="dial-g{on}" data-i="{i}">']
         if s.get("early"):
-            data.append({"y": s["year"], "p": round(pos, 4), "w": s["when"], "by": who})
+            data.append({"y": s["year"], "p": round(pos, 4), "w": s["when"], "by": who, "sheet": s["sheet"]})
             j = next((j for j in site.journeys if j["key"] == s.get("ride")), None)
             if j:
                 line = "M" + "L".join("%.1f %.1f" % S.xy(st["lon"], st["lat"]) for st in j["stops"])
@@ -2657,7 +2657,7 @@ def page_dial(site, ctx):
             fit = '<p class="dial-fit">No sheet lies on the earth at this stop.</p>' if not j else '<p class="dial-fit">The line joins the stops of his journey. It is not the exact road.</p>'
             unsure = ""
         else:
-            data.append({"y": s["year"], "p": round(pos, 4), "w": s["when"], "by": who, "k": s["key"]})
+            data.append({"y": s["year"], "p": round(pos, 4), "w": s["when"], "by": who, "sheet": s["sheet"], "k": s["key"]})
             sheets.append(f'<img class="dial-sheet{on}" data-i="{i}" alt="" {"src" if i == first else "data-src"}="{ctx.asset("dial/" + s["key"] + ".webp")}" '
                           f'width="{S.W}" height="{S.H}" decoding="async">')
             tart, also, lands = dial_names(s, "labels"), dial_names(s, "also"), dial_lands(s)
@@ -2759,24 +2759,35 @@ def page_dial(site, ctx):
              f'<svg class="dial-over" viewBox="0 0 {S.W} {S.H}" preserveAspectRatio="xMidYMid slice" data-over>{"".join(names)}</svg>'
              f'<p class="dial-year" data-year aria-hidden="true">{cur["year"]}</p>'
              f'<p class="dial-tip" data-tip hidden></p></div>')
-    scale = (f'<div class="dial-scale"><div class="dial-track" data-track>'
+    scale = (f'<div class="dial-scale"><p class="dial-scale-label" id="dial-help">Drag the compass, choose a mark, or use the arrow keys.</p><div class="dial-track" data-track>'
              f'<div class="dial-rule" aria-hidden="true">{"".join(marks)}</div>{"".join(ticks)}'
-             f'<div class="dial-knob" data-knob role="slider" tabindex="0" aria-label="Year" aria-valuemin="{stops[0]["year"]}" aria-valuemax="{stops[-1]["year"]}" '
-             f'aria-valuenow="{cur["year"]}" aria-valuetext="{esc(cur["when"])}, {esc(cur["who"])}" style="left:{at(cur["year"]) * 100:.2f}%">{knob}</div></div>'
-             f'<div class="dial-bar"><button type="button" class="btn icon" data-prev aria-label="The map before">←</button>'
-             f'<button type="button" class="btn primary" data-play aria-pressed="false">Let it run</button>'
-             f'<button type="button" class="btn icon" data-next aria-label="The next map">→</button>'
-             f'<span class="dial-toggles"><button type="button" class="pill" data-lift aria-pressed="false">Lift the old sheet</button>'
-             f'<button type="button" class="pill" data-ghost aria-pressed="false">Keep earlier outlines</button></span></div></div>')
+             f'<div class="dial-knob" data-knob role="slider" tabindex="0" aria-label="Historical stop" aria-describedby="dial-help" aria-valuemin="1" aria-valuemax="{len(stops)}" '
+             f'aria-valuenow="{first + 1}" aria-valuetext="{esc(cur["when"])}, {esc(cur["who"])}" style="left:{at(cur["year"]) * 100:.2f}%">{knob}</div></div>'
+             f'<p class="dial-scale-note">Spacing is eased for nearby dates. Fades turn between sources; they do not show the years between.</p></div>')
+    options = "".join(f'<option value="{i}"{" selected" if i == first else ""}>{esc(s["when"])} · {esc(s["who"])} · {esc(s["sheet"])}</option>' for i, s in enumerate(stops))
+    console = (f'<aside class="dial-console" aria-label="Time dial controls">'
+               f'<div class="dial-current" role="status" aria-live="polite" aria-atomic="true">'
+               f'<p class="eyebrow" data-count>Stop {first + 1} of {len(stops)}</p>'
+               f'<p class="dial-current-year" data-current-year>{esc(cur["when"])}</p>'
+               f'<h2 data-current-maker>{esc(cur["who"])}</h2><p class="dial-current-sheet" data-current-sheet>{esc(cur["sheet"])}</p></div>'
+               f'<label class="dial-select-label" for="dial-select">Choose a map or early account</label>'
+               f'<select id="dial-select" data-select>{options}</select>'
+               f'<div class="dial-bar"><button type="button" class="btn icon" data-prev aria-label="Previous stop">←</button>'
+               f'<button type="button" class="btn primary" data-play aria-pressed="false">Let it run</button>'
+               f'<button type="button" class="btn icon" data-next aria-label="Next stop">→</button></div>'
+               f'<div class="dial-toggles"><button type="button" class="pill" data-lift aria-pressed="false">Lift the old sheet</button>'
+               f'<button type="button" class="pill" data-ghost aria-pressed="false">Keep earlier outlines</button></div>'
+               f'<p class="dial-view-state" data-view-state></p>'
+               f'<p class="dial-transition" data-transition hidden>Turning between sources. No intervening map is shown.</p>'
+               f'<p class="dial-load-state" data-load-state role="status" hidden></p></aside>')
     legend = ('<p class="dial-legend"><span><i class="sw t"></i>The word Tartary, where it is lettered</span>'
               '<span><i class="sw l"></i>The ground the sheet gives it, by a drawn or coloured limit</span>'
               '<span><i class="sw l loose"></i>The same, where no limit is drawn: a reading of the lettering</span>'
               '<span><i class="sw p"></i>Tartars, as a people or a sea</span>'
               '<span><i class="sw a"></i>Other big names</span><span class="muted">Press a name to find it. Lift the sheet to see the outlines on today\'s map.</span></p>')
     head = page_head("The many Tartarys in motion", "Turn the dial",
-                     f"{len(maps)} old maps laid on the real earth, from {maps[0]['year']} to {maps[-1]['year']}. Drag the wheel and watch where each mapmaker "
-                     f"lettered the word Tartary and what ground he gave it: it arrives, swells, splits, shrinks and is gone. "
-                     f"Lift the sheet and the outline stays behind on today's map.",
+                     f"{len(maps)} old maps, {maps[0]['year']} to {maps[-1]['year']}. Explore where each mapmaker placed Tartary, "
+                     f"then lift the sheet to compare its outlines with today's map.",
                      ornament=orn(site, ctx, "compass-star", "head"))
     n_lands = sum(len(dial_lands(m)) for m in maps)
     wall = (f'<section class="dial-all"><h2>Every outline, side by side</h2>'
@@ -2798,7 +2809,9 @@ def page_dial(site, ctx):
            f'<a href="{ctx.link("labels")}">The many Tartarys</a> counts every map and book in the atlas that uses each name, and '
            f'<a href="{ctx.link("method")}">How it was made</a> explains the rest.</p></section>')
     body = (f'<div class="page dial-page">{head}<div class="dial" data-module="dial"><script type="application/json">{js}</script>'
-            f'{stage}{scale}{legend}<div class="dial-cards" aria-live="polite">{"".join(cards)}</div>{wall}</div>{how}</div>')
+            f'<div class="dial-workbench"><div class="dial-map-panel">{stage}<p class="dial-pan-hint">Slide the map sideways to explore the whole sheet.</p>{scale}</div>{console}</div>'
+            f'<p class="dial-reading-note">Read these as mapmakers’ claims. Solid outlines follow drawn or coloured limits; dashed outlines interpret the lettering. The readings and outlines await human review.</p>'
+            f'{legend}<div class="dial-cards">{"".join(cards)}</div>{wall}</div>{how}</div>')
     desc = (f"Watch the word Tartary (Tartaria) move across {len(maps)} old maps laid on the real earth, from {maps[0]['year']} to {maps[-1]['year']}: "
             f"where each mapmaker lettered it, what ground he gave it on today's map, how it split into Muscovite, Independent and Chinese Tartary, and when it left the map.")
     return dict(title="Turn the dial: Tartary on the map, year by year", description=desc, body=body, nav="maps", modules=["dial"])
