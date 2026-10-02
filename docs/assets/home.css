@@ -65,24 +65,8 @@
 .atlas-home .hero-card-head { padding-bottom: 14px; border-bottom: 1px solid var(--rule); }
 .atlas-home .hero-card-head h2 { font-size: .67rem; letter-spacing: .13em; }
 .atlas-home .hero-card-head .btn { font-family: var(--font-display); font-size: 1rem; border: 0; background: transparent; padding: 4px 0 4px 12px; gap: 10px; }
-.atlas-home .feature-slot .psg { padding: 6px 0 0; background: transparent; border: 0; box-shadow: none; gap: 16px; }
-.atlas-home .feature-slot .psg-meta { order: 0; font-size: .76rem; }
-.atlas-home .feature-slot .psg h3 { order: 1; font-size: 1.85rem; }
-.atlas-home .feature-slot blockquote { order: 2; background: transparent; border: 0; padding: 3px 0 0; }
-.atlas-home .feature-slot blockquote > p:first-child { font-size: 1.4rem; line-height: 1.5; }
-.atlas-home .feature-slot blockquote > p:first-child::first-letter { font-size: 2em; line-height: 1; color: var(--gamboge); }
-.atlas-home .feature-slot .psg-foot { order: 3; }
-.atlas-home .feature-slot .basis-tip { order: 4; }
-.atlas-home .feature-slot .psg-links { order: 5; border-color: var(--rule); }
-.atlas-home .feature-slot .front-context { order: 6; font-size: .88rem; }
 .atlas-home .front-context summary { cursor: pointer; color: var(--verdigris); font-weight: 600; min-height: 28px; }
 .atlas-home .front-context .gloss { margin-top: 8px; }
-.atlas-home .feature-slot .psg-people { order: 7; }
-.atlas-home .feature-slot .psg-notes { order: 8; }
-.atlas-home .feature-slot .psg-tale { order: 9; border-radius: 0; background: transparent; padding: 16px 0 0; border: 0; border-top: 1px solid var(--rule); }
-.atlas-home .feature-slot .psg-tale-k { font-size: .85rem; }
-.atlas-home .feature-slot .psg-tale-t { font-size: 1.05rem; }
-.atlas-home .feature-slot .psg-tale::after { background: transparent; color: var(--verdigris); }
 .atlas-home .home { max-width: 1360px; }
 .atlas-home .home .hand-list li, .atlas-home .home .hand-list .cut { max-width: 100%; }
 .atlas-home .home .hand-list a { grid-template-columns: minmax(0, 1fr); }
@@ -129,18 +113,13 @@
   .atlas-home .front-margin h2 br { display: none; }
   .atlas-home .front-margin > p:not(.front-kicker) { max-width: none; }
   .atlas-home .front .hero-card { padding: 18px; }
-  .atlas-home .feature-slot .psg h3 { font-size: 1.55rem; }
-  .atlas-home .feature-slot blockquote > p:first-child { font-size: 1.23rem; }
   .atlas-home .front-stage.roam { height: auto; }
 }
 @media (prefers-reduced-motion: reduce) {
   .atlas-home *, .atlas-home *::before, .atlas-home *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
-  .atlas-home .feature-slot:not([data-ready]) { visibility: visible; }
 }
 
 .atlas-home .front-intro h1 { font-family: var(--font-heading); }
-.atlas-home .feature-slot blockquote::before { display: none; }
-.atlas-home .feature-slot .psg-foot, .atlas-home .feature-slot .psg-links { padding-left: 0; }
 
 /* An open volume on the homepage. Paper is the existing decorative vellum;
    the quotations and historical evidence stay as selectable HTML. */
@@ -235,7 +214,8 @@
 .atlas-home .passage-book .psg-tale-t { font-family: var(--font-heading); font-size: 1.2rem; line-height: 1.3; }
 .atlas-home .passage-book .psg-tale-n { font-size: .7rem; }
 .atlas-home .passage-book .psg-tale::after { right: 0; width: 20px; }
-.atlas-home .passage-book blockquote { margin: 0; padding: 0; color: #35281c; }
+.atlas-home .passage-book blockquote { margin: 0; padding: 0; border: 0; background: none; color: #35281c; }
+.atlas-home .passage-book blockquote::before { display: none; }
 .atlas-home .passage-book blockquote > p:first-child {
   font-family: var(--font-display); font-size: clamp(1.18rem, 1.7vw, 1.5rem);
   font-weight: 400; line-height: 1.65; letter-spacing: .005em; hanging-punctuation: first last;
@@ -336,7 +316,7 @@
 .atlas-home .passage-book .book-spread { position: relative; perspective: 2200px; z-index: 1; }
 .atlas-home .passage-book .book-page { padding-top: 28px; gap: 18px; }
 .atlas-home .passage-book .book-running { flex: none; font-size: .86rem; margin-bottom: 14px; }
-.atlas-home .passage-book .book-source-title {
+.atlas-home .passage-book .book-page .book-source-title {
   font-family: var(--font-heading); font-weight: 400; font-size: clamp(1.8rem, 2.65vw, 2.45rem);
   line-height: 1.2; text-align: center; text-wrap: balance; margin: 0;
 }
@@ -377,7 +357,7 @@
   .atlas-home .passage-book .book-binding { overflow: visible; }
   .atlas-home .passage-book .book-spread { overflow: hidden; }
   .atlas-home .passage-book .book-page { padding: 24px 27px; }
-  .atlas-home .passage-book .book-source-title { font-size: 1.85rem; }
+  .atlas-home .passage-book .book-page .book-source-title { font-size: 1.85rem; }
   .atlas-home .passage-book .book-passage-title { font-size: 1.5rem; }
   .atlas-home .passage-book .book-editorial .gloss { font-size: 1.07rem; }
   .atlas-home .passage-book .book-byline { font-size: .98rem; }
@@ -389,5 +369,5 @@
 }
 @media (max-width: 380px) {
   .atlas-home .passage-book .book-page { padding-inline: 21px; }
-  .atlas-home .passage-book .book-source-title { font-size: 1.65rem; }
+  .atlas-home .passage-book .book-page .book-source-title { font-size: 1.65rem; }
 }

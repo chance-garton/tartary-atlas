@@ -1033,7 +1033,7 @@ def page_home(site, ctx):
             f'<span><i class="key dot"></i>Places in the writings</span><span><i class="key dia"></i>Mapmaker’s notes</span>'
             f'<span class="front-hint">Press a mark to explore</span></p></div>'
             f'<div class="front-body"><aside class="front-margin">{orn(site, ctx, "tents")}'
-            f'<p class="front-kicker">Leaves from the archive</p><h2>A voice<br>across the centuries.</h2>'
+            f'<p class="front-kicker">Leaves from the archive</p><h2>A voice<br> across the centuries.</h2>'
             f'<p>One account among many. Each passage carries its author, its source, and what to keep in mind.</p>'
             f'<p class="front-independent">The writings and the map are independent sources; their dates and perspectives may differ.</p>'
             f'<a href="{ctx.link("passages")}">Explore all {num(n_psg)} passages <span aria-hidden="true">↗</span></a></aside>'
