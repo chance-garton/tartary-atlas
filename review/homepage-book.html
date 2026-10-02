@@ -10,5 +10,5 @@ frame.onload=showBook;
 document.querySelectorAll('[data-width]').forEach(b=>b.onclick=()=>{frame.style.width=b.dataset.width+'px';document.querySelectorAll('[data-width]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));requestAnimationFrame(showBook);});
 document.getElementById('book').onclick=showBook;
 document.getElementById('map').onclick=()=>frame.contentDocument.querySelector('.front-map-mount').scrollIntoView();
-document.getElementById('nojs').onchange=e=>{if(e.target.checked)frame.setAttribute('sandbox','allow-same-origin');else frame.removeAttribute('sandbox');frame.src=frame.getAttribute('src');};
+document.getElementById('nojs').onchange=e=>{if(e.target.checked)frame.setAttribute('sandbox','allow-same-origin');else frame.removeAttribute('sandbox');frame.src='../docs/index.html?review-nojs='+(e.target.checked?'1':'0')+'#front-passage';};
 </script></html>
