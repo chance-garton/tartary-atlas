@@ -17,6 +17,7 @@ import pathlib
 import re
 import shutil
 import sys
+import experience
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 DATA = ROOT / "data"
@@ -818,7 +819,7 @@ def psg_card(site, ctx, p, theme_tag=True, source=True, cls="", book=False):
     return (f'<article class="psg{(" " + cls) if cls else ""}" id="p-{p["id"]}" data-th="{p["theme"]}" data-b="{p["basis"]}" data-y="{"" if y is None else y}">'
             f'<div class="psg-meta">{"".join(meta)}</div>'
             f'<h3>{esc(p["headline"])}</h3>'
-            f'<p class="gloss"><span class="psg-label">Editorial context</span>{esc(p["gloss"])}</p>{quote}'
+            f'{quote}<details class="psg-context"><summary>Editorial context</summary><p class="gloss">{esc(p["gloss"])}</p></details>'
             f'<div class="psg-foot">{basis_chip(p["basis"], button=True)}<span class="who">{esc(p["speaker"])}</span></div>'
             f'<div class="psg-links">{"".join(links)}</div>{people}{notes_html}{tale}</article>')
 
@@ -1014,30 +1015,21 @@ def page_home(site, ctx):
                 f'<p class="front-at" data-at hidden></p>'
                 f'<div class="feature-slot" id="home-book-pages" data-slot>{excerpt}</div>'
                 f'<p class="book-status sr-only" data-book-status role="status" aria-live="polite" aria-atomic="true"></p></div>')
-    routes = [('I', 'passages', 'Read their words', f'{num(n_psg)} passages, with sources'),
-              ('II', 'maps', 'Enter the map room', f'{n_pictured} historical maps to explore'),
-              ('III', 'ride', 'Ride with a traveler', 'Follow a journey, stop by stop'),
-              ('IV', 'dial', 'Turn the time dial', 'Watch the name change over time')]
-    doors = '<nav class="front-routes" aria-label="Begin exploring">' + ''.join(
-        f'<a href="{ctx.link(key)}"><span class="route-number" aria-hidden="true">{number}</span>'
-        f'<span><strong>{title}</strong><small>{detail}</small></span><span class="route-arrow" aria-hidden="true">↗</span></a>'
-        for number, key, title, detail in routes) + '</nav>'
     hero = (f'<section class="front" data-module="feature"><script type="application/json">{feat_json}</script>'
-            f'<div class="front-opening"><div class="front-intro"><div><p class="front-kicker">An open atlas of maps &amp; witnesses</p>'
-            f'<h1>Enter the world<br><em>called Tartary.</em></h1></div>'
-            f'<div class="front-invitation"><p>What did the people who went there write down?</p>'
-            f'<p>Wander the old maps. Follow the travelers. Read what they left behind, in their own words.</p>'
-            f'<a href="{ctx.link("about")}">About this atlas <span aria-hidden="true">↗</span></a></div></div>{doors}'
-            f'<div class="front-map-mount">{stage}</div>'
+            f'<div class="study-table"><div class="front-opening"><div class="front-intro">'
+            f'<p class="front-kicker">An atlas of the historical record</p>'
+            f'<h1>A lost name.<br><em>A world to discover.</em></h1>'
+            f'<p class="study-invitation">Enter Tartary through the maps, journeys, and words of those who knew it.</p>'
+            f'<div class="study-actions"><a class="btn primary" href="#explore">Enter the Atlas {experience.icon("arrow")}</a>'
+            f'<a class="study-read" href="#front-passage">Open a page</a></div>'
+            f'<p class="study-totals"><span><b>{num(n_psg)}</b> passages</span><span><b>{n_maps}</b> maps</span><span><b>{n_read}</b> voices</span></p></div>'
+            f'<div class="study-map"><div class="front-map-mount">{stage}</div>'
             f'<div class="front-map-caption">{credit}<p class="front-how" data-how hidden>'
-            f'<span><i class="key dot"></i>Places in the writings</span><span><i class="key dia"></i>Mapmaker’s notes</span>'
-            f'<span class="front-hint">Press a mark to explore</span></p></div>'
-            f'<div class="front-body"><aside class="front-margin">{orn(site, ctx, "tents")}'
-            f'<p class="front-kicker">Leaves from the archive</p><h2>A voice<br> across the centuries.</h2>'
-            f'<p>One account among many. Each passage carries its author, its source, and what to keep in mind.</p>'
-            f'<p class="front-independent">The writings and the map are independent sources; their dates and perspectives may differ.</p>'
-            f'<a href="{ctx.link("passages")}">Explore all {num(n_psg)} passages <span aria-hidden="true">↗</span></a></aside>'
-            f'{card}</div></div></section>')
+            f'<span><i class="key dot"></i>Places</span><span><i class="key dia"></i>Map notes</span></p></div></div></div></div>'
+            f'<div class="page cabinet-home-content">{experience.home_rooms(ctx)}'
+            f'<div class="front-body"><aside class="front-margin"><p class="front-kicker">The open volume</p>'
+            f'<h2>A voice across the centuries.</h2><a href="{ctx.link("passages")}">All {num(n_psg)} passages {experience.icon("arrow")}</a>'
+            f'<p class="front-independent">An independent account, alongside the map.</p></aside>{card}</div></div></section>')
 
     # One name, many hands: the word as the mapmakers themselves lettered it.
     names = ""
@@ -1085,8 +1077,10 @@ def page_home(site, ctx):
               f'<li><a href="{ctx.link("archive")}">The rest of the vault</a><span>Places, peoples, and how the atlas was made.</span></li></ul></section>')
 
     rides = rides_band(site, ctx) or places
-    body = (f'{hero}<div class="page home">{names}{dial_band(site, ctx)}{orn_rule(site, ctx, "tents")}{trails}{deck_band(site, ctx)}{orn_rule(site, ctx, "compass-star")}{maps_band}'
-            f'{orn_rule(site, ctx, "rider")}{rides}{orn_rule(site, ctx, "archer")}{witnesses}{orn_rule(site, ctx, "ship")}{deeper}</div>')
+    body = (f'{hero}<div class="page home cabinet-home-bottom">{trails}'
+            f'<details class="archive-cabinet"><summary><span>{experience.icon("vault")} Deeper in the cabinet</span><small>Lettering, witnesses &amp; the source index</small></summary>'
+            f'{names}{maps_band}{rides}{witnesses}{deeper}</details></div>')
+
     desc = (f"What {n_written} historical texts and {n_maps} maps say about Tartary (Tartaria): {num(n_psg)} quoted passages on cities, "
             f"buildings, daily life and legends, each linked to its page.")
     return dict(title="The Tartary Atlas: Tartary and Tartaria in the historical record", description=desc, body=body,
@@ -1105,8 +1099,8 @@ def page_passages(site, ctx, theme=None):
                     f'<figcaption>{esc(site.pics[key]["caption"])}</figcaption></figure></div>')
         title, desc = m["q"], f'{m["blurb"]} {num(len(plist))} quoted passages from {n_src} historical sources on Tartary.'
     else:
-        head = page_head("In their words", "What the sources say",
-                         f'{num(len(plist))} passages from {n_src} sources. Follow a question, search them all, or <a href="{ctx.link("deck")}">draw three from the deck</a>.', ornament=orn(site, ctx, "scholar", "head"))
+        head = page_head("The reading room", "Leaves from the archive",
+                         f'{num(len(plist))} passages. {n_src} voices. Choose a trail, or follow a word.', ornament=orn(site, ctx, "scholar", "head"))
         title, desc = "Passages: what the sources say about Tartary", f'{num(len(plist))} quoted passages about the Tartars and Tartary from {n_src} historical sources, searchable by place, people and date.'
     basis_opts = "".join(f'<option value="{k}">{esc(v[0])}</option>' for k, v in PBASIS.items())
     when_opts = ('<option value="0">Before 1200</option>'
@@ -1122,7 +1116,7 @@ def page_passages(site, ctx, theme=None):
             f'<label for="px-o">Order<select id="px-o"><option value="best">Best first</option><option value="old">Oldest first</option><option value="new">Newest first</option></select></label>'
             f'<button type="button" class="btn" data-shuffle>Shuffle</button></div></details></div>'
             f'<details class="basis-legend"><summary>Saw it? Heard it?</summary>{legend}</details></aside>'
-            f'<div class="px-main" data-main><p class="small muted px-count" aria-live="polite"><span data-count>{num(len(plist))}</span><span data-of hidden> of {num(len(plist))}</span> passages'
+            f'<div class="px-main" data-main><div class="reading-mode-bar"><button type="button" class="btn primary" data-read-first hidden>{experience.icon("book")} Open the reading desk</button></div><p class="small muted px-count" aria-live="polite"><span data-count>{num(len(plist))}</span><span data-of hidden> of {num(len(plist))}</span> passages'
             f'<button type="button" class="linkbtn" data-clear hidden>Clear filters</button></p>'
             f'<div class="psg-list" data-list>{cards}</div>'
             f'<p class="px-more"><button type="button" class="btn" data-more>Show {PAGE_SIZE} more</button></p></div></div></div>')
@@ -2218,11 +2212,11 @@ def page_rides(site, ctx):
     js = rides_sorted(site)
     cards = "".join(ride_card(site, ctx, j) for j in js)
     head = page_head("Ride with a traveler", "Pick a road and ride it",
-                     "Six people who crossed Tartary and wrote it down. Follow each one stop by stop, and read what they saw where they saw it.",
+                     "Six travelers. Six roads. Their words at every stop.",
                      ornament=orn(site, ctx, "rider", "head"))
     body = f'<div class="page">{head}<div class="ridecards">{cards}</div></div>'
     return dict(title="Ride with a traveler", description="Follow six travelers across Tartary stop by stop, from Changchun in 1220 to John Bell in 1722, and read what each one wrote at each place.",
-                body=body, nav="sources")
+                body=body, nav="ride")
 
 
 def page_ride(site, ctx, j):
@@ -2293,7 +2287,7 @@ def page_ride(site, ctx, j):
             f'{orn_rule(site, ctx, "compass-star")}'
             f'<section class="band"><div class="band-head"><h2>Ride with someone else</h2></div><div class="ridecards">{others}</div></section></div>')
     desc = f'{j["one_line"]} Follow the route stop by stop and read {plural(n_psg, "passage")} from the book at the places they describe.'
-    return dict(title=f'{j["title"]}: {j["who"]}, {j["years"]}', description=desc, body=body, nav="sources", modules=["ride"])
+    return dict(title=f'{j["title"]}: {j["who"]}, {j["years"]}', description=desc, body=body, nav="ride", modules=["ride"])
 
 
 def playing_back(site, ctx):
@@ -2320,12 +2314,12 @@ def page_deck(site, ctx):
         f'<div class="spread-slot" data-slot="{i}"><p class="spread-k">{esc(n)}</p><div class="spread-card" data-card></div></div>'
         for i, (n, _) in enumerate(SPREAD))
     n_good = sum(1 for p in site.passages if p["strength"] == 3)
-    head = page_head("The deck", "Draw three from the record",
-                     f"{num(n_good)} of the strongest passages, shuffled. One place, one people, one marvel. Turn a card to read it.")
+    head = page_head("The deck", "Fortune favours the curious",
+                     "One place. One people. One marvel. What will you find?")
     body = (f'<div class="page deck" data-module="deck"><script type="application/json">{js}</script>{head}'
             f'<div class="deck-table"><button type="button" class="deck-stack" data-deal aria-label="Deal three cards">{deck_stack(site, ctx)}'
             f'<span class="deck-stack-k">Deal three</span></button>'
-            f'<div class="spread" data-spread>{slots}</div></div>'
+            f'<div class="spread" data-spread>{slots}</div><p class="deck-table-legend">T H E &nbsp; T A R T A R Y &nbsp; C O L L E C T I O N</p></div>'
             f'<p class="deck-acts"><button type="button" class="btn primary" data-deal>Deal three more</button>'
             f'<button type="button" class="btn" data-turn>Turn them all</button></p>'
             f'<div class="deck-read" data-read aria-live="polite"></div>'
@@ -2340,7 +2334,7 @@ def rides_band(site, ctx):
         return ""
     picks = [j for j in js if j["key"] in ("changchun", "rubruck", "ides")] or js[:3]
     return (f'<section class="band"><div class="band-head row"><div><h2>Ride with a traveler</h2>'
-            f'<p>Pick a road. The line draws itself, and at each stop you read what they wrote there.</p></div>'
+            f'<p>Six roads across the centuries.</p></div>'
             f'<a class="btn" href="{ctx.link("ride")}">See all {len(js)} rides</a></div>'
             f'<div class="ridecards">{"".join(ride_card(site, ctx, j) for j in picks)}</div></section>')
 
@@ -2782,11 +2776,11 @@ def page_dial(site, ctx):
              f'<svg class="dial-over" viewBox="0 0 {S.W} {S.H}" preserveAspectRatio="xMidYMid slice" data-over>{"".join(names)}</svg>'
              f'<p class="dial-year" data-year aria-hidden="true">{cur["year"]}</p>'
              f'<p class="dial-tip" data-tip hidden></p></div>')
-    scale = (f'<div class="dial-scale"><p class="dial-scale-label" id="dial-help">Drag the compass, choose a mark, or use the arrow keys.</p><div class="dial-track" data-track>'
+    scale = (f'<div class="dial-scale"><p class="dial-scale-label sr-only" id="dial-help">Drag the compass, choose a mark, or use the arrow keys.</p><div class="dial-track" data-track>'
              f'<div class="dial-rule" aria-hidden="true">{"".join(marks)}</div>{"".join(ticks)}'
              f'<div class="dial-knob" data-knob role="slider" tabindex="0" aria-label="Historical stop" aria-describedby="dial-help" aria-valuemin="1" aria-valuemax="{len(stops)}" '
              f'aria-valuenow="{first + 1}" aria-valuetext="{esc(cur["when"])}, {esc(cur["who"])}" style="left:{at(cur["year"]) * 100:.2f}%">{knob}</div></div>'
-             f'<p class="dial-scale-note">Spacing is eased for nearby dates. Fades turn between sources; they do not show the years between.</p></div>')
+             f'<p class="dial-scale-note">Dates mark individual sources; transitions are crossfades.</p></div>')
     options = "".join(f'<option value="{i}"{" selected" if i == first else ""}>{esc(s["when"])} · {esc(s["who"])} · {esc(s["sheet"])}</option>' for i, s in enumerate(stops))
     console = (f'<aside class="dial-console" aria-label="Time dial controls">'
                f'<div class="dial-current" role="status" aria-live="polite" aria-atomic="true">'
@@ -2809,14 +2803,13 @@ def page_dial(site, ctx):
               '<span><i class="sw p"></i>Tartars, as a people or a sea</span>'
               '<span><i class="sw a"></i>Other big names</span><span class="muted">Press a name to find it. Lift the sheet to see the outlines on today\'s map.</span></p>')
     head = page_head("The many Tartarys in motion", "Turn the dial",
-                     f"{len(maps)} old maps, {maps[0]['year']} to {maps[-1]['year']}. Explore where each mapmaker placed Tartary, "
-                     f"then lift the sheet to compare its outlines with today's map.",
+                     f"{len(maps)} maps. {maps[0]['year']} to {maps[-1]['year']}. A name in motion.",
                      ornament=orn(site, ctx, "compass-star", "head"))
     n_lands = sum(len(dial_lands(m)) for m in maps)
     wall = (f'<section class="dial-all"><h2>Every outline, side by side</h2>'
             f'<p>The ground each sheet gives to a country called Tartary, drawn on today\'s map. {len(maps)} sheets, {n_lands} outlines, and they do not agree. '
             f'Press one to turn the dial to it.</p><ol class="dial-grid">{"".join(grid)}</ol></section>')
-    how = (f'<section class="section dial-how"><h2>How the dial was made</h2>'
+    how = (f'<details class="section dial-how"><summary>Inside the instrument: sources &amp; method</summary>'
            f'<p>Each sheet is a Library of Congress picture of a printed map. On every one, between {min(m["drawn"]["places"] for m in maps)} and {max(m["drawn"]["places"] for m in maps)} '
            f'places were matched by an AI reader to where they really are: river mouths, capes, lakes and towns the mapmaker could have known from report. '
            f'The sheet was then bent, stiffly, so those places fall as near their true spots as the sheet allows. A stiff bend keeps the map looking like itself, '
@@ -2830,14 +2823,14 @@ def page_dial(site, ctx):
            f'the scale is eased apart so each can be reached. '
            f'No person has checked the matched places, the readings or the outlines yet. '
            f'<a href="{ctx.link("labels")}">The many Tartarys</a> counts every map and book in the atlas that uses each name, and '
-           f'<a href="{ctx.link("method")}">How it was made</a> explains the rest.</p></section>')
+           f'<a href="{ctx.link("method")}">How it was made</a> explains the rest.</p></details>')
     body = (f'<div class="page dial-page">{head}<div class="dial" data-module="dial"><script type="application/json">{js}</script>'
             f'<div class="dial-workbench"><div class="dial-map-panel">{stage}<p class="dial-pan-hint">Slide the map sideways to explore the whole sheet.</p>{scale}</div>{console}</div>'
             f'<p class="dial-reading-note">Read these as mapmakers’ claims. Solid outlines follow drawn or coloured limits; dashed outlines interpret the lettering. The readings and outlines await human review.</p>'
             f'{legend}<div class="dial-cards">{"".join(cards)}</div>{wall}</div>{how}</div>')
     desc = (f"Watch the word Tartary (Tartaria) move across {len(maps)} old maps laid on the real earth, from {maps[0]['year']} to {maps[-1]['year']}: "
             f"where each mapmaker lettered it, what ground he gave it on today's map, how it split into Muscovite, Independent and Chinese Tartary, and when it left the map.")
-    return dict(title="Turn the dial: Tartary on the map, year by year", description=desc, body=body, nav="maps", modules=["dial"])
+    return dict(title="Turn the dial: Tartary on the map, year by year", description=desc, body=body, nav="dial", modules=["dial"])
 
 
 # ------------------------------------------------ About, Method, Corrections
@@ -2975,12 +2968,7 @@ def wordmark(site, ctx):
 
 
 def header(site, ctx, nav_key):
-    cur = ' aria-current="page"'
-    items = "".join(
-        f'<a href="{ctx.link(k)}" data-nav="{k}"{cur if k == nav_group(nav_key) else ""}>{esc(label)}</a>' for k, label in NAV)
-    return (f'<a class="skip" href="#main">Skip to content</a><header class="site-header"><div class="bar">'
-            f'{wordmark(site, ctx)}'
-            f'<nav class="site-nav" aria-label="Main">{items}</nav></div></header>')
+    return experience.header(ctx, nav_key)
 
 
 def footer(site, ctx):
@@ -3001,7 +2989,7 @@ def static_page(site, key, pg):
     ctx = Ctx("static", key)
     title = full_title(pg)
     # Keep each redesigned page's markup and controls together in returning browsers.
-    revision = "?v=home-book-2" if pg.get("homepage") else ("?v=dial-3" if key == "dial" else "")
+    revision = "?v=cabinet-1"
     url = f'{CONFIG["base_url"]}/{key + "/" if key else ""}'
     head = [
         '<!doctype html><html lang="en"><head><meta charset="utf-8">',
@@ -3022,13 +3010,15 @@ def static_page(site, key, pg):
         head.append(f'<script src="{CONFIG["osd_js"]}" defer></script>')
     if pg.get("homepage"):
         head.append(f'<link rel="stylesheet" href="{ctx.asset("home.css")}{revision}">')
+    head.append(f'<link rel="stylesheet" href="{ctx.asset("cabinet.css")}{revision}">')
     head.append('<script>document.documentElement.className += " js";</script>')
     head.append(f'<script src="{ctx.asset("site.js")}{revision}" defer></script>')
+    head.append(f'<script src="{ctx.asset("cabinet.js")}{revision}" defer></script>')
     if pg.get("jsonld"):
         head.append('<script type="application/ld+json">' + json.dumps({k: v for k, v in pg["jsonld"].items() if v is not None}, ensure_ascii=False).replace("</", "<\\/") + "</script>")
     head.append("</head>")
-    home_class = ' class="atlas-home"' if pg.get("homepage") else ''
-    body = f'<body data-root="{ctx.root}"{home_class}>{header(site, ctx, pg["nav"])}<main id="main" tabindex="-1">{pg["body"]}</main>{footer(site, ctx)}{TO_TOP}</body></html>'
+    home_class = ' class="atlas-home cabinet"' if pg.get("homepage") else ' class="cabinet"'
+    body = f'<body data-root="{ctx.root}"{home_class}>{header(site, ctx, pg["nav"])}<main id="main" tabindex="-1">{pg["body"]}</main>{footer(site, ctx)}{TO_TOP}{experience.dialogs(ctx)}</body></html>'
     return "".join(head) + body
 
 
@@ -3081,6 +3071,10 @@ def write_static(site):
         shutil.copytree(STATIC / "cuts", OUT / "assets" / "cuts")
     if (STATIC / "dial").exists():
         shutil.copytree(STATIC / "dial", OUT / "assets" / "dial")
+    shutil.copy(STATIC / "css" / "cabinet.css", OUT / "assets" / "cabinet.css")
+    shutil.copy(STATIC / "js" / "cabinet.js", OUT / "assets" / "cabinet.js")
+    shutil.copy(STATIC / "textures" / "scholars-desk.webp", OUT / "assets" / "scholars-desk.webp")
+    (OUT / "assets" / "search-index.json").write_text(experience.search_index(site))
     write_basemap(OUT / "assets" / "basemap.json")
     write_passage_assets(site, OUT / "assets")
     (OUT / "assets" / "eurasia.svg").write_text(f'<svg xmlns="http://www.w3.org/2000/svg">{build_land_svg()}</svg>')

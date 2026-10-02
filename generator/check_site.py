@@ -87,8 +87,8 @@ check('data-osd' in front and 'openseadragon' in front and 'class="front-still"'
 cuts = json.load(open(ROOT/'data/cuts.json'))
 gone = [c['key'] for c in cuts['labels'] if not (D/'assets/cuts/labels'/(c['key'] + '.png')).exists()] + [c['key'] for c in cuts['ornaments'] if not (D/'assets/cuts/ornaments'/(c['key'] + '.png')).exists()]
 check(not gone, f"every cut in data/cuts.json has its picture in the site ({gone[:5]})")
-check('data-wordmarks=' in w43 and 'mask-image:url(../../assets/cuts/labels/' in w43, 'header: the name is set in lettering cut from a map, addressed from the page')
-check(front.count('class="orn-rule"') >= 4 and 'One name, many hands' in front, 'front page: the many hands strip and the ornament rules are there')
+check('class="atlas-brand"' in w43 and 'aria-label="Explore the Atlas"' in w43 and 'data-open-search' in w43, 'header: consistent brand, complete exploration menu, and search')
+check('One name, many hands' in front and 'class="archive-cabinet"' in front, 'front page: original map lettering remains in the archive cabinet')
 # 3f. the rides and the deck
 J = json.load(open(ROOT/'data/journeys.json'))['journeys']
 PID = {p['id']: p for p in psg}
@@ -109,7 +109,7 @@ deck = (D/'deck/index.html').read_text()
 dd = json.loads(re.search(r'data-module="deck"><script type="application/json">(.*?)</script>', deck, re.S).group(1))
 check(len(dd['spread']) == 3 and deck.count('data-card') == 3 and set(dd['suits']) == {'cities', 'architecture', 'customs', 'names', 'outliers'}
       and all((D/'assets/cuts/ornaments'/(v['k'] + '.png')).exists() for v in dd['suits'].values()), 'deck: three places in the spread and a suit drawing for each of the five trails')
-check('class="deck-door-a"' in front and 'draw three from the deck' in (D/'passages/index.html').read_text(), 'deck: a door on the front page and on the passages page')
+check('href="./deck/"' in front and 'href="../deck/"' in (D/'passages/index.html').read_text(), 'deck: reachable from the front page and passages navigation')
 # 3g. the time dial
 DL = json.load(open(ROOT/'data/dial.json'))
 dl = (D/'dial/index.html').read_text()
@@ -128,7 +128,7 @@ check(len(lands) >= 40 and not badl and all('lands' in m for m in on) and dl.cou
       f"dial: {len(lands)} outlines, each carried onto the earth, measured, with how its limit was found, drawn on the dial and on the wall of outlines ({badl[:4]})")
 ps = [s_['p'] for s_ in dj['stops']]
 check(min(b - a for a, b in zip(ps, ps[1:])) > 0.02 and 'class="today"' in dl and 'Keep earlier outlines' in dl, "dial: no two stops crowd each other on the scale; today's countries lie under the sheet")
-check('class="dial-door-a"' in front and 'Turn the dial' in (D/'maps/index.html').read_text() and 'Turn the dial' in (D/'labels/index.html').read_text() and 'Turn the dial' in (D/'archive/index.html').read_text(),
+check('href="./dial/"' in front and 'Turn the dial' in (D/'maps/index.html').read_text() and 'Turn the dial' in (D/'labels/index.html').read_text() and 'Turn the dial' in (D/'archive/index.html').read_text(),
       'dial: doors on the front page, the map room, the many Tartarys and the vault')
 # 4. em dashes
 em_titles = [str(f.relative_to(D)) for f in D.rglob('*.html') if '—' in re.search(r'<title>(.*?)</title>', f.read_text(), re.S).group(1)]
@@ -148,3 +148,4 @@ for f in D.rglob('index.html'):
         if not target.exists(): missing.add(str(h))
 check(not missing, f'all internal links resolve ({list(missing)[:5]})')
 print('ALL PASS' if ok else 'SOME FAILED')
+raise SystemExit(0 if ok else 1)
