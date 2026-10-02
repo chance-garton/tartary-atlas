@@ -761,7 +761,7 @@ def tale_link(href, title, n, when):
             f'<span class="psg-tale-n">{esc(when)} · {plural(n, "passage")}</span></a>')
 
 
-def psg_card(site, ctx, p, theme_tag=True, source=True, cls=""):
+def psg_card(site, ctx, p, theme_tag=True, source=True, cls="", book=False):
     """One passage. The page script builds the same markup in TA.card; keep the two in step."""
     meta = []
     if theme_tag:
@@ -791,6 +791,30 @@ def psg_card(site, ctx, p, theme_tag=True, source=True, cls=""):
     links = [f'<a href="{esc(p["url"])}" rel="noopener">{page}</a>', COPY_BTN]
     tale = tale_link(ctx.link(site.rkey(p["rec"])), *tale_meta(site, p["rec"])) if source else ""
     y = p.get("year")
+    if book:
+        original = (f'<details class="book-original"><summary>Original wording</summary>'
+                    f'<p class="orig" dir="auto">{esc(p["quote"])}</p></details>') if p.get("translation") else ""
+        reading = f'<blockquote><p dir="auto">{esc(p.get("translation") or p["quote"])}</p>'
+        if p.get("translation"):
+            reading += '<p class="q-tag">Working translation</p>'
+        reading += '</blockquote>'
+        date = f'<p class="book-date">{esc(p["when"])}</p>' if p.get("when") else ""
+        return (f'<article class="psg book-entry" id="p-{p["id"]}" data-th="{p["theme"]}" data-b="{p["basis"]}">'
+                f'<div class="book-binding"><div class="book-spread">'
+                f'<div class="book-page book-verso"><p class="book-running">Leaves from the archive</p>'
+                f'<h3 class="book-source-title">{esc(tale_meta(site, p["rec"])[0])}</h3>{date}'
+                f'<p class="who book-byline">{esc(p["speaker"])}</p><span class="book-fleuron" aria-hidden="true">❦</span>'
+                f'<section class="book-editorial"><h4>Editor’s introduction</h4><p class="gloss">{esc(p["gloss"])}</p></section>'
+                f'<span class="book-colophon" aria-hidden="true">Collected in the Tartary Atlas</span></div>'
+                f'<div class="book-page book-recto"><p class="book-running">In their own words</p>'
+                f'<h4 class="book-passage-title">{esc(p["headline"])}</h4>{reading}'
+                f'<span class="book-endmark" aria-hidden="true">❦</span></div></div></div>'
+                f'<div class="book-apparatus"><div class="book-actions"><div class="psg-links">{"".join(links)}</div>'
+                f'<a class="book-source-link" href="{ctx.link(site.rkey(p["rec"]))}">Read this source <span aria-hidden="true">↗</span></a></div>'
+                f'<div class="book-catalogue"><div class="psg-meta">{"".join(meta)}</div>'
+                f'<div class="book-evidence"><div class="psg-foot"><span class="book-evidence-label">How the author knew</span>'
+                f'{basis_chip(p["basis"], button=True)}</div></div></div>{people}{original}{notes_html}</div></article>')
+
     return (f'<article class="psg{(" " + cls) if cls else ""}" id="p-{p["id"]}" data-th="{p["theme"]}" data-b="{p["basis"]}" data-y="{"" if y is None else y}">'
             f'<div class="psg-meta">{"".join(meta)}</div>'
             f'<h3>{esc(p["headline"])}</h3>'
@@ -984,13 +1008,12 @@ def page_home(site, ctx):
     # This is a homepage-only manuscript treatment. Shared passage cards keep their existing markup.
     card = ""
     if first:
-        excerpt = psg_card(site, ctx, first, cls="big")
-        excerpt = excerpt.replace(f'<p class="gloss"><span class="psg-label">Editorial context</span>{esc(first["gloss"])}</p>',
-                                  f'<details class="front-context"><summary>Read the context</summary><p class="gloss"><span class="psg-label">Editorial context</span>{esc(first["gloss"])}</p></details>')
-        card = (f'<div class="hero-card" id="front-passage"><div class="hero-card-head"><h2>One passage from the record</h2>'
-                f'<button type="button" class="btn" data-next>Draw another <span aria-hidden="true">↻</span></button></div>'
+        excerpt = psg_card(site, ctx, first, book=True)
+        card = (f'<div class="hero-card passage-book" id="front-passage"><div class="hero-card-head"><h2>One passage from the record</h2>'
+                f'<button type="button" class="btn book-next" data-next hidden aria-controls="home-book-pages">Turn the page <span aria-hidden="true">→</span></button></div>'
                 f'<p class="front-at" data-at hidden></p>'
-                f'<div class="feature-slot" data-slot aria-live="polite">{excerpt}</div></div>')
+                f'<div class="feature-slot" id="home-book-pages" data-slot>{excerpt}</div>'
+                f'<p class="book-status sr-only" data-book-status role="status" aria-live="polite" aria-atomic="true"></p></div>')
     routes = [('I', 'passages', 'Read their words', f'{num(n_psg)} passages, with sources'),
               ('II', 'maps', 'Enter the map room', f'{n_pictured} historical maps to explore'),
               ('III', 'ride', 'Ride with a traveler', 'Follow a journey, stop by stop'),
@@ -2977,8 +3000,8 @@ def full_title(pg):
 def static_page(site, key, pg):
     ctx = Ctx("static", key)
     title = full_title(pg)
-    # Keep the redesigned dial's markup and controls together in returning browsers.
-    revision = "?v=dial-3" if key == "dial" else ""
+    # Keep each redesigned page's markup and controls together in returning browsers.
+    revision = "?v=home-book-2" if pg.get("homepage") else ("?v=dial-3" if key == "dial" else "")
     url = f'{CONFIG["base_url"]}/{key + "/" if key else ""}'
     head = [
         '<!doctype html><html lang="en"><head><meta charset="utf-8">',
@@ -2998,7 +3021,7 @@ def static_page(site, key, pg):
     if pg.get("osd"):
         head.append(f'<script src="{CONFIG["osd_js"]}" defer></script>')
     if pg.get("homepage"):
-        head.append(f'<link rel="stylesheet" href="{ctx.asset("home.css")}">')
+        head.append(f'<link rel="stylesheet" href="{ctx.asset("home.css")}{revision}">')
     head.append('<script>document.documentElement.className += " js";</script>')
     head.append(f'<script src="{ctx.asset("site.js")}{revision}" defer></script>')
     if pg.get("jsonld"):

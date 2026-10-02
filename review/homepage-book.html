@@ -1,0 +1,14 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Homepage book review</title>
+<style>body{margin:0;background:#282119;color:#f3ead7;font:14px system-ui}header{padding:12px 20px;display:flex;align-items:center;flex-wrap:wrap;gap:12px;position:sticky;top:0;background:#282119;z-index:1}button,a{padding:9px 12px;background:#eee3cc;border:1px solid #bca77f;color:#30271c;cursor:pointer;font:inherit}button[aria-pressed=true]{background:#cdb47d}main{overflow:auto;padding:15px}iframe{display:block;width:1280px;height:1050px;margin:auto;border:1px solid #8a7a5b;background:#f1e5c9}output{font-size:12px}</style>
+<header><strong>Homepage book</strong><button data-width="320">320 px</button><button data-width="390">390 px</button><button data-width="768">768 px</button><button data-width="1280" aria-pressed="true">Desktop</button><label><input type="checkbox" id="nojs"> JavaScript off</label><button id="book">Show book</button><button id="map">Show map</button><output id="metrics"></output><a href="../docs/index.html#front-passage" target="_blank">Open full preview</a></header>
+<main><iframe title="Book responsive preview" src="../docs/index.html#front-passage"></iframe></main>
+<script>
+const frame=document.querySelector('iframe');
+function metrics(){const d=frame.contentDocument;document.querySelector('output').textContent=d.documentElement.clientWidth+'px / '+d.documentElement.scrollWidth+'px';}
+function showBook(){frame.contentDocument.getElementById('front-passage').scrollIntoView({block:'start'});metrics();}
+frame.onload=showBook;
+document.querySelectorAll('[data-width]').forEach(b=>b.onclick=()=>{frame.style.width=b.dataset.width+'px';document.querySelectorAll('[data-width]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));requestAnimationFrame(showBook);});
+document.getElementById('book').onclick=showBook;
+document.getElementById('map').onclick=()=>frame.contentDocument.querySelector('.front-map-mount').scrollIntoView();
+document.getElementById('nojs').onchange=e=>{if(e.target.checked)frame.setAttribute('sandbox','allow-same-origin');else frame.removeAttribute('sandbox');frame.src=frame.getAttribute('src');};
+</script></html>
