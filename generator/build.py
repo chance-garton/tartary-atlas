@@ -971,29 +971,50 @@ def page_home(site, ctx):
     front_rec = site.rec.get(fm.get("rec", ""), None)
     credit = ""
     if front_rec:
-        credit = (f'<p class="front-credit"><a href="{ctx.link(site.rkey(front_rec))}">Map by Ortelius, 1570</a></p>')
+        credit = (f'<p class="front-credit"><a href="{ctx.link(site.rkey(front_rec))}">Abraham Ortelius · Tartary · first printed 1570</a>'
+                  f'<span>Library of Congress</span></p>')
     tools = ('<div class="front-tools" data-tools hidden>'
              '<button type="button" class="btn" data-roam>Roam the map</button>'
              '<span class="front-zoom"><button type="button" class="btn icon" data-zoom-out aria-label="Zoom out">−</button>'
              '<button type="button" class="btn icon" data-zoom-in aria-label="Zoom in">+</button></span>'
+             '<button type="button" class="btn" data-home>Whole map</button>'
              '<button type="button" class="btn primary" data-close hidden>Close the map</button></div>')
     slip = '<div class="front-slip" data-slip hidden aria-live="polite"></div>'
     stage = (f'<div class="front-stage" data-stage>{still}<div class="front-osd"><div data-osd></div></div>{tools}{slip}</div>')
-    # The passage leads the page: it is the first thing a visitor meets, beside the question it answers.
+    # This is a homepage-only manuscript treatment. Shared passage cards keep their existing markup.
     card = ""
     if first:
-        card = (f'<div class="hero-card"><div class="hero-card-head"><h2>One passage from the record</h2>'
-                f'<button type="button" class="btn primary" data-next>Draw another</button></div>'
+        excerpt = psg_card(site, ctx, first, cls="big")
+        excerpt = excerpt.replace(f'<p class="gloss">{esc(first["gloss"])}</p>',
+                                  f'<details class="front-context"><summary>Read the context</summary><p class="gloss">{esc(first["gloss"])}</p></details>')
+        card = (f'<div class="hero-card" id="front-passage"><div class="hero-card-head"><h2>One passage from the record</h2>'
+                f'<button type="button" class="btn" data-next>Draw another <span aria-hidden="true">↻</span></button></div>'
                 f'<p class="front-at" data-at hidden></p>'
-                f'<div class="feature-slot" data-slot aria-live="polite">{psg_card(site, ctx, first, cls="big")}</div></div>')
+                f'<div class="feature-slot" data-slot aria-live="polite">{excerpt}</div></div>')
+    routes = [('I', 'passages', 'Read their words', f'{num(n_psg)} passages, with sources'),
+              ('II', 'maps', 'Enter the map room', f'{n_pictured} historical maps to explore'),
+              ('III', 'ride', 'Ride with a traveler', 'Follow a journey, stop by stop'),
+              ('IV', 'dial', 'Turn the time dial', 'Watch the name change over time')]
+    doors = '<nav class="front-routes" aria-label="Begin exploring">' + ''.join(
+        f'<a href="{ctx.link(key)}"><span class="route-number" aria-hidden="true">{number}</span>'
+        f'<span><strong>{title}</strong><small>{detail}</small></span><span class="route-arrow" aria-hidden="true">↗</span></a>'
+        for number, key, title, detail in routes) + '</nav>'
     hero = (f'<section class="front" data-module="feature"><script type="application/json">{feat_json}</script>'
-            f'{stage}<div class="front-body"><div class="front-plate">'
-            f'<h1>What did the people who went there write down?</h1>'
-            f'<p class="lede"><a href="{ctx.link("passages")}">{num(n_psg)} passages</a> from travellers, envoys, captives and monks.</p>'
-            f'<p class="front-how" data-how hidden><span><i class="key dot"></i>A place they wrote about</span>'
-            f'<span><i class="key dia"></i>A note on the map</span></p>'
-            f'{credit}</div>'
-            f'{card}</div></section>')
+            f'<div class="front-opening"><div class="front-intro"><div><p class="front-kicker">An open atlas of maps &amp; witnesses</p>'
+            f'<h1>Enter the world<br><em>called Tartary.</em></h1></div>'
+            f'<div class="front-invitation"><p>What did the people who went there write down?</p>'
+            f'<p>Wander the old maps. Follow the travelers. Read what they left behind, in their own words.</p>'
+            f'<a href="{ctx.link("about")}">About this atlas <span aria-hidden="true">↗</span></a></div></div>{doors}'
+            f'<div class="front-map-mount">{stage}</div>'
+            f'<div class="front-map-caption">{credit}<p class="front-how" data-how hidden>'
+            f'<span><i class="key dot"></i>Places in the writings</span><span><i class="key dia"></i>Mapmaker’s notes</span>'
+            f'<span class="front-hint">Press a mark to explore</span></p></div>'
+            f'<div class="front-body"><aside class="front-margin">{orn(site, ctx, "tents")}'
+            f'<p class="front-kicker">Leaves from the archive</p><h2>A voice<br>across the centuries.</h2>'
+            f'<p>One account among many. Each passage carries its author, its source, and what to keep in mind.</p>'
+            f'<p class="front-independent">The writings and the map are independent sources; their dates and perspectives may differ.</p>'
+            f'<a href="{ctx.link("passages")}">Explore all {num(n_psg)} passages <span aria-hidden="true">↗</span></a></aside>'
+            f'{card}</div></div></section>')
 
     # One name, many hands: the word as the mapmakers themselves lettered it.
     names = ""
@@ -1046,7 +1067,7 @@ def page_home(site, ctx):
     desc = (f"What {n_written} historical texts and {n_maps} maps say about Tartary (Tartaria): {num(n_psg)} quoted passages on cities, "
             f"buildings, daily life and legends, each linked to its page.")
     return dict(title="The Tartary Atlas: Tartary and Tartaria in the historical record", description=desc, body=body,
-                nav="", modules=["feature"], bare_title=True, osd=True)
+                nav="", modules=["feature"], bare_title=True, osd=True, homepage=True)
 
 
 def page_passages(site, ctx, theme=None):
@@ -2961,12 +2982,15 @@ def static_page(site, key, pg):
         head.append(f'<script src="{CONFIG["maplibre_js"]}" defer></script>')
     if pg.get("osd"):
         head.append(f'<script src="{CONFIG["osd_js"]}" defer></script>')
+    if pg.get("homepage"):
+        head.append(f'<link rel="stylesheet" href="{ctx.asset("home.css")}">')
     head.append('<script>document.documentElement.className += " js";</script>')
     head.append(f'<script src="{ctx.asset("site.js")}" defer></script>')
     if pg.get("jsonld"):
         head.append('<script type="application/ld+json">' + json.dumps({k: v for k, v in pg["jsonld"].items() if v is not None}, ensure_ascii=False).replace("</", "<\\/") + "</script>")
     head.append("</head>")
-    body = f'<body data-root="{ctx.root}">{header(site, ctx, pg["nav"])}<main id="main" tabindex="-1">{pg["body"]}</main>{footer(site, ctx)}{TO_TOP}</body></html>'
+    home_class = ' class="atlas-home"' if pg.get("homepage") else ''
+    body = f'<body data-root="{ctx.root}"{home_class}>{header(site, ctx, pg["nav"])}<main id="main" tabindex="-1">{pg["body"]}</main>{footer(site, ctx)}{TO_TOP}</body></html>'
     return "".join(head) + body
 
 
@@ -3011,6 +3035,8 @@ def write_static(site):
         (d / "index.html").write_text(static_page(site, key, pg))
         keys.append(key)
     shutil.copy(STATIC / "css" / "site.css", OUT / "assets" / "site.css")
+    shutil.copy(STATIC / "css" / "home.css", OUT / "assets" / "home.css")
+    shutil.copy(STATIC / "textures" / "home-parchment.webp", OUT / "assets" / "home-parchment.webp")
     shutil.copy(STATIC / "js" / "site.js", OUT / "assets" / "site.js")
     shutil.copy(STATIC / "vendor" / "maplibre-gl.css", OUT / "assets" / "maplibre-gl.css")
     if (STATIC / "cuts").exists():
@@ -3047,6 +3073,7 @@ def write_preview(site):
         pages[key] = {"t": full_title(pg), "h": pg["body"], "n": nav_group(pg["nav"])}
     ctx = Ctx("preview", "")
     css = (STATIC / "vendor" / "maplibre-gl.css").read_text() + "\n" + (STATIC / "css" / "site.css").read_text()
+    css += "\n" + (STATIC / "css" / "home.css").read_text().replace('url("home-parchment.webp")', 'url("assets/home-parchment.webp")')
     js = (STATIC / "js" / "site.js").read_text()
     pages_json = json.dumps(pages, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
     doc = (f'<meta charset="utf-8"><title>Tartary Atlas Preview</title>\n'
@@ -3059,6 +3086,7 @@ def write_preview(site):
            f'<script type="application/json" id="ta-pages">{pages_json}</script>'
            f'<script>window.TA_PREVIEW=true;</script><script>{js}</script>')
     (PREVIEW / "index.html").write_text(doc)
+    shutil.copy(STATIC / "textures" / "home-parchment.webp", PREVIEW / "assets" / "home-parchment.webp")
     # A Claude artifact cannot load pictures from other sites, so the preview carries its own copies.
     if (STATIC / "cuts").exists():
         shutil.copytree(STATIC / "cuts", PREVIEW / "assets" / "cuts")

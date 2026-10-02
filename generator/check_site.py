@@ -133,7 +133,10 @@ check('class="dial-door-a"' in front and 'Turn the dial' in (D/'maps/index.html'
 # 4. em dashes
 em_titles = [str(f.relative_to(D)) for f in D.rglob('*.html') if '—' in re.search(r'<title>(.*?)</title>', f.read_text(), re.S).group(1)]
 check(not em_titles, f'no em dash in any page title ({len(list(D.rglob("*.html")))} pages)')
-em_any = [str(f) for f in list(D.rglob('*.html')) + [ROOT/'preview/index.html'] if '—' in f.read_text()]
+html_outputs = list(D.rglob('*.html'))
+if (ROOT/'preview/index.html').exists():
+    html_outputs.append(ROOT/'preview/index.html')
+em_any = [str(f) for f in html_outputs if '—' in f.read_text()]
 check(not em_any, 'no em dash anywhere in the generated HTML')
 # links resolve
 missing = set()
