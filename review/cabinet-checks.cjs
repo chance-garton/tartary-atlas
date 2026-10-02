@@ -1,0 +1,91 @@
+/* Run with jsdom available in NODE_PATH: node review/cabinet-checks.cjs. */
+const {JSDOM, VirtualConsole} = require('jsdom');
+const fs = require('node:fs');
+const path = require('node:path');
+const assert = require('node:assert/strict');
+const root = path.resolve(__dirname, '..');
+const wait = ms => new Promise(r => setTimeout(r, ms));
+async function setup(route='', {query='', saved=null, quiet=true}={}) {
+ const errors=[];
+ const vc=new VirtualConsole();vc.on('jsdomError',e=>{ if(!/navigation|scrollTo/.test(e.message)) errors.push(e.message); });
+ const dom=new JSDOM(fs.readFileSync(path.join(root,'docs',route,'index.html'),'utf8'),{url:'https://tartary.innerversepodcast.com/'+route+(route?'/':'')+query,runScripts:'outside-only',pretendToBeVisual:true,virtualConsole:vc});
+ const w=dom.window;
+ w.matchMedia=q=>({matches:q.includes('reduced-motion')?quiet:false,addEventListener(){},removeEventListener(){}});
+ w.scrollTo=()=>{};w.Element.prototype.scrollIntoView=()=>{};
+ w.HTMLDialogElement.prototype.showModal=function(){this.open=true};w.HTMLDialogElement.prototype.close=function(){this.open=false};
+ w.fetch=async url=>{const name=String(url).split('assets/')[1];return {ok:true,json:async()=>JSON.parse(fs.readFileSync(path.join(root,'docs/assets',name),'utf8'))}};
+ Object.defineProperty(w.performance,'getEntriesByType',{value:()=>[{type:'navigate'}]});
+ if(saved)w.localStorage.setItem('ta:collection:v1',JSON.stringify(saved));
+ await wait(0);
+ w.eval(fs.readFileSync(path.join(root,'static/js/site.js'),'utf8'));
+ w.eval(fs.readFileSync(path.join(root,'static/js/cabinet.js'),'utf8'));
+ await wait(30);
+ return {dom,w,d:w.document,errors};
+}
+(async()=>{
+ let {dom,w,d,errors}=await setup('passages');
+ const data=JSON.parse(fs.readFileSync(root+'/docs/assets/passages-cities.json','utf8'));
+ const themes=['cities','architecture','customs','names','outliers'];
+ let total=0;
+ for(const theme of themes){
+  const raw=JSON.parse(fs.readFileSync(root+'/docs/assets/passages-'+theme+'.json','utf8'));
+  for(const p of raw.p){
+   w.TA.srcMeta(p,raw.src);const box=d.createElement('div');box.innerHTML=w.TA.card(p);
+   assert.equal(box.querySelector('blockquote > p').textContent,p.t||p.q);
+   assert.equal(box.querySelector('.gloss').textContent,p.g);
+   assert.equal(box.querySelector('.who').textContent,p.s);
+   assert.equal(box.querySelector('.psg-links a').getAttribute('href'),p.u);
+   if(p.t)assert.equal(box.querySelector('.orig').textContent,p.q);
+   if(p.c)assert.equal(box.querySelector('.psg-notes').open,true);
+   total++;
+  }
+ }
+ console.log('PASS exact quotation, translation, attribution, context, scan link and cautions for '+total+' passages');
+ let card=d.querySelector('.px-main .psg'), id=card.id, title=card.querySelector('h3').textContent;
+ let exact=card.querySelector('blockquote > p').textContent, citation=w.TA.citation(card);
+ card.querySelector('[data-save-id]').click();
+ let saved=JSON.parse(w.localStorage.getItem('ta:collection:v1'));
+ assert.equal(saved.length,1);assert.equal(saved[0].id,id);assert.equal(saved[0].t,title);
+ card.querySelector('[data-open-reader]').click();
+ assert.equal(d.querySelector('#atlas-reader').open,true);
+ const reading=d.querySelector('.reader-document');
+ assert.equal(reading.querySelector('blockquote > p').textContent,exact);
+ assert.equal(w.TA.citation(reading),citation);
+ assert.equal(reading.querySelector('.reader-spread').querySelectorAll('button,summary,a').length,0);
+ assert.equal(d.querySelector('[data-reader-count]').textContent,'Leaf 1 of 10');
+ d.querySelector('[data-reader-next]').click();assert.equal(d.querySelector('[data-reader-count]').textContent,'Leaf 2 of 10');
+ d.querySelector('.reader-document [data-save-id]').click();saved=JSON.parse(w.localStorage.getItem('ta:collection:v1'));
+ assert.equal(saved[1].t,d.querySelector('.reader-right h3').textContent);
+ assert.equal(new Set([...d.querySelectorAll('[id]')].map(n=>n.id)).size,d.querySelectorAll('[id]').length);
+ console.log('PASS collection, exact reader citations, clean printed pages, navigation and unique IDs');
+ d.querySelector('#atlas-reader').close();
+ d.querySelector('[data-open-search]').click();
+ d.querySelector('#global-search').value='Samarkand';d.querySelector('#global-search').dispatchEvent(new w.Event('input',{bubbles:true}));await wait(200);
+ assert.ok(d.querySelectorAll('.search-result').length>1);assert.ok(d.querySelector('.search-result').href.includes('passages/?q=Samarkand'));
+ console.log('PASS global catalogue search and full-passage search link');
+ assert.deepEqual(errors,[]);dom.window.close();
+ ({dom,w,d,errors}=await setup('passages',{query:'?q=mosque',saved}));
+ assert.equal(d.querySelector('#px-q').value,'mosque');
+ assert.ok(Number(d.querySelector('[data-count]').textContent.replaceAll(',',''))<2029);
+ assert.equal(d.querySelector('[data-saved-count]').textContent,'2');
+ console.log('PASS query handoff, filtering and collection across page visits');dom.window.close();
+ const rawSource=fs.readFileSync(root+'/docs/w/W043/index.html','utf8');const ids=[...rawSource.matchAll(/id="(p-W043-\d+)"/g)].map(m=>m[1]);
+ ({dom,w,d}=await setup('w/W043',{query:'#'+ids.at(-1)}));
+ assert.equal(d.getElementById(ids.at(-1)).hidden,false);console.log('PASS deep link reveals a saved passage beyond the initial set');dom.window.close();
+ ({dom,w,d,errors}=await setup('dial'));
+ const rotor=d.querySelector('.chronometer');assert.ok(rotor);
+ rotor.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Home',bubbles:true}));await wait(20);assert.equal(d.querySelector('[data-select]').value,'0');
+ rotor.dispatchEvent(new w.KeyboardEvent('keydown',{key:'End',bubbles:true}));await wait(20);assert.equal(d.querySelector('[data-select]').value,'28');assert.equal(rotor.getAttribute('aria-valuenow'),'29');
+ rotor.dispatchEvent(new w.KeyboardEvent('keydown',{key:'ArrowLeft',bubbles:true}));await wait(20);assert.equal(d.querySelector('[data-select]').value,'27');
+ assert.deepEqual(errors,[]);console.log('PASS brass dial keyboard navigation and existing map selector stay synchronized');dom.window.close();
+ ({dom,w,d,errors}=await setup('deck'));
+ assert.equal(d.querySelectorAll('.pcard').length,3);d.querySelector('[data-turn]').click();assert.equal(d.querySelectorAll('.pcard.up').length,3);
+ d.querySelectorAll('.pcard')[0].click();await wait(20);assert.ok(d.querySelector('.deck-read .psg [data-save-id]'));
+ console.log('PASS deck deals, reveals, opens passages and adds collection controls');assert.deepEqual(errors,[]);dom.window.close();
+ ({dom,w,d}=await setup('',{quiet:false}));
+ const old=d.querySelector('[data-slot] .psg').id;d.querySelector('[data-next]').click();await wait(20);
+ assert.notEqual(d.querySelector('[data-slot] .psg').id,old);assert.ok(d.querySelector('.book-turn-leaf'));
+ assert.equal(d.querySelectorAll('.book-turn-leaf [data-save-id]').length,0);
+ console.log('PASS homepage dimensional page turn retains inert printed leaves');dom.window.close();
+ console.log('ALL CABINET CHECKS PASS');
+})().catch(e=>{console.error(e);process.exit(1)});

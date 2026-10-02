@@ -230,7 +230,7 @@
         (p.pe ? '<p class="psg-people"><span>About</span> ' + esc(p.pe) + '</p>' : '') + original + notes + '</div></article>';
     }
     return '<article class="psg' + (o.cls ? ' ' + o.cls : '') + '" id="p-' + esc(p.i) + '" data-th="' + esc(p.th) + '" data-b="' + esc(p.b) + '" data-y="' + (p.y == null ? '' : p.y) + '">' +
-      '<div class="psg-meta">' + meta + '</div><h3>' + esc(p.h) + '</h3><p class="gloss"><span class="psg-label">Editorial context</span>' + esc(p.g) + '</p>' + quote +
+      '<div class="psg-meta">' + meta + '</div><h3>' + esc(p.h) + '</h3>' + quote + '<details class="psg-context"><summary>Editorial context</summary><p class="gloss">' + esc(p.g) + '</p></details>' +
       '<div class="psg-foot"><button type="button" class="basis ' + esc(p.b) + '" data-basis aria-expanded="false" title="' + esc(b[1]) + '">' + esc(b[0]) + '</button><span class="who">' + esc(p.s) + '</span></div>' +
       '<div class="psg-links">' + links + '</div>' +
       (p.pe ? '<p class="psg-people"><span>About</span> ' + esc(p.pe) + '</p>' : '') +
@@ -293,6 +293,7 @@
       if (mq.addEventListener) { mq.addEventListener('change', fold); TA.cleanups.push(function () { mq.removeEventListener('change', fold); }); }
     }
     var saved = TA.restoring ? TA.mem.get('px') : null;
+    if (!saved) q.value = new URLSearchParams(location.search).get('q') || '';
     if (saved) {
       q.value = saved.q || ''; bs.value = saved.b || ''; wh.value = saved.w || ''; od.value = saved.o || 'best';
       shown = saved.n || STEP;
@@ -422,7 +423,10 @@
         pressed(pills, pills.filter(function (b) { return b.getAttribute('data-f') === f; })[0]);
         pressed(ords, ords.filter(function (b) { return b.getAttribute('data-ord') === ord; })[0]);
       }
+      var linked = cards.findIndex(function (c) { return '#' + c.id === location.hash; });
+      if (linked >= 0) { f = ''; shown = Math.max(shown, linked + 1); }
       draw();
+      if (linked >= 0 && !TA.restoring) requestAnimationFrame(function () { cards[linked].scrollIntoView({ block: 'start' }); });
       TA.rescroll();
     }
     pills.forEach(function (b) {
