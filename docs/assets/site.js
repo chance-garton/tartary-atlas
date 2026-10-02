@@ -597,7 +597,7 @@
         element: stage.querySelector('[data-osd]'),
         tileSources: M.tiled ? M.src : { type: 'image', url: M.src },
         showNavigationControl: false, homeFillsViewer: false, visibilityRatio: 1, constrainDuringPan: true,
-        minZoomImageRatio: 1, maxZoomPixelRatio: 2, animationTime: 1.6, springStiffness: 6.5, minScrollDeltaTime: 0,
+        minZoomImageRatio: 1, maxZoomPixelRatio: 2, animationTime: reduced() ? 0 : 1.6, springStiffness: 6.5, minScrollDeltaTime: 0,
         gestureSettingsMouse: { scrollToZoom: false, clickToZoom: false, dblClickToZoom: true },
         gestureSettingsTouch: quiet, gestureSettingsPen: JSON.parse(JSON.stringify(quiet))
       });
