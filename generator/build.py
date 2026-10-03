@@ -18,6 +18,7 @@ import re
 import shutil
 import sys
 import experience
+import storybook
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 DATA = ROOT / "data"
@@ -928,6 +929,10 @@ def reading_progress(site):
 # ---------------------------------------------------------------- discovery pages
 
 def page_home(site, ctx):
+    return storybook.page(site, ctx)
+
+
+def page_frontispiece(site, ctx):
     n_read, n_written, n_profile_only = reading_progress(site)
     n_psg = len(site.passages)
     n_maps = sum(1 for r in site.records if r["kind"] == "map")
@@ -1017,9 +1022,9 @@ def page_home(site, ctx):
                 f'<p class="book-status sr-only" data-book-status role="status" aria-live="polite" aria-atomic="true"></p></div>')
     hero = (f'<section class="front" data-module="feature"><script type="application/json">{feat_json}</script>'
             f'<div class="study-table"><div class="front-opening"><div class="front-intro">'
-            f'<p class="front-kicker">An atlas of the historical record</p>'
-            f'<h1>A lost name.<br><em>A world to discover.</em></h1>'
-            f'<p class="study-invitation">Enter Tartary through the maps, journeys, and words of those who knew it.</p>'
+            f'<p class="front-kicker">The opening map · 1570</p>'
+            f'<h1>Ortelius’s<br><em>Tartary.</em></h1>'
+            f'<p class="study-invitation">Explore the places and curious notes on this original sheet. Let a place lead you to a witness.</p>'
             f'<div class="study-actions"><a class="btn primary" href="#explore">Enter the Atlas {experience.icon("arrow")}</a>'
             f'<a class="study-read" href="#front-passage">Open a page</a></div>'
             f'<p class="study-totals"><span><b>{num(n_psg)}</b> passages</span><span><b>{n_maps}</b> maps</span><span><b>{n_read}</b> voices</span></p></div>'
@@ -1072,7 +1077,7 @@ def page_home(site, ctx):
 
     desc = (f"What {n_written} historical texts and {n_maps} maps say about Tartary (Tartaria): {num(n_psg)} quoted passages on cities, "
             f"buildings, daily life and legends, each linked to its page.")
-    return dict(title="The Tartary Atlas: Tartary and Tartaria in the historical record", description=desc, body=body,
+    return dict(title="Ortelius’s Tartary: the opening map", description=desc, body=body,
                 nav="", modules=["feature"], bare_title=True, osd=True, homepage=True)
 
 
@@ -3000,20 +3005,28 @@ def static_page(site, key, pg):
     if pg.get("homepage"):
         head.append(f'<link rel="stylesheet" href="{ctx.asset("home.css")}{revision}">')
     head.append(f'<link rel="stylesheet" href="{ctx.asset("cabinet.css")}{revision}">')
+    if pg.get("storybook"):
+        head.append(f'<link rel="stylesheet" href="{ctx.asset("storybook.css")}?v=storybook-1">')
+        head.append(f'<script src="{ctx.asset("storybook.js")}?v=storybook-1" defer></script>')
     head.append('<script>document.documentElement.className += " js";</script>')
-    head.append(f'<script src="{ctx.asset("site.js")}{revision}" defer></script>')
-    head.append(f'<script src="{ctx.asset("cabinet.js")}{revision}" defer></script>')
+    if not pg.get("storybook"):
+        head.append(f'<script src="{ctx.asset("site.js")}{revision}" defer></script>')
+        head.append(f'<script src="{ctx.asset("cabinet.js")}{revision}" defer></script>')
     if pg.get("jsonld"):
         head.append('<script type="application/ld+json">' + json.dumps({k: v for k, v in pg["jsonld"].items() if v is not None}, ensure_ascii=False).replace("</", "<\\/") + "</script>")
     head.append("</head>")
     home_class = ' class="atlas-home cabinet"' if pg.get("homepage") else ' class="cabinet"'
-    body = f'<body data-root="{ctx.root}"{home_class}>{header(site, ctx, pg["nav"])}<main id="main" tabindex="-1">{pg["body"]}</main>{footer(site, ctx)}{TO_TOP}{experience.dialogs(ctx)}</body></html>'
+    if pg.get("storybook"):
+        body = f'<body data-root="{ctx.root}" class="cabinet storybook-home"><a class="skip" href="#main">Skip to the book</a><main id="main" tabindex="-1">{pg["body"]}</main>{storybook.footer(ctx)}</body></html>'
+    else:
+        body = f'<body data-root="{ctx.root}"{home_class}>{header(site, ctx, pg["nav"])}<main id="main" tabindex="-1">{pg["body"]}</main>{footer(site, ctx)}{TO_TOP}{experience.dialogs(ctx)}</body></html>'
     return "".join(head) + body
 
 
 def all_pages(site, ctx_factory):
     """Yield (key, page dict) for every page. ctx_factory(key) builds the link context."""
     yield "", page_home(site, ctx_factory(""))
+    yield "frontispiece", page_frontispiece(site, ctx_factory("frontispiece"))
     yield "passages", page_passages(site, ctx_factory("passages"))
     for t in THEMES:
         k = "passages/" + t
@@ -3062,6 +3075,9 @@ def write_static(site):
         shutil.copytree(STATIC / "dial", OUT / "assets" / "dial")
     shutil.copy(STATIC / "css" / "cabinet.css", OUT / "assets" / "cabinet.css")
     shutil.copy(STATIC / "js" / "cabinet.js", OUT / "assets" / "cabinet.js")
+    shutil.copy(STATIC / "css" / "storybook.css", OUT / "assets" / "storybook.css")
+    shutil.copy(STATIC / "js" / "storybook.js", OUT / "assets" / "storybook.js")
+    shutil.copytree(STATIC / "storybook", OUT / "assets" / "storybook")
     shutil.copy(STATIC / "textures" / "scholars-desk.webp", OUT / "assets" / "scholars-desk.webp")
     (OUT / "assets" / "search-index.json").write_text(experience.search_index(site))
     write_basemap(OUT / "assets" / "basemap.json")

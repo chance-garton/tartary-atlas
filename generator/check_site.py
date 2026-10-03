@@ -60,9 +60,12 @@ bad_url = [p['id'] for p in psg if not p['url'].startswith('https://')]
 check(not bad_url, f'every passage links to a page ({bad_url[:5]})')
 kz = (D/'place/kazan/index.html').read_text()
 check(kz.count('<article class="psg"') == sum(1 for p in psg if 'kazan' in p['place_ids']), 'kazan place page carries every Kazan passage')
-front = (D/'index.html').read_text()
-check('Follow a question' in front and front.count('class="trail"') == 5 and 'data-module="feature"' in front, 'front page has the five trails and a featured passage')
-check(0 < front.index('One passage from the record') < front.index('Follow a question') and 'What has been read' not in front, 'front page: the passage comes first, above the trails, with no progress report')
+landing = (D/'index.html').read_text()
+front = (D/'frontispiece/index.html').read_text()
+check(landing.count('class="story-chapter"') == 8 and landing.count('class="story-inscription"') == 8 and 'data-storybook' in landing, 'landing page: eight illustrated chapters with eight feature entrances')
+check('data-module="feature"' not in landing and 'cabinet-header' not in landing and 'frontispiece/' in landing, 'landing page is a book; the original map experience has its own entrance')
+check('Follow a question' in front and front.count('class="trail"') == 5 and 'data-module="feature"' in front, 'opening map retains the five trails and featured passage')
+check(0 < front.index('One passage from the record') < front.index('Follow a question') and 'What has been read' not in front, 'opening map: the passage comes first, above the trails, with no progress report')
 # 3c. the pills above a set of passages are buttons that filter it
 w43 = (D/'w/W043/index.html').read_text()
 check('data-module="pset"' in w43 and w43.count('class="pill" data-f=') >= 3 and 'data-copy' in w43, 'source page: trail pills are filter buttons, cards carry a copy button')
@@ -88,7 +91,7 @@ cuts = json.load(open(ROOT/'data/cuts.json'))
 gone = [c['key'] for c in cuts['labels'] if not (D/'assets/cuts/labels'/(c['key'] + '.png')).exists()] + [c['key'] for c in cuts['ornaments'] if not (D/'assets/cuts/ornaments'/(c['key'] + '.png')).exists()]
 check(not gone, f"every cut in data/cuts.json has its picture in the site ({gone[:5]})")
 check('class="atlas-brand"' in w43 and 'aria-label="Explore the Atlas"' in w43 and 'data-open-search' in w43, 'header: consistent brand, complete exploration menu, and search')
-check('One name, many hands' in front and 'class="archive-cabinet"' in front, 'front page: original map lettering remains in the archive cabinet')
+check('One name, many hands' not in front + landing and 'class="archive-cabinet"' in front, 'the requested lettering-section removal is preserved')
 # 3f. the rides and the deck
 J = json.load(open(ROOT/'data/journeys.json'))['journeys']
 PID = {p['id']: p for p in psg}
@@ -109,7 +112,7 @@ deck = (D/'deck/index.html').read_text()
 dd = json.loads(re.search(r'data-module="deck"><script type="application/json">(.*?)</script>', deck, re.S).group(1))
 check(len(dd['spread']) == 3 and deck.count('data-card') == 3 and set(dd['suits']) == {'cities', 'architecture', 'customs', 'names', 'outliers'}
       and all((D/'assets/cuts/ornaments'/(v['k'] + '.png')).exists() for v in dd['suits'].values()), 'deck: three places in the spread and a suit drawing for each of the five trails')
-check('href="./deck/"' in front and 'href="../deck/"' in (D/'passages/index.html').read_text(), 'deck: reachable from the front page and passages navigation')
+check('href="./deck/"' in landing and 'href="../deck/"' in (D/'passages/index.html').read_text(), 'deck: reachable from the storybook and passages navigation')
 # 3g. the time dial
 DL = json.load(open(ROOT/'data/dial.json'))
 dl = (D/'dial/index.html').read_text()
@@ -128,7 +131,7 @@ check(len(lands) >= 40 and not badl and all('lands' in m for m in on) and dl.cou
       f"dial: {len(lands)} outlines, each carried onto the earth, measured, with how its limit was found, drawn on the dial and on the wall of outlines ({badl[:4]})")
 ps = [s_['p'] for s_ in dj['stops']]
 check(min(b - a for a, b in zip(ps, ps[1:])) > 0.02 and 'class="today"' in dl and 'Keep earlier outlines' in dl, "dial: no two stops crowd each other on the scale; today's countries lie under the sheet")
-check('href="./dial/"' in front and 'Turn the dial' in (D/'maps/index.html').read_text() and 'Turn the dial' in (D/'labels/index.html').read_text() and 'Turn the dial' in (D/'archive/index.html').read_text(),
+check('href="./dial/"' in landing and 'Turn the dial' in (D/'maps/index.html').read_text() and 'Turn the dial' in (D/'labels/index.html').read_text() and 'Turn the dial' in (D/'archive/index.html').read_text(),
       'dial: doors on the front page, the map room, the many Tartarys and the vault')
 # 4. em dashes
 em_titles = [str(f.relative_to(D)) for f in D.rglob('*.html') if '—' in re.search(r'<title>(.*?)</title>', f.read_text(), re.S).group(1)]
