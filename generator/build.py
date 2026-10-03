@@ -1031,17 +1031,6 @@ def page_home(site, ctx):
             f'<h2>A voice across the centuries.</h2><a href="{ctx.link("passages")}">All {num(n_psg)} passages {experience.icon("arrow")}</a>'
             f'<p class="front-independent">An independent account, alongside the map.</p></aside>{card}</div></div></section>')
 
-    # One name, many hands: the word as the mapmakers themselves lettered it.
-    names = ""
-    if site.labels:
-        items = "".join(
-            f'<li><a href="{ctx.link(site.rkey(c["rec"]))}" title="{esc(c["reads"])}, as lettered by {esc(cut_credit(site, c))}">'
-            f'{cut(site, ctx, c, "labels", "tall" if c.get("vertical") else "", label=c["reads"] + (" (" + c["say"] + ")" if c.get("say") else ""))}'
-            f'<span class="hand-by">{esc(c["by"].split(",")[0])}, {esc(c["year"])}</span></a></li>' for c in site.labels)
-        names = (f'<section class="band hands"><div class="band-head row"><div><h2>One name, many hands</h2>'
-                 f'<p>The word as the mapmakers lettered it, cut from their own maps.</p></div>'
-                 f'<a class="btn" href="{ctx.link("labels")}">See the many Tartarys</a></div><ul class="hand-list">{items}</ul></section>')
-
     trails = (f'<section class="band"><div class="band-head"><h2>Follow a question</h2></div>{trail_cards(site, ctx)}</section>')
 
     picks_m = [site.rec[i] for i in HOME_MAPS if i in site.map_img]
@@ -1078,8 +1067,8 @@ def page_home(site, ctx):
 
     rides = rides_band(site, ctx) or places
     body = (f'{hero}<div class="page home cabinet-home-bottom">{trails}'
-            f'<details class="archive-cabinet"><summary><span>{experience.icon("vault")} Deeper in the cabinet</span><small>Lettering, witnesses &amp; the source index</small></summary>'
-            f'{names}{maps_band}{rides}{witnesses}{deeper}</details></div>')
+            f'<details class="archive-cabinet"><summary><span>{experience.icon("vault")} Deeper in the cabinet</span><small>Maps, witnesses &amp; the source index</small></summary>'
+            f'{maps_band}{rides}{witnesses}{deeper}</details></div>')
 
     desc = (f"What {n_written} historical texts and {n_maps} maps say about Tartary (Tartaria): {num(n_psg)} quoted passages on cities, "
             f"buildings, daily life and legends, each linked to its page.")
