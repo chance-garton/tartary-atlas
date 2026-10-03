@@ -36,6 +36,8 @@ CHAPTERS = [
                      "The vault opens the whole catalogue, along with the research notes and the questions that remain. There is always another thread to follow."],
          link="Open the scholar’s vault", route="archive", note="Books, maps, witnesses, and unfinished questions", alt="A vaulted medieval library with leather-bound books, scrolls, a chest, and an open manuscript on a lectern."),
 ]
+PAPER = {"frontispiece": "#efd6ae", "reading": "#eed5aa", "maps": "#eed2a4", "journeys": "#ecd2a5",
+         "time": "#f0d3a5", "atlas": "#f0d5ab", "archive": "#edd4af", "discovery": "#ecd3ad"}
 ROMAN = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII"]
 
 
@@ -44,14 +46,16 @@ def page(site, ctx):
     for i, ch in enumerate(CHAPTERS):
         heading = "h1" if i == 0 else "h2"
         paragraphs = ''.join(f'<p>{escape(p)}</p>' for p in ch['paragraphs'])
-        art = ctx.asset('storybook/' + ch['art'] + '.webp')
+        art = ctx.asset('storybook/' + ch['art'] + '-poster.webp')
         priority = 'fetchpriority="high"' if i == 0 else ''
         spreads.append(
-            f'<section class="story-chapter" id="chapter-{ch["key"]}" data-chapter="{ch["key"]}" aria-label="{escape(ch["title"])}">'
+            f'<section class="story-chapter" id="chapter-{ch["key"]}" data-chapter="{ch["key"]}" aria-label="{escape(ch["title"])}" style="--book-paper:{PAPER[ch["art"]]}">'
             f'<div class="story-page story-page-art"><span class="story-running">The Tartary Atlas</span>'
-            f'<figure class="story-illumination"><img src="{art}" alt="{escape(ch["alt"])}" width="800" height="1200" '
+            f'<figure class="story-illumination"><div class="story-media"><img src="{art}" alt="{escape(ch["alt"])}" width="768" height="1080" '
             f'loading="{"eager" if i == 0 else "lazy"}" decoding="async" {priority}>'
-            f'<figcaption>{escape(ch["caption"])}</figcaption></figure>'
+            f'<video data-book-video data-src="{ctx.asset("storybook/" + ch["art"] + ".mp4")}" poster="{art}" '
+            f'width="768" height="1080" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1"></video></div>'
+            f'<figcaption>{escape(ch["caption"])}</figcaption></figure>' 
             f'<span class="story-folio" aria-hidden="true">{2*i+1}</span></div>'
             f'<div class="story-page story-page-text"><span class="story-running">{escape(ch["subtitle"])}</span>'
             f'<div class="story-writing"><p class="story-chapter-number">Chapter {ROMAN[i]}</p>'
@@ -77,6 +81,7 @@ def page(site, ctx):
         '<button type="button" data-book-next aria-label="Turn the page">Turn the page <span aria-hidden="true">☞</span></button></nav>'
         '<div class="story-ribbon" aria-hidden="true"></div></div></div>'
         '<div class="story-colophon"><span data-book-position>Chapter I of VIII</span><span class="story-hint">Turn a leaf, or choose a ribbon.</span>'
+        '<button type="button" class="story-motion" data-book-motion hidden>Pause illustrations</button>'
         f'<a href="{ctx.link("about")}">A work by Chance Garton</a></div>'
         '<p class="sr-only" role="status" aria-live="polite" aria-atomic="true" data-book-status></p></div>'
     )

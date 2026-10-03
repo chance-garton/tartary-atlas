@@ -10,6 +10,8 @@ function setup({reduced=true,narrow=false,hash=''}={}) {
  const dom = new JSDOM(html,{url:'https://tartary.innerversepodcast.com/'+hash,runScripts:'outside-only',pretendToBeVisual:true});
  const w=dom.window,d=w.document,animations=[];
  w.matchMedia=query=>({matches:query.includes('reduced-motion')?reduced:narrow});
+ w.HTMLMediaElement.prototype.play=function(){this._playing=true;return Promise.resolve()};
+ w.HTMLMediaElement.prototype.pause=function(){this._playing=false};
  w.Element.prototype.scrollIntoView=function(){};
  w.Element.prototype.animate=function(frames,options){let resolve;const a={frames,options,finished:new Promise(r=>{resolve=r}),cancel(){},finish(){resolve()}};animations.push(a);return a};
  return {dom,w,d,animations,run:()=>w.eval(script)};
@@ -41,7 +43,7 @@ function setup({reduced=true,narrow=false,hash=''}={}) {
  d.querySelector('[data-book-next]').click();
  assert.equal(env.animations.length,1);assert.equal(d.querySelector('.story-turner').hidden,false);
  assert.equal(d.querySelector('.story-turner-front .story-title').textContent,'The painted world');
- assert.equal(d.querySelector('.story-turner-back img').getAttribute('src'),'./assets/storybook/journeys.webp');
+ assert.equal(d.querySelector('.story-turner-back img').getAttribute('src'),'./assets/storybook/journeys-poster.webp');
  assert.ok(+d.querySelector('#chapter-journeys').style.zIndex > +d.querySelector('#chapter-maps').style.zIndex);
  assert.equal(new Set([...d.querySelectorAll('[id]')].map(n=>n.id)).size,d.querySelectorAll('[id]').length);
  env.animations[0].finish();await wait();
@@ -49,7 +51,7 @@ function setup({reduced=true,narrow=false,hash=''}={}) {
  assert.equal(d.querySelectorAll('.story-chapter:not([hidden])').length,1);
  d.querySelector('[data-book-prev]').click();
  assert.equal(d.querySelector('.story-turner-front .story-title').textContent,'The painted world');
- assert.equal(d.querySelector('.story-turner-back img').getAttribute('src'),'./assets/storybook/journeys.webp');
+ assert.equal(d.querySelector('.story-turner-back img').getAttribute('src'),'./assets/storybook/journeys-poster.webp');
  const revealed=d.querySelector('#chapter-maps'), departing=d.querySelector('#chapter-journeys');
  assert.ok(+revealed.style.zIndex > +departing.style.zIndex,'reverse turn reveals the earlier chapter above the later DOM sibling');
  assert.equal(revealed.querySelector('.story-page-art').style.visibility,'');
@@ -78,5 +80,16 @@ function setup({reduced=true,narrow=false,hash=''}={}) {
  assert.equal(d.querySelector('.story-chapter:not([hidden])').id,'chapter-words');
  assert.equal(d.querySelector('[data-storybook]').hasAttribute('aria-busy'),false);
  console.log('PASS a cold illustration loads before its leaf is turned');dom.window.close();
+ env=setup({reduced:false});({dom,w,d,run}=env);run();
+ const media=[...d.querySelectorAll('[data-book-video]')];
+ assert.equal(media.filter(v=>v._playing).length,1);
+ assert.equal(media.filter(v=>v.hasAttribute('src')).length,1);
+ assert.ok(media.every(v=>v.loop&&v.hasAttribute('muted')&&v.hasAttribute('playsinline')));
+ d.querySelector('[data-book-motion]').click();assert.ok(media.every(v=>!v._playing));
+ d.querySelector('[data-book-motion]').click();assert.equal(media[0]._playing,true);
+ d.querySelector('[data-book-next]').click();assert.ok(media.every(v=>!v._playing));
+ assert.equal(d.querySelectorAll('.story-turner video').length,0);
+ env.animations[0].finish();await wait();assert.equal(media[1]._playing,true);assert.equal(media[0]._playing,false);
+ console.log('PASS videos load on demand, pause during turns, resume the selected chapter, and honor the pause control');dom.window.close();
  console.log('ALL STORYBOOK CHECKS PASS');
 })().catch(e=>{console.error(e);process.exit(1)});
