@@ -28,12 +28,15 @@
     var img = chapter.querySelector('img');
     if (img) img.loading = 'eager';
   }
-  function render(index, announce) {
-    chapters.forEach(function (chapter, i) { chapter.hidden = i !== index; });
+  function markChapter(index) {
     tabs.forEach(function (tab, i) {
       if (i === index) tab.setAttribute('aria-current', 'page');
       else tab.removeAttribute('aria-current');
     });
+  }
+  function render(index, announce) {
+    chapters.forEach(function (chapter, i) { chapter.hidden = i !== index; });
+    markChapter(index);
     previous.disabled = index === 0;
     next.disabled = index === chapters.length - 1;
     position.textContent = 'Chapter ' + romans[index] + ' of ' + romans[chapters.length - 1];
@@ -70,7 +73,7 @@
       leaf.querySelector('.story-turner-back').replaceChildren();
       oldChapter.querySelectorAll('.story-page').forEach(function (page) { page.style.visibility = ''; });
       target.querySelectorAll('.story-page').forEach(function (page) { page.style.visibility = ''; });
-      chapters.forEach(function (chapter) { chapter.style.position = ''; chapter.style.inset = ''; });
+      chapters.forEach(function (chapter) { chapter.style.position = ''; chapter.style.inset = ''; chapter.style.zIndex = ''; });
       render(index, true);
       if (movingFocus) tabs[index].focus({preventScroll:true});
       if (focused === next && next.disabled) previous.focus({preventScroll:true});
@@ -81,6 +84,7 @@
       if (pending) { var queued = pending; pending = null; go(queued.index, queued.options); }
     }
     function turn() {
+    markChapter(index);
     if (reduced.matches || typeof leaf.animate !== 'function') { finish(); return; }
     if (narrow.matches) {
       render(index, false);
@@ -95,6 +99,9 @@
       leaf.inert = true;
       target.hidden = false;
       target.style.position = 'absolute'; target.style.inset = '0';
+      /* Earlier chapters precede the old spread in DOM order. Give the revealed
+         sheet its own layer so reverse turns cannot leave the old art on top. */
+      oldChapter.style.zIndex = '0'; target.style.zIndex = '1';
       (forward ? leftNew : rightNew).style.visibility = 'hidden';
       leaf.hidden = false;
       animation = leaf.animate([

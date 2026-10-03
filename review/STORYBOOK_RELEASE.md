@@ -2,6 +2,17 @@
 
 October 3, 2026. Implements Chance’s request for an open medieval storybook as the Atlas landing page.
 
+## Page-turn and bookmark refinement · October 3
+
+Chance reported that the departing illustration lingered during reverse turns and asked for more natural tabs that continue onto the selected page.
+
+- During a turn, the revealed spread now explicitly sits above the departing spread. Earlier chapters precede later chapters in the DOM, which previously let the old illustration remain on top during reverse turns. Temporary layer values are removed when the turn completes.
+- Glossy raised tabs have been replaced by parchment index slips using the existing paper texture, uneven cut edges, restrained shadows and handwritten labels. Unselected slips stay beneath the book’s fore-edge; the selected slip sits above the open leaf and continues into its margin. The overlap is narrowed on tablet and phone to keep the writing clear.
+- Bookmark selection follows the incoming chapter when the turn begins, after the target illustration is ready. The storybook asset version is now `storybook-2`.
+- The responsive review page includes a Hold turn control and a leaf-position slider for inspecting the actual animation before completion.
+
+Validation: the static build and all site checks pass (946 content pages, 947 HTML files including 404). Storybook checks cover the reverse-turn layer order, visible incoming illustration, correct front/back leaf faces, selected bookmark, cleanup, history, keyboard navigation, cold illustration loading, reduced motion and mobile swipe. JavaScript syntax and whitespace checks pass. Browser review inspected a reverse turn held at 80 percent, confirming the incoming illustration was already revealed; normal reverse turns and tab navigation also worked. Layouts were checked at 1280, 768, 390 and 320 px, with no horizontal overflow. Changes are scoped to the landing page and its review files; source data and the other Atlas experiences are unchanged.
+
 ## Experience
 
 Eight spreads pair a manuscript-style illustration with a short chapter and an ink inscription linking to a feature. Side ribbons jump to the opening, words, maps, journeys, time, chance, places, and vault. CSS constructs the leather boards, gilt corners, page block, gutter, and ribbon bookmark. Desktop page turns show front and back faces; smaller screens use stacked leaves and a short transition. Keyboard arrows, Home/End, swipe, chapter deep links, and browser history are supported. Reduced motion removes the animation; no-script mode shows the complete book.
