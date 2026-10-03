@@ -57,11 +57,13 @@
     var focused = document.activeElement;
     var movingFocus = oldChapter.contains(focused);
     current = index; busy = true;
+    book.setAttribute('aria-busy', 'true');
     if (!options.history) remember(index, true);
     warm(index);
     function finish() {
       if (!busy) return;
       busy = false;
+      book.removeAttribute('aria-busy');
       if (animation) { animation.cancel(); animation = null; }
       leaf.hidden = true;
       leaf.querySelector('.story-turner-front').replaceChildren();
@@ -78,6 +80,7 @@
       }
       if (pending) { var queued = pending; pending = null; go(queued.index, queued.options); }
     }
+    function turn() {
     if (reduced.matches || typeof leaf.animate !== 'function') { finish(); return; }
     if (narrow.matches) {
       render(index, false);
@@ -101,6 +104,12 @@
       ], {duration:1000,easing:'cubic-bezier(.35,.05,.25,1)',fill:'forwards'});
     }
     animation.finished.then(finish).catch(finish);
+    }
+    var picture = target.querySelector('img');
+    if (picture && !picture.complete && typeof picture.decode === 'function') {
+      status.textContent = 'Opening ' + target.getAttribute('aria-label') + '…';
+      picture.decode().catch(function () {}).then(turn);
+    } else turn();
   }
   book.classList.add('book-ready');
   turns.hidden = false;
@@ -108,7 +117,11 @@
   render(current, false);
   previous.addEventListener('click', function () { go(current - 1); });
   next.addEventListener('click', function () { go(current + 1); });
-  tabs.forEach(function (tab, i) { tab.addEventListener('click', function (event) { event.preventDefault(); go(i); }); });
+  tabs.forEach(function (tab, i) {
+    tab.addEventListener('pointerenter', function () { warm(i); });
+    tab.addEventListener('focus', function () { warm(i); });
+    tab.addEventListener('click', function (event) { event.preventDefault(); go(i); });
+  });
   document.querySelector('[data-book-home]').addEventListener('click', function (event) { event.preventDefault(); go(0); });
   book.addEventListener('keydown', function (event) {
     if (event.altKey || event.ctrlKey || event.metaKey || event.target.closest('input,textarea,select')) return;

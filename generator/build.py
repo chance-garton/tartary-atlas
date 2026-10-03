@@ -3009,8 +3009,9 @@ def static_page(site, key, pg):
         head.append(f'<link rel="stylesheet" href="{ctx.asset("storybook.css")}?v=storybook-1">')
         head.append(f'<script src="{ctx.asset("storybook.js")}?v=storybook-1" defer></script>')
     head.append('<script>document.documentElement.className += " js";</script>')
-    head.append(f'<script src="{ctx.asset("site.js")}{revision}" defer></script>')
-    head.append(f'<script src="{ctx.asset("cabinet.js")}{revision}" defer></script>')
+    if not pg.get("storybook"):
+        head.append(f'<script src="{ctx.asset("site.js")}{revision}" defer></script>')
+        head.append(f'<script src="{ctx.asset("cabinet.js")}{revision}" defer></script>')
     if pg.get("jsonld"):
         head.append('<script type="application/ld+json">' + json.dumps({k: v for k, v in pg["jsonld"].items() if v is not None}, ensure_ascii=False).replace("</", "<\\/") + "</script>")
     head.append("</head>")

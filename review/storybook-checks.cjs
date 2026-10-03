@@ -62,5 +62,13 @@ function setup({reduced=true,narrow=false,hash=''}={}) {
  assert.equal(w.location.hash,'#chapter-words');env.animations[0].finish();await wait();
  assert.equal(d.querySelectorAll('.story-chapter:not([hidden])').length,1);
  console.log('PASS mobile swipe and narrow-layout transition');dom.window.close();
+ env=setup({reduced:false});({dom,w,d,run}=env);run();
+ let release;d.querySelector('#chapter-words img').decode=()=>new Promise(r=>{release=r});
+ d.querySelector('[data-book-next]').click();assert.equal(env.animations.length,0);
+ assert.equal(d.querySelector('.story-chapter:not([hidden])').id,'chapter-opening');
+ release();await wait();assert.equal(env.animations.length,1);env.animations[0].finish();await wait();
+ assert.equal(d.querySelector('.story-chapter:not([hidden])').id,'chapter-words');
+ assert.equal(d.querySelector('[data-storybook]').hasAttribute('aria-busy'),false);
+ console.log('PASS a cold illustration loads before its leaf is turned');dom.window.close();
  console.log('ALL STORYBOOK CHECKS PASS');
 })().catch(e=>{console.error(e);process.exit(1)});
