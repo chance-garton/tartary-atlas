@@ -48,7 +48,9 @@
 .story-writing { display: flex; flex-direction: column; justify-content: center; flex: 1; width: 100%; max-width: 370px; margin: 0 auto; padding: 21px 0 0; }
 .story-chapter-number { margin: 0 0 12px; text-align: center; font: .85rem "IM Fell English SC", Georgia,serif; color: #846039; letter-spacing: .14em; }
 .storybook-home .story-title { color: var(--book-red); text-align: center; font: 400 clamp(2.25rem,3.8vw,3.75rem)/1.08 "IM Fell English",Georgia,serif; margin: 0; letter-spacing: -.035em; text-wrap: balance; }
-.story-chapter:first-child .story-title { font-family: "IM Fell English SC",Georgia,serif; font-size: clamp(2.8rem,4.7vw,4.8rem); }
+/* Keep the opening title's typography on the leaf itself so its animated
+   clone retains the same font, wrapping, and spacing outside the chapter. */
+.storybook-home h1.story-title { font-family: "IM Fell English SC",Georgia,serif; font-size: clamp(2.8rem,4.7vw,4.8rem); }
 .story-flourish { text-align: center; color: #9b763b; font-size: 2rem; line-height: 1; margin: 17px 0 16px; }
 .story-prose { color: #453121; font: 1.15rem/1.63 "IM Fell English",Georgia,serif; }
 .story-prose p { margin: 0 0 15px; }
@@ -151,7 +153,7 @@
   .story-writing { max-width: 460px; padding-top: 17px; }
   .story-chapter-number { font-size: .72rem; margin-bottom: 9px; }
   .storybook-home .story-title { font-size: clamp(2rem,7.5vw,2.8rem); }
-  .story-chapter:first-child .story-title { font-size: clamp(2.6rem,9vw,3.5rem); }
+  .storybook-home h1.story-title { font-size: clamp(2.6rem,9vw,3.5rem); }
   .story-prose { font-size: 1.1rem; line-height: 1.58; }
   .story-prose p { margin-bottom: 13px; }
   .story-prose p:first-child::first-letter { font-size: 3.7rem; padding-right: 7px; }
