@@ -24,12 +24,13 @@
 .story-spreads { position: relative; z-index: 2; border-radius: 7px 10px 10px 7px; }
 .story-chapter { display: grid; grid-template-columns: 1fr 1fr; position: relative; width: 100%; min-height: 660px; aspect-ratio: 1.72; }
 .story-chapter[hidden] { display: none !important; }
-.story-page { position: relative; min-width: 0; display: flex; flex-direction: column; overflow: hidden; background-color: var(--book-paper, #efd6ae); border-top: 1px solid #fff3d4; }
+/* Composite each leaf's video and paper wash together, inside the 3D turn. */
+.story-page { position: relative; isolation: isolate; min-width: 0; display: flex; flex-direction: column; overflow: hidden; background-color: var(--book-paper, #efd6ae); border-top: 1px solid #fff3d4; }
 .story-page-art { border-radius: 6px 44% 0 8px / 8px 1.5% 0 6px; background-position: left; padding: 28px 30px 44px 30px; box-shadow: inset 4px 0 14px #80603720, inset -16px 0 22px #50381830; }
 .story-page-text { border-radius: 44% 7px 8px 0 / 1.5% 7px 5px 0; padding: 28px 45px 65px 48px; box-shadow: inset 16px 0 23px #50381822, inset -2px 0 12px #80603717; }
 .story-page::before { content: ""; position: absolute; inset: 0; background: linear-gradient(0deg,#a17b3e0a,transparent 7%,transparent 93%,#b0945808); pointer-events: none; z-index: 4; }
 .story-running { color: #7b6141; text-align: center; font: .72rem "IM Fell English SC", Georgia, serif; letter-spacing: .13em; display: block; padding: 0 0 13px; border-bottom: 1px solid #92734440; margin: 0 16px; }
-.story-illumination { display: flex; flex: 1; flex-direction: column; justify-content: center; align-items: center; margin: 11px 0 0; min-height: 0; }
+.story-illumination { position: relative; isolation: isolate; display: flex; flex: 1; flex-direction: column; justify-content: center; align-items: center; margin: 11px 0 0; min-height: 0; border: 0; outline: 0; box-shadow: none; }
 /* The clips encode 768 x 1080 pixels with a 15:16 pixel aspect ratio,
    so their displayed frame is 2:3. Fit raw posters and captured frames to
    that same rectangle; contain would expose a wider poster behind the video.
@@ -102,6 +103,14 @@
 .story-volume:not(.book-ready) .story-chapter { scroll-margin-top: 15px; }
 .story-volume:not(.book-ready) .story-tabs { height: 540px; top: 25px; }
 .story-volume:not(.book-ready) .story-spine { display: none; }
+/* Give the desktop index enough paper and ink to read at a glance. */
+@media(min-width:1101px) {
+  .story-scene { left: -48px; }
+  .story-tabs { right: -122px; width: 139px; top: 5%; height: 86%; }
+  .story-tab { width: 133px; min-height: 54px; padding: 12px 10px 12px 24px; gap: 7px; font-size: 1.08rem; color: #382719; }
+  .story-tab::before { inset-block: 3px; }
+  .story-tab-number { width: 16px; font-size: .68rem; opacity: .85; }
+}
 @media(min-width:1400px) and (min-height:900px) {
   .story-scene { width: min(1300px,calc(100% - 150px)); }
   .story-chapter { min-height: 720px; }
