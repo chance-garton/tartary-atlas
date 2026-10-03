@@ -1,0 +1,169 @@
+/* The front door is a physical volume. All rules are scoped to that volume. */
+.storybook-home {
+  --book-ink: #39291e; --book-red: #763f31; --book-gold: #99733a;
+  color: #ebd9b2; background: #211913; background-image: radial-gradient(ellipse at 48% 42%, #65503a22, #100d0bbf), url("scholars-desk.webp");
+  background-size: cover; background-position: center; background-attachment: fixed;
+  min-height: 100vh; margin: 0; font-family: "IM Fell English", Georgia, serif;
+}
+.storybook-home *, .storybook-home *::before, .storybook-home *::after { box-sizing: border-box; }
+.storybook-home #main { padding: 0; outline: none; }
+.storybook-world { min-height: calc(100svh - 44px); display: flex; flex-direction: column; justify-content: center; padding: 22px 32px 0; overflow: clip; }
+.story-masthead { display: flex; align-items: baseline; justify-content: space-between; gap: 20px; width: min(1120px, calc(100% - 100px)); margin: 0 auto 32px; color: #d2b884; }
+.story-masthead a { color: #eddbb6; text-decoration: none; font: 1.3rem "IM Fell English SC", Georgia, serif; letter-spacing: .11em; }
+.story-masthead > span { font-size: .93rem; font-style: italic; color: #c4ae8a; }
+.story-scene { perspective: 2200px; width: min(1170px, calc(100% - 100px)); margin: 0 auto; padding: 0 0 28px; position: relative; }
+.story-volume { position: relative; isolation: isolate; color: var(--book-ink); transform: rotateX(5deg); transform-style: preserve-3d; margin: 0; }
+.story-volume::after { content: ""; position: absolute; z-index: -3; inset: 17% 2% -36px; border-radius: 25%; background: #090705; opacity: .9; filter: blur(28px); transform: translateZ(-30px); pointer-events: none; }
+.story-cover { position: absolute; z-index: -1; inset: -12px -16px -20px; border: 2px solid #9d733d; border-radius: 12px 16px 17px 12px; background: repeating-linear-gradient(15deg, #281c130f 0 2px, #76492e22 2px 4px), linear-gradient(90deg,#31241a, #633e2a 7%,#46291f 47%,#2c1b15 50%,#633e2a 53%,#472c20); box-shadow: inset 0 0 0 4px #321f16, inset 0 0 0 6px #936c38, inset 0 0 0 9px #382418, 0 5px 0 #20150f, 0 9px 0 #352316, 0 20px 30px #0008; }
+.story-cover i { position: absolute; width: 33px; height: 33px; border: 2px solid #b6914d; background: #956f3680; }
+.story-cover i:nth-child(1) { top: 4px; left: 4px; border-radius: 7px 0 22px 0; }
+.story-cover i:nth-child(2) { top: 4px; right: 4px; border-radius: 0 7px 0 22px; }
+.story-cover i:nth-child(3) { bottom: 4px; left: 4px; border-radius: 0 22px 0 7px; }
+.story-cover i:nth-child(4) { bottom: 4px; right: 4px; border-radius: 22px 0 7px 0; }
+.story-page-block { position: absolute; z-index: -1; inset: 8px -7px -10px; border-radius: 9px 11px 12px 8px; background: repeating-linear-gradient(0deg,#d2bc8d 0 1px,#88734e 1px 2px,#e6d5ae 2px 4px); box-shadow: 0 2px 0 #57472d, 0 4px 0 #b99b67; }
+.story-spreads { position: relative; z-index: 2; border-radius: 7px 10px 10px 7px; }
+.story-chapter { display: grid; grid-template-columns: 1fr 1fr; position: relative; min-height: 630px; aspect-ratio: 1.85; }
+.story-chapter[hidden] { display: none !important; }
+.story-page { position: relative; min-width: 0; display: flex; flex-direction: column; overflow: hidden; background-color: #f0e2c2; background-image: url("home-parchment.webp"); background-size: 720px auto; border-top: 1px solid #fff3d4; }
+.story-page-art { border-radius: 6px 44% 0 8px / 8px 1.5% 0 6px; background-position: left; padding: 28px 30px 44px 30px; box-shadow: inset 4px 0 14px #80603720, inset -16px 0 22px #50381830; }
+.story-page-text { border-radius: 44% 7px 8px 0 / 1.5% 7px 5px 0; padding: 28px 45px 65px 48px; box-shadow: inset 16px 0 23px #50381822, inset -2px 0 12px #80603717; }
+.story-page::before { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse at 0 100%,#aa824222,transparent 45%),linear-gradient(0deg,#a17b3e17,transparent 10%,transparent 90%,#b0945811); pointer-events: none; z-index: 4; }
+.story-running { color: #7b6141; text-align: center; font: .72rem "IM Fell English SC", Georgia, serif; letter-spacing: .13em; display: block; padding: 0 0 13px; border-bottom: 1px solid #92734440; margin: 0 16px; }
+.story-illumination { display: flex; flex: 1; flex-direction: column; justify-content: center; align-items: center; margin: 11px 0 0; min-height: 0; }
+.story-illumination img { display: block; width: 100%; max-height: 466px; height: 100%; object-fit: contain; mix-blend-mode: multiply; filter: saturate(.9); }
+.story-illumination figcaption { flex-shrink: 0; text-align: center; color: #74583c; margin: 8px 0 0; font: italic .9rem/1.4 "IM Fell English",Georgia,serif; }
+.story-writing { display: flex; flex-direction: column; justify-content: center; flex: 1; width: 100%; max-width: 370px; margin: 0 auto; padding: 21px 0 0; }
+.story-chapter-number { margin: 0 0 12px; text-align: center; font: .85rem "IM Fell English SC", Georgia,serif; color: #846039; letter-spacing: .14em; }
+.storybook-home .story-title { color: var(--book-red); text-align: center; font: 400 clamp(2.25rem,3.8vw,3.75rem)/1.08 "IM Fell English",Georgia,serif; margin: 0; letter-spacing: -.035em; text-wrap: balance; }
+.story-chapter:first-child .story-title { font-family: "IM Fell English SC",Georgia,serif; font-size: clamp(2.8rem,4.7vw,4.8rem); }
+.story-flourish { text-align: center; color: #9b763b; font-size: 2rem; line-height: 1; margin: 17px 0 16px; }
+.story-prose { color: #453121; font: 1.15rem/1.63 "IM Fell English",Georgia,serif; }
+.story-prose p { margin: 0 0 15px; }
+.story-prose p:first-child::first-letter { float: left; font-family: "IM Fell English SC",Georgia,serif; font-size: 4.05rem; color: #88472e; line-height: .91; padding: 7px 9px 0 0; }
+.story-inscription { color: #71352c; display: block; align-self: center; text-align: center; font: italic 1.23rem/1.5 "IM Fell English",Georgia,serif; text-decoration-color: #8f624580; text-decoration-thickness: 1px; text-underline-offset: 5px; margin-top: 13px; padding: 3px 0; }
+.story-inscription:hover { color: #a34c28; text-decoration-color: currentColor; }
+.story-manicule { font-style: normal; display: inline-block; font-size: 1.6rem; vertical-align: -.04em; margin-right: 4px; }
+.story-link-note { text-align: center; margin: 9px 0 0; font: italic .84rem/1.4 "IM Fell English",Georgia,serif; color: #7e6849; }
+.story-folio { position: absolute; bottom: 22px; left: 0; right: 0; text-align: center; font: .8rem Georgia,serif; color: #87704d; }
+.story-spine { position: absolute; pointer-events: none; z-index: 6; top: 0; bottom: 0; left: calc(50% - 24px); width: 48px; background: linear-gradient(90deg,transparent,#66442520 30%,#4d321642 48%,#3b240f66 50%,#edd2a130 53%,#fff3d137 68%,transparent); }
+.story-ribbon { position: absolute; z-index: 1; width: 25px; height: 72px; bottom: -55px; left: 52%; background: linear-gradient(90deg,#52271d,#95533b 45%,#612c20); clip-path: polygon(0 0,100% 0,100% 100%,50% 82%,0 100%); box-shadow: 3px 5px 6px #0009; transform: rotate(-5deg); }
+.story-tabs { position: absolute; right: -88px; top: 6%; width: 105px; height: 83%; display: flex; flex-direction: column; justify-content: space-between; z-index: 1; }
+.story-tab { position: relative; min-height: 44px; width: 99px; padding: 10px 6px 9px 21px; display: flex; align-items: center; gap: 5px; text-decoration: none; color: #e5cea3; font: .81rem/1.2 "IM Fell English",Georgia,serif; border: 1px solid #b294556b; border-radius: 0 5px 6px 0; background: linear-gradient(0deg,#38271c,#5b412a 30%,#684b30 65%,#402b1b); box-shadow: inset 0 0 0 3px #1f150f30,2px 4px 5px #100b0799; transform-origin: left; transition: transform .2s,color .2s; }
+.story-tab:nth-child(3n+2) { background: linear-gradient(0deg,#442820,#79523a 45%,#4b2c22); }
+.story-tab:nth-child(3n) { background: linear-gradient(0deg,#333c38,#5f6958 45%,#353c32); }
+.story-tab:hover, .story-tab[aria-current="page"] { color: #fff2d7; transform: translateX(8px); background: linear-gradient(0deg,#77532b,#a57c43 45%,#76502a); }
+.story-tab-number { font: .55rem Georgia,serif; width: 14px; opacity: .75; }
+.story-page-turns { position: absolute; z-index: 8; inset: auto 24px 12px; display: flex; justify-content: space-between; pointer-events: none; }
+.story-page-turns[hidden] { display: none; }
+.story-page-turns button { pointer-events: auto; padding: 9px 10px; min-height: 44px; font: italic .87rem "IM Fell English",Georgia,serif; border: 0; background: none; color: #694a32; cursor: pointer; }
+.story-page-turns button:hover { color: #9c452e; }
+.story-page-turns button:disabled { opacity: 0; pointer-events: none; }
+.story-page-turns button span { font-size: 1.2rem; font-style: normal; }
+.story-page-turns button[data-book-next]::after { content: ""; position: absolute; right: -24px; bottom: -12px; width: 34px; height: 34px; background: linear-gradient(135deg,transparent 49%,#b8a07970 51%,#e5d1a5 58%,#fff1cf 83%); border-radius: 0 0 7px 0; transition: width .2s,height .2s; }
+.story-page-turns button[data-book-next]:hover::after { width: 43px; height: 43px; }
+.story-page-turns button:disabled::after { display: none; }
+.story-turner { position: absolute; z-index: 7; left: 50%; top: 0; width: 50%; height: 100%; transform-origin: 0 50%; transform-style: preserve-3d; pointer-events: none; }
+.story-turner[hidden] { display: none; }
+.story-turner-front,.story-turner-back { position: absolute; inset: 0; backface-visibility: hidden; transform-style: preserve-3d; overflow: hidden; border-radius: 0 7px 8px 0; box-shadow: 14px 8px 25px #42270f36; }
+.story-turner-back { transform: rotateY(180deg); border-radius: 7px 0 0 8px; }
+.story-turner .story-page { width: 100%; height: 100%; }
+.story-turner-front::after,.story-turner-back::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg,#593b201a,transparent 35%,#99704b1f); pointer-events: none; }
+.story-colophon { width: min(1120px,calc(100% - 100px)); margin: 30px auto 5px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px 20px; color: #c3ad88; font: .82rem/1.5 "IM Fell English",Georgia,serif; }
+.story-colophon a { color: #cfb88f; text-decoration: none; }
+.story-colophon a:hover { color: #f6ddb0; text-decoration: underline; }
+.story-hint { font-style: italic; }
+.story-footer { min-height: 44px; display: flex; justify-content: center; gap: 15px; align-items: center; padding: 12px 20px; font: .73rem "IM Fell English",Georgia,serif; color: #c5af88; }
+.story-footer a { color: inherit; text-decoration: none; }
+.story-footer a:hover { text-decoration: underline; }
+.storybook-home :is(a,button):focus-visible { outline: 2px solid #bd8b3a; outline-offset: 5px; border-radius: 2px; }
+/* Without script, every spread is a readable chapter and the ribbons are anchors. */
+.story-volume:not(.book-ready) .story-chapter + .story-chapter { margin-top: 36px; }
+.story-volume:not(.book-ready) .story-chapter { scroll-margin-top: 15px; }
+.story-volume:not(.book-ready) .story-tabs { height: 540px; top: 25px; }
+.story-volume:not(.book-ready) .story-spine { display: none; }
+@media(min-width:1400px) and (min-height:900px) {
+  .story-scene { width: min(1300px,calc(100% - 150px)); }
+  .story-chapter { min-height: 695px; }
+  .story-illumination img { max-height: 525px; }
+  .story-writing { max-width: 405px; }
+  .story-prose { font-size: 1.27rem; }
+}
+@media(max-width:1100px) and (min-width:701px) {
+  .storybook-world { padding: 18px 20px 0; }
+  .story-scene { width: calc(100% - 100px); }
+  .story-chapter { min-height: 580px; aspect-ratio: auto; }
+  .story-page-text { padding: 24px 26px 65px 31px; }
+  .story-page-art { padding: 24px 21px 52px; }
+  .story-prose { font-size: 1.03rem; line-height: 1.55; }
+  .story-inscription { font-size: 1.06rem; }
+  .story-running { font-size: .59rem; margin-inline: 0; }
+  .story-illumination img { max-height: 390px; }
+  .story-illumination figcaption { font-size: .78rem; }
+  .story-link-note { font-size: .75rem; }
+  .story-flourish { margin-block: 13px; }
+}
+@media(max-width:700px) {
+  .storybook-world { justify-content: flex-start; padding: 19px 18px 0; overflow: clip; }
+  .story-masthead { width: calc(100% - 28px); margin: 0 auto 28px; justify-content: center; }
+  .story-masthead a { font-size: 1.05rem; }
+  .story-masthead > span { display: none; }
+  .story-scene { width: calc(100% - 51px); margin-left: 1px; padding-bottom: 16px; perspective: none; }
+  .story-volume { transform: none; }
+  .story-cover { inset: -9px -9px -15px; border-radius: 8px; }
+  .story-page-block { inset: 6px -4px -8px; }
+  .story-chapter { grid-template-columns: 1fr; min-height: 0; aspect-ratio: auto; }
+  .story-page-art { padding: 17px 20px 14px; border-radius: 6px 6px 0 0; box-shadow: inset 9px 0 17px #795d3426; }
+  .story-running { font-size: .59rem; margin: 0; padding-bottom: 10px; }
+  .story-illumination { margin: 6px 0 0; }
+  .story-illumination img { height: 250px; max-height: none; object-fit: contain; }
+  .story-illumination figcaption { font-size: .72rem; margin-top: 3px; }
+  .story-page-art .story-folio { display: none; }
+  .story-page-text { padding: 14px 23px 68px 27px; border-radius: 0 0 6px 6px; box-shadow: inset 9px 0 17px #795d3426; border-top: 0; }
+  .story-page-text .story-running { border-top: 1px solid #92734440; border-bottom: 0; padding: 17px 0 0; }
+  .story-writing { padding-top: 14px; }
+  .story-chapter-number { font-size: .69rem; margin-bottom: 8px; }
+  .storybook-home .story-title { font-size: 2rem; }
+  .story-chapter:first-child .story-title { font-size: 2.6rem; }
+  .story-prose { font-size: 1.04rem; line-height: 1.55; }
+  .story-prose p { margin-bottom: 13px; }
+  .story-prose p:first-child::first-letter { font-size: 3.5rem; padding-right: 6px; }
+  .story-inscription { font-size: 1.08rem; margin-top: 8px; }
+  .story-manicule { font-size: 1.3rem; }
+  .story-link-note { font-size: .76rem; }
+  .story-flourish { margin: 11px 0; font-size: 1.6rem; }
+  .story-spine { left: 0; width: 14px; background: linear-gradient(90deg,#6946204d,transparent); }
+  .story-tabs { right: -52px; width: 62px; top: 22px; height: 392px; }
+  .story-tab { width: 61px; min-height: 43px; padding: 10px 2px 10px 12px; font-size: .71rem; gap: 0; }
+  .story-tab-number { display: none; }
+  .story-tab:hover,.story-tab[aria-current="page"] { transform: translateX(3px); }
+  .story-page-turns { inset: auto 7px 10px; }
+  .story-page-turns button { padding: 8px 7px; font-size: .72rem; }
+  .story-page-turns button span { font-size: .95rem; }
+  .story-page-turns button[data-book-next]::after { right: -7px; bottom: -10px; width: 26px; height: 26px; }
+  .story-folio { bottom: 14px; font-size: .63rem; }
+  .story-colophon { width: 100%; font-size: .7rem; margin-top: 25px; justify-content: center; text-align: center; gap: 5px 15px; }
+  .story-colophon a { flex-basis: 100%; }
+  .story-ribbon { left: 65%; height: 50px; bottom: -40px; width: 20px; }
+  .story-footer { font-size: .68rem; gap: 12px; padding-top: 18px; }
+  .story-volume:not(.book-ready) .story-tabs { height: 392px; }
+}
+@media(max-width:360px) {
+  .storybook-world { padding-inline: 12px; }
+  .story-page-text { padding-inline: 18px; }
+  .story-illumination img { height: 215px; }
+  .story-prose { font-size: .99rem; }
+  .storybook-home .story-title { font-size: 1.85rem; }
+  .story-chapter:first-child .story-title { font-size: 2.2rem; }
+  .story-page-turns button { font-size: .65rem; padding-inline: 3px; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .story-volume { transform: none; }
+  .story-tab, .story-page-turns button::after { transition: none; }
+}
+@media print {
+  .storybook-home { background: white; }
+  .story-cover,.story-page-block,.story-tabs,.story-spine,.story-page-turns,.story-ribbon,.story-colophon,.story-footer { display: none !important; }
+  .story-scene { width: 100%; }
+  .story-volume { transform: none; }
+  .story-chapter,.story-chapter[hidden] { display: grid !important; break-after: page; }
+}

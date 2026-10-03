@@ -82,10 +82,10 @@ async function setup(route='', {query='', saved=null, quiet=true}={}) {
  assert.equal(d.querySelectorAll('.pcard').length,3);d.querySelector('[data-turn]').click();assert.equal(d.querySelectorAll('.pcard.up').length,3);
  d.querySelectorAll('.pcard')[0].click();await wait(20);assert.ok(d.querySelector('.deck-read .psg [data-save-id]'));
  console.log('PASS deck deals, reveals, opens passages and adds collection controls');assert.deepEqual(errors,[]);dom.window.close();
- ({dom,w,d}=await setup('',{quiet:false}));
+ ({dom,w,d}=await setup('frontispiece',{quiet:false}));
  const old=d.querySelector('[data-slot] .psg').id;d.querySelector('[data-next]').click();await wait(20);
  assert.notEqual(d.querySelector('[data-slot] .psg').id,old);assert.ok(d.querySelector('.book-turn-leaf'));
  assert.equal(d.querySelectorAll('.book-turn-leaf [data-save-id]').length,0);
- console.log('PASS homepage dimensional page turn retains inert printed leaves');dom.window.close();
+ console.log('PASS opening-map dimensional page turn retains inert printed leaves');dom.window.close();
  console.log('ALL CABINET CHECKS PASS');
 })().catch(e=>{console.error(e);process.exit(1)});
