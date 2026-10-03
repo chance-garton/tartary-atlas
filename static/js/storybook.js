@@ -164,9 +164,9 @@
   render(current, false);
   previous.addEventListener('click', function () { go(current - 1); });
   next.addEventListener('click', function () { go(current + 1); });
+  /* Hover/focus stay local to the index. render() warms adjacent pages and
+     go() loads a selected chapter before turning its leaf. */
   tabs.forEach(function (tab, i) {
-    tab.addEventListener('pointerenter', function () { warm(i); });
-    tab.addEventListener('focus', function () { warm(i); });
     tab.addEventListener('click', function (event) { event.preventDefault(); go(i); });
   });
   document.querySelector('[data-book-home]').addEventListener('click', function (event) { event.preventDefault(); go(0); });

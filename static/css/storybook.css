@@ -68,15 +68,15 @@
 /* Unselected index slips emerge from below the fore-edge. Only the current
    slip lies over the open leaf; the nav must not create a stacking context. */
 .story-tabs { position: absolute; right: -88px; top: 6%; width: 105px; height: 83%; display: flex; flex-direction: column; justify-content: space-between; pointer-events: none; }
-.story-tab { --slip-wash: #92703c40; --slip-angle: -.8deg; position: relative; z-index: 1; min-height: 44px; width: 99px; padding: 10px 5px 9px 21px; display: flex; align-items: center; gap: 5px; text-decoration: none; color: #493321; font: italic .86rem/1.2 "IM Fell English",Georgia,serif; pointer-events: auto; filter: drop-shadow(1px 3px 2px #100b0759); }
+.story-tab { --slip-wash: #92703c40; --slip-angle: -.8deg; position: relative; z-index: 1; min-height: 44px; width: 99px; padding: 10px 5px 9px 21px; display: flex; align-items: center; gap: 5px; text-decoration: none; color: #493321; font: italic .86rem/1.2 "IM Fell English",Georgia,serif; pointer-events: auto; }
 .story-tab::before { content: ""; position: absolute; z-index: -1; inset: 5px 0; background-color: #d4bb8c; background-image: linear-gradient(var(--slip-wash),var(--slip-wash)), url("home-parchment.webp"); background-size: auto, 330px auto; background-position: center, 60% 45%; clip-path: polygon(0 7%,18% 4%,97% 0,100% 9%,98% 42%,100% 75%,96% 96%,1% 100%,4% 54%); box-shadow: inset 0 1px #f9e8bb80, inset 0 -2px #88643833; transform: rotate(var(--slip-angle)); }
 .story-tab:nth-child(3n+2) { --slip-wash: #9b5a4536; --slip-angle: 1.1deg; }
 .story-tab:nth-child(3n) { --slip-wash: #72744b36; --slip-angle: -.3deg; }
 .story-tab:nth-child(4n) { --slip-angle: 1.5deg; }
 .story-tab > span { transform: rotate(var(--slip-angle)); }
+/* Hover changes ink only: avoid filtered paper repaints inside the 3D book. */
 .story-tab:hover { color: #783b26; }
-.story-tab:hover::before { background-position: center, 60% 45%; --slip-wash: #bb8c3920; }
-.story-tab[aria-current="page"] { z-index: 5; color: #713c29; filter: drop-shadow(0 2px 1px #563b292b); }
+.story-tab[aria-current="page"] { z-index: 5; color: #713c29; }
 .story-tab[aria-current="page"]::before { left: -18px; --slip-wash: #b1853920; }
 .story-tab[aria-current="page"]::after { content: ""; position: absolute; left: 16px; top: 8px; bottom: 7px; width: 1px; background: #80613926; box-shadow: 1px 0 #ffedc85c; transform: rotate(var(--slip-angle)); pointer-events: none; }
 .story-tab-number { font: .56rem Georgia,serif; width: 13px; opacity: .7; }
