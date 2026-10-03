@@ -3006,8 +3006,8 @@ def static_page(site, key, pg):
         head.append(f'<link rel="stylesheet" href="{ctx.asset("home.css")}{revision}">')
     head.append(f'<link rel="stylesheet" href="{ctx.asset("cabinet.css")}{revision}">')
     if pg.get("storybook"):
-        head.append(f'<link rel="stylesheet" href="{ctx.asset("storybook.css")}?v=storybook-3">')
-        head.append(f'<script src="{ctx.asset("storybook.js")}?v=storybook-3" defer></script>')
+        head.append(f'<link rel="stylesheet" href="{ctx.asset("storybook.css")}?v=storybook-4">')
+        head.append(f'<script src="{ctx.asset("storybook.js")}?v=storybook-4" defer></script>')
     head.append('<script>document.documentElement.className += " js";</script>')
     if not pg.get("storybook"):
         head.append(f'<script src="{ctx.asset("site.js")}{revision}" defer></script>')

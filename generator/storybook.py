@@ -51,10 +51,10 @@ def page(site, ctx):
         spreads.append(
             f'<section class="story-chapter" id="chapter-{ch["key"]}" data-chapter="{ch["key"]}" aria-label="{escape(ch["title"])}" style="--book-paper:{PAPER[ch["art"]]}">'
             f'<div class="story-page story-page-art"><span class="story-running">The Tartary Atlas</span>'
-            f'<figure class="story-illumination"><div class="story-media"><img src="{art}" alt="{escape(ch["alt"])}" width="768" height="1080" '
+            f'<figure class="story-illumination"><div class="story-media"><img src="{art}" alt="{escape(ch["alt"])}" width="720" height="1080" '
             f'loading="{"eager" if i == 0 else "lazy"}" decoding="async" {priority}>'
             f'<video data-book-video data-src="{ctx.asset("storybook/" + ch["art"] + ".mp4")}" poster="{art}" '
-            f'width="768" height="1080" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1"></video></div>'
+            f'width="720" height="1080" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1"></video></div>'
             f'<figcaption>{escape(ch["caption"])}</figcaption></figure>' 
             f'<span class="story-folio" aria-hidden="true">{2*i+1}</span></div>'
             f'<div class="story-page story-page-text"><span class="story-running">{escape(ch["subtitle"])}</span>'
