@@ -36,6 +36,9 @@
    that same rectangle; contain would expose a wider poster behind the video.
    Keep the existing illustration height while correcting its displayed width. */
 .story-media { position: relative; width: min(100%,calc(var(--art-width,347px) * .9375)); aspect-ratio: 2 / 3; flex-shrink: 0; overflow: hidden; mask-image: linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent),linear-gradient(0deg,transparent,#000 5%,#000 95%,transparent); mask-composite: intersect; }
+/* Keep the video surface clipped to its own frame when fullscreen resizes
+   the tilted book. The soft paper mask remains inside this paint boundary. */
+.story-media { contain: paint; isolation: isolate; clip-path: inset(0); }
 .story-media img, .story-media video, .story-media canvas { display: block; width: 100%; height: 100%; object-fit: fill; }
 .story-media video, .story-media canvas { position: absolute; inset: 0; }
 .story-media video { opacity: 0; }
