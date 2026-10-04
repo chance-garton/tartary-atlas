@@ -978,7 +978,7 @@ def page_explore(site, ctx):
             got += 1
         pins.append({"i": pid, "n": site.place[pid]["name"], "m": pin["on_map"], "x": round(pin["xy"][0] / fw, 5),
                      "y": round(pin["xy"][1] / fh, 5), "k": pin["kind"], "c": len(ps)})
-    sights = [{"t": s["title"], "x": round(s["xy"][0] / fw, 5), "y": round(s["xy"][1] / fh, 5), "w": s["what"], "l": s.get("latin") or ""}
+    sights = [{"t": s["title"], "x": round(s["xy"][0] / fw, 5), "y": round(s["xy"][1] / fh, 5), "w": s["what"], "l": s.get("latin") or "", "lang": s.get("language", "la"), "note": s.get("note", "")}
               for s in fm.get("sights", [])]
     pool.sort(key=lambda p: p["x"])
     front_map = None
@@ -2965,7 +2965,7 @@ def static_page(site, key, pg):
         head.append(f'<script src="{ctx.asset("storybook.js")}?v=storybook-5" defer></script>')
     head.append('<script>document.documentElement.className += " js";</script>')
     if not pg.get("storybook"):
-        head.append(f'<script src="{ctx.asset("site.js")}{"?v=scroll-3" if pg.get("ortelius") else revision}" defer></script>')
+        head.append(f'<script src="{ctx.asset("site.js")}{"?v=scroll-4" if pg.get("ortelius") else revision}" defer></script>')
         head.append(f'<script src="{ctx.asset("cabinet.js")}{revision}" defer></script>')
     if pg.get("jsonld"):
         head.append('<script type="application/ld+json">' + json.dumps({k: v for k, v in pg["jsonld"].items() if v is not None}, ensure_ascii=False).replace("</", "<\\/") + "</script>")

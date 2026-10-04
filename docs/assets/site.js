@@ -629,8 +629,10 @@
       }
     }
     function pickSight(s) {
-      openSlip('<p class="slip-k">Written on the map</p><h3>' + esc(s.t) + '</h3><p>' + esc(s.w) + '</p>' +
-        (s.l ? '<p class="orig" lang="la">' + esc(s.l) + '</p><p class="slip-note">The Latin as read from the sheet. It may be partial.</p>' : ''));
+      openSlip('<p class="slip-k">Written on the map</p><h3>' + esc(s.t) + '</h3>' +
+        '<p class="slip-k">English translation</p><p lang="en">' + esc(s.w) + '</p>' +
+        (s.note ? '<p class="slip-note">' + esc(s.note) + '</p>' : '') +
+        (s.l ? '<p class="slip-k">Original inscription</p><p class="orig" lang="' + (s.lang === 'it' ? 'it' : 'la') + '">' + esc(s.l) + '</p><p class="slip-note">Abbreviations expanded where possible.</p>' : ''));
     }
     function mark(cls, label, x, y, fn, tip) {
       var OSD = window.OpenSeadragon, b = document.createElement('button');

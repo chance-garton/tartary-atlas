@@ -266,7 +266,7 @@
     1290,
     800
    ],
-   "what": "A large tent with an armed ruler at its door, beside the words 'borders of the Duke of Muscovy'.",
+   "what": "The borders of the Duke of Muscovy.",
    "latin": "DVCIS MOSCOVIAE CONFINIA."
   },
   {
@@ -275,7 +275,7 @@
     2170,
     2240
    ],
-   "what": "Tents with the ruler seated at the door. The caption says Great Khan means emperor in the Tartar tongue, and calls him the greatest prince of Asia.",
+   "what": "The Great Khan (which in the language of the Tartars means emperor), the greatest prince of Asia.",
    "latin": "Magnus Cham, (quod lingua Tartarorum Imperatorem sonat) maximus Asie princeps."
   },
   {
@@ -284,8 +284,8 @@
     1270,
     3750
    ],
-   "what": "The map's own summary, held up by two figures: all Tartary and the rest of eastern Asia that obeys the Great Khan, bounded by the Ob, the Volga, the Caspian, Tibet, the Caromoran river and the ocean.",
-   "latin": "Continet hec tabula oem Tartariam, cum reliqua Asie Orientalioris usq3 Oceanu Eoum parte, Magno Chamo obediente: Cuius imperium Obij fl: Kataia lacu; Volga fl: Mari Caspio, Chesel flu: Ussonte monte, Thebet regione, Caromoram fluuio, & Oceano terminatur."
+   "what": "This map contains all Tartary, together with the remaining part of eastern Asia as far as the Eastern Ocean, subject to the Great Khan; his empire is bounded by the river Ob, Lake Kataia, the river Volga, the Caspian Sea, the river Chesel, Mount Uson, the region of Tibet, the river Caromoran, and the ocean.",
+   "latin": "Continet hec tabula omnem Tartariam, cum reliqua Asie Orientalioris usque Oceanum Eoum parte, Magno Chamo obediente: Cuius imperium Obij fl: Kataia lacu; Volga fl: Mari Caspio, Chesel flu: Usonte monte, Thebet regione, Caromoram fluuio, et Oceano terminatur."
   },
   {
    "title": "The ten lost tribes",
@@ -293,8 +293,9 @@
     3450,
     2380
    ],
-   "what": "The land of Arsareth. The note says the ten tribes of Israel withdrew here and took the place of the Scythians as Totars or Tartars, and ties the name Cathay to them.",
-   "latin": "ARSARETH. Hic 10 Tribus secessere, et Totatoru sive Tartarorum loco Scythice substituerunt. Vnde Gauthe seu Gauthay a summa Dei gloria asserenda ibi dicti sunt, et hinc Cathay clariss: Regnum."
+   "what": "Arsareth. Here the ten tribes withdrew and substituted [the name] Totars or Tartars for [that of] Scythia. Hence they were called Gauthae or Gauthay there, from upholding the supreme glory of God, and from this [comes] Cathay, a most renowned kingdom.",
+   "latin": "ARSARETH. Hic 10 Tribus secessere, et Totatorum sive Tartarorum loco Scythice substituerunt. Vnde Gauthae seu Gauthay a summa Dei gloria asserenda ibi dicti sunt, et hinc Cathay clarissimum Regnum.",
+   "note": "The middle clause is grammatically compressed; bracketed words supply an implied name. The reference above it is 4 Esdras, chapter 13."
   },
   {
    "title": "A horde named for a tribe of Israel",
@@ -302,8 +303,9 @@
     2850,
     940
    ],
-   "what": "A horde in the far north is lettered as the Nephthalites, and the note says they are named after Naphtali, one of the ten tribes of Israel.",
-   "latin": "Nepthalitarum horda, Nepthalite a 10 Tribuum Israelis nomine Neptali dicti sunt"
+   "what": "The horde of the Nephthalites. The Nephthalites are named after Naphtali, one of the ten tribes of Israel; and after the Danites, who in their northern chastisement were called Danmarchi, they are placed second among the Hudaei or Jews, on account of the right of Rachel’s Bilhah. In the year of salvation 476 they were victorious against Perosa. Others incorrectly call them Euthalites.",
+   "latin": "Nepthalitarum horda. Nepthalite ab una 10. Tribuum Israelis nomine Neptali dicti sunt, et post Danitas qui in castigatione Aquilonari Danmarchi dicti sunt, ob Rachelis Balhah ius, secundo in loco Hudorum sive Iehudeorum sunt positi, et 476. salutis anno contra Perosa victores fuere, Euthalitas male vocant ceteri.",
+   "note": "The clause about Rachel’s Bilhah and the order of the tribes is obscure; this is a close, tentative rendering."
   },
   {
    "title": "The king of Tabor",
@@ -311,8 +313,8 @@
     2580,
     2080
    ],
-   "what": "A note on Tabor or Tybur, which it calls the navel of the Tartars' country. It says their king came to France in 1540, to King Francis I, and was later burned at Mantua under Charles V.",
-   "latin": "Tabor seu Tybur, umbilicarius Tatarorum regio, ubi licet olim libros sacros perdidissent, sunt tamen uniti sub uno rege, qui 1540 in Galliam usq3 ad regem Franciscum illius nominis primum venit, et postea a Carolo V. Mantue igne sue infidelitatis poenas luit"
+   "what": "Tabor or Tybur, or the central region of the Totars, where, although they lost the sacred books long ago, they are nevertheless united under one king. In 1540 he came as far as France to King Francis, the first of that name, and afterwards, by Charles V, at Mantua, paid the penalty for his unbelief by fire; for he was secretly urging Christian princes to Judaism, concerning which he had spoken to Charles V.",
+   "latin": "Tabor seu Tybur, umbilicariave Totarorum regio, ubi licet olim libros sacros perdidissent, sunt tamen uniti sub uno rege, qui 1540. in Galliam usque ad regem Franciscum id nominis primum venit, et postea a Carolo V. Mantue igne sue infidelitatis poenas luit: quia secrete solicitabat Christianos principes ad Iudaismum, de qua re Carolum V. alloquutus erat."
   },
   {
    "title": "Prester John's kingdom",
@@ -320,8 +322,8 @@
     3420,
     2600
    ],
-   "what": "A note on Argon: once, it says, the Christian kingdom of Prester John in Asia, founded by Saint Thomas.",
-   "latin": "ARGON. Christianorum olim regnu noie Presbiteri Iois in Asia erat, a D. Thoma ibi institutum, ut Romane corresponderet ecclesie"
+   "what": "Argon. There was formerly in Asia a kingdom of Christians under the name of Prester John, established there by Saint Thomas so that it might correspond with the Roman Church, obedient to Rome through Prester John the African. And before it was conquered by the Gothani, they were called Crive Romove.",
+   "latin": "ARGON. Christianorum olim regnum nomine Presbiteri Ioannis in Asia erat, a D. Thoma ibi institutum, ut Romane corresponderet ecclesie, per Presbiterum Ioannem Africanum Rome obediens. Et antequam a Gothanis vinceretur Crive Romove nuncupabantur."
   },
   {
    "title": "Printing, a thousand years early",
@@ -329,8 +331,8 @@
     2520,
     2885
    ],
-   "what": "A note beside Tangut: people here, it is said, had the art of printing a thousand years ago.",
-   "latin": "Hic arte imprimendi ante mille, ut ferunt, annos habuerunt."
+   "what": "Tangut. Here they possessed the art of printing a thousand years ago, as they say.",
+   "latin": "TANGVT. Hic artem imprimendi ante mille, ut ferunt, annos habuerunt."
   },
   {
    "title": "The Strait of Anian",
@@ -338,8 +340,9 @@
     4250,
     2790
    ],
-   "what": "The Strait of Anian, the imagined sea passage separating Asia from America.",
-   "latin": "STRETTO DI ANIAN"
+   "what": "The Strait of Anian.",
+   "latin": "STRETTO DI ANIAN",
+   "language": "it"
   },
   {
    "title": "Japan, attacked in vain",
@@ -347,7 +350,7 @@
     4670,
     3850
    ],
-   "what": "A note below Japan: this is the island Marco Polo called Zipangri, which the Great Khan once attacked in war, in vain.",
+   "what": "The island of Japan, called Zipangri by Marco Polo of Venice, formerly Chryse, once attacked in war by the Great Khan, but in vain.",
    "latin": "Iapan insula, a M. Paulo Veneto Zipangri dicta, olim Chryse, a Magno Cham olim bello petita sed frustra."
   },
   {
@@ -356,7 +359,7 @@
     5000,
     2090
    ],
-   "what": "The west coast of North America, lettered 'part of America or the New World', with Sierra Nevada and California further south.",
+   "what": "Part of America, or the New World.",
    "latin": "AMERICAE VEL NOVI ORBIS PARS"
   },
   {
@@ -374,7 +377,7 @@
     3630,
     1850
    ],
-   "what": "The Scythian Ocean is fresh water, according to Pliny, who says there are many islands in it, as does Marco Polo of Venice; but neither gives their location or number. This is the map’s report of those authors.",
+   "what": "The Scythian Ocean is fresh, according to Pliny, who says that there are many islands in it, as does Marco Polo of Venice; but neither gives their position or number.",
    "latin": "Oceanus Scythicus dulcis est Plinio auctore, qui multas in eo insulas esse dicit, ut etiam M. Paul: Venetus: sed neuter neque situm neque numerum tradit."
   },
   {
@@ -383,7 +386,7 @@
     2130,
     1810
    ],
-   "what": "Tartary, which comprises Asian Sarmatia and both Scythias of the ancients. “Both Scythias” refers to the ancient geographical division on either side of Mount Imaus.",
+   "what": "Tartary, which comprises Asian Sarmatia and both Scythias of the ancients.",
    "latin": "Tartaria, quae Sarmatiam Asiaticam, et utramque Scythiam veterum comprehendit."
   },
   {
@@ -392,7 +395,7 @@
     1870,
     2050
    ],
-   "what": "The region of Turkestan, from which the allies of the ten tribes on this side of the mountains were summoned by the Persians 900 years ago against the arms of Muhammad the Ishmaelite. The wording and chronology are the map’s own.",
+   "what": "The region of Turkestan, from which the allies of the ten tribes on this side of the mountains were summoned by the Persians 900 years ago against the arms of Muhammad the Ishmaelite.",
    "latin": "Turchestan Regio unde cismontani 10. Tribuum socij ante 900 annos sunt accersiti a Persis contra Ismaelitae Mahumedis arma."
   },
   {
@@ -401,7 +404,7 @@
     1330,
     1490
    ],
-   "what": "Here aromatic reed grows abundantly. Calamus aromaticus is a fragrant reed or sweet flag.",
+   "what": "Here there is an abundant growth of aromatic reed.",
    "latin": "Hic magnus proventus calami aromatici."
   },
   {
@@ -428,7 +431,7 @@
     2910,
     825
    ],
-   "what": "The horde of the Danes or Danites; the accompanying gloss reads “casting down, descent, or expulsion.” The map associates the Danes with the biblical Danites.",
+   "what": "The horde of the Danes or Danites: casting down, descent, or expulsion.",
    "latin": "Danorum sive Danitarum horda 1. deiectio sive descensio aut expulsio."
   },
   {
@@ -437,7 +440,7 @@
     3100,
     1480
    ],
-   "what": "Island of falcons, according to Marco Polo of Venice.",
+   "what": "The island of falcons, according to Marco Polo of Venice.",
    "latin": "Insula falconum, M. Pauli Veneti."
   },
   {
@@ -446,7 +449,7 @@
     2735,
     3000
    ],
-   "what": "Cambalu, the chief city of Cathay, measures 28 miles around its circumference. The map’s historical distance is retained without conversion to modern miles.",
+   "what": "Cambalu, the chief city of Cathay, has a circumference of 28 miles.",
    "latin": "Cambalu Cataiae metropolis, habet 28. mill: in circuitu."
   },
   {
@@ -455,7 +458,7 @@
     3290,
     3770
    ],
-   "what": "From these mountains stones are dug out which people use for the fire instead of wood. The note describes coal.",
+   "what": "From these mountains stones are dug out which they use for the fire in place of wood.",
    "latin": "His montibus eruuntur lapides, quibus utuntur ad focum loco lignorum."
   },
   {
@@ -482,7 +485,7 @@
     3015,
     3135
    ],
-   "what": "A marble bridge, 300 paces long. The abbreviation pass. denotes paces; the map does not give a modern unit conversion.",
+   "what": "A marble bridge of 300 paces.",
    "latin": "Pons marmoreus 300. pass:"
   },
   {
@@ -491,7 +494,7 @@
     4570,
     3455
    ],
-   "what": "Meaco, the chief city of the island. Meaco is the historical name used here for Kyoto.",
+   "what": "Meaco, the chief city of the island.",
    "latin": "Meaco insulae civitas primaria."
   },
   {
@@ -518,7 +521,7 @@
     3745,
     2110
    ],
-   "what": "Cape Tabin, according to Pliny. Prom. abbreviates promontory or cape; Plin. identifies Pliny as the authority.",
+   "what": "Cape Tabin, according to Pliny.",
    "latin": "Tabin Prom: Plin."
   },
   {
@@ -527,7 +530,7 @@
     940,
     4200
    ],
-   "what": "With privilege. This indicates an official privilege protecting the publication.",
+   "what": "With privilege.",
    "latin": "Cum Privilegio."
   }
  ],
@@ -538,7 +541,7 @@
    4758
   ],
   "added_notes": 19,
-  "method": "Read against the full-resolution Library of Congress sheet. New transcriptions expand scribal abbreviations and normalize u/v, ligatures and long s; English translations are rendered from the Latin. Place-name buttons remain separate from inscription translations.",
+  "method": "Attempted direct English translations of the inscriptions, checked against the full-resolution Library of Congress sheet. Abbreviations are expanded where possible. Formerly truncated Nephthalite, Tabor and Argon passages are now supplied in full. Brackets mark supplied words; uncertain readings are explained separately.",
   "date": "2026-10-04"
  }
 }
