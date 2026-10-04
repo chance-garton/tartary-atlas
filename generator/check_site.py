@@ -64,8 +64,8 @@ landing = (D/'index.html').read_text()
 front = (D/'frontispiece/index.html').read_text()
 check(landing.count('class="story-chapter"') == 8 and landing.count('class="story-inscription"') == 8 and 'data-storybook' in landing, 'landing page: eight illustrated chapters with eight feature entrances')
 check('data-module="feature"' not in landing and 'cabinet-header' not in landing and 'frontispiece/' in landing, 'landing page is a book; the original map experience has its own entrance')
-check('Follow a question' in front and front.count('class="trail"') == 5 and 'data-module="feature"' in front, 'opening map retains the five trails and featured passage')
-check(0 < front.index('One passage from the record') < front.index('Follow a question') and 'What has been read' not in front, 'opening map: the passage comes first, above the trails, with no progress report')
+check('data-scroll' in front and 'aria-label="Map legend"' in front and 'data-module="feature"' in front, 'opening map: interactive scroll with a legend and featured passage')
+check(0 < front.index('data-scroll') < front.index('id="front-passage"') < front.index('id="explore"') and 'Follow a question' not in front and 'archive-cabinet' not in front, 'opening map: scroll, book, then discovery links; old sections removed')
 # 3c. the pills above a set of passages are buttons that filter it
 w43 = (D/'w/W043/index.html').read_text()
 check('data-module="pset"' in w43 and w43.count('class="pill" data-f=') >= 3 and 'data-copy' in w43, 'source page: trail pills are filter buttons, cards carry a copy button')
@@ -91,7 +91,7 @@ cuts = json.load(open(ROOT/'data/cuts.json'))
 gone = [c['key'] for c in cuts['labels'] if not (D/'assets/cuts/labels'/(c['key'] + '.png')).exists()] + [c['key'] for c in cuts['ornaments'] if not (D/'assets/cuts/ornaments'/(c['key'] + '.png')).exists()]
 check(not gone, f"every cut in data/cuts.json has its picture in the site ({gone[:5]})")
 check('class="atlas-brand"' in w43 and 'aria-label="Explore the Atlas"' in w43 and 'data-open-search' in w43, 'header: consistent brand, complete exploration menu, and search')
-check('One name, many hands' not in front + landing and 'class="archive-cabinet"' in front, 'the requested lettering-section removal is preserved')
+check('One name, many hands' not in front + landing, 'the requested lettering-section removal is preserved')
 # 3f. the rides and the deck
 J = json.load(open(ROOT/'data/journeys.json'))['journeys']
 PID = {p['id']: p for p in psg}
@@ -107,7 +107,7 @@ for j in J:
     if 'Ride the route' not in (D/'w'/j['rec']/'index.html').read_text(): bad.append(j['key'] + ': no way in from the source page')
 check(len(J) >= 6 and not bad, f'rides: {len(J)} journeys, every stop drawn, every passage of the source either on the road or left out with a reason ({bad[:4]})')
 rides = (D/'ride/index.html').read_text()
-check(rides.count('class="ridecard"') == len(J) and front.count('class="ridecard"') == 3 and 'Ride with a traveler' in front, 'rides: the list shows them all and the front page offers three')
+check(rides.count('class="ridecard"') == len(J) and 'href="../ride/"' in front and 'href="./ride/"' in landing, 'rides: all journeys remain accessible from the storybook and map discoveries')
 deck = (D/'deck/index.html').read_text()
 dd = json.loads(re.search(r'data-module="deck"><script type="application/json">(.*?)</script>', deck, re.S).group(1))
 check(len(dd['spread']) == 3 and deck.count('data-card') == 3 and set(dd['suits']) == {'cities', 'architecture', 'customs', 'names', 'outliers'}

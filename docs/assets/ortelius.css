@@ -1,0 +1,124 @@
+/* The original sheet on an unfurling scroll. No filters touch the map image. */
+.ortelius-page { --header-h: 72px; }
+.ortelius-page .cabinet-header .bar { min-height: var(--header-h); }
+.ortelius-page .cabinet-header { background: #241d23; }
+.scroll-workspace {
+  height: calc(100svh - var(--header-h)); min-height: 560px; padding: 26px 36px 32px 28px;
+  background: radial-gradient(ellipse at 60% 45%, #57423b88, #201b23dd), url("scholars-desk.webp") center / cover;
+  border-bottom: 1px solid #886e45; overflow: hidden;
+}
+.scroll-layout { display: grid; grid-template-columns: 204px minmax(0, 1fr); gap: 34px; height: 100%; }
+.scroll-legend { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; color: #edddbb; padding: 16px 0 12px; min-width: 0; }
+.scroll-kicker { font: .6rem/1.5 var(--font-body); text-transform: uppercase; letter-spacing: .19em; color: #aa864e; }
+.scroll-legend .scroll-kicker { color: #c5a570; }
+.scroll-title h1 { font: 2.65rem/1.07 var(--font-heading); font-weight: 400; letter-spacing: -.015em; margin: 17px 0 0; color: #f3e3c3; }
+.scroll-title h1 em { color: #d3b37a; font-weight: 400; }
+.scroll-fleuron { font: 2rem/1 Georgia, serif; color: #aa8855; margin: 24px 0; }
+.scroll-key { display: grid; gap: 17px; width: 100%; }
+.scroll-key h2 { font: .67rem/1.4 var(--font-body); font-weight: 400; text-transform: uppercase; letter-spacing: .16em; margin: 0 0 2px; color: #b9a588; }
+.scroll-key > span { display: flex; align-items: center; gap: 14px; font: 1rem/1.25 var(--font-display); }
+.scroll-key .key { margin-left: 4px; --pin: #bca26f; --pin-sight: #b87b70; --pin-halo: #352a2c; --rule: #8d785a; }
+.scroll-key .ring { background: transparent; box-shadow: 0 0 0 2px #c4a975; }
+.scroll-hint { color: #bbaa90; font: italic 1.12rem/1.5 var(--font-display); margin: 27px 0 20px; }
+.scroll-read { display: flex; align-items: center; gap: 10px; color: #ead5a9; font: 1.03rem var(--font-display); text-decoration: none; padding: 12px 0; border-block: 1px solid #a385523d; width: 100%; }
+.scroll-read:hover { color: #fff0cd; }
+.scroll-read .atlas-icon { width: 20px; flex-basis: 20px; }
+.scroll-read > span { margin-left: auto; }
+.scroll-credit { display: grid; gap: 5px; margin-top: 28px; color: #a99a85; font: .64rem/1.4 var(--font-body); }
+.scroll-credit a { color: #d6c5a4; font: 1rem var(--font-display); text-underline-offset: 4px; }
+.scroll-map { position: relative; min-width: 0; height: 100%; padding: 22px 8px; }
+.scroll-sheet { position: absolute; inset: 21px 8px; padding: 12px 14px; background: #d9c69e url("home-parchment.webp") center / 760px; box-shadow: 0 22px 36px #09060c88, inset 0 0 18px #85613299; }
+.ortelius-page .front-stage { height: 100%; border: 1px solid #9a8152; background: #dfd1ac; }
+.ortelius-page .front-stage::after { display: none; }
+.ortelius-page .front-still { pointer-events: none; }
+.scroll-roller { position: absolute; z-index: 7; left: 0; right: 0; height: 32px; border-radius: 45% / 9px; pointer-events: none;
+  background: linear-gradient(0deg, #705031 0%, #b18b55 13%, #e9d4a1 38%, #f0dfb3 50%, #dbc28c 67%, #aa8248 88%, #634529 100%);
+  box-shadow: 0 6px 7px #160c0b77, inset 0 0 0 1px #6e513455;
+}
+.scroll-roller::before, .scroll-roller::after { content: ""; position: absolute; top: -4px; width: 14px; height: 40px; border-radius: 5px;
+  background: linear-gradient(0deg, #352017, #785135 28%, #bb9460 48%, #6e482c 74%, #322016); border: 1px solid #2d1e17; box-shadow: 1px 2px 3px #0007; }
+.scroll-roller::before { left: -7px; }.scroll-roller::after { right: -7px; }
+.scroll-roller-top { top: 5px; }.scroll-roller-bottom { bottom: 5px; }
+/* Only the parchment boundary moves; the map keeps its final dimensions throughout. */
+@media (prefers-reduced-motion: no-preference) {
+  .js .scroll-workspace.is-unfurling .scroll-sheet { animation: scroll-reveal 1.65s cubic-bezier(.22,.68,.2,1) both; }
+  .js .scroll-workspace.is-unfurling .scroll-roller-top { animation: scroll-roll-top 1.65s cubic-bezier(.22,.68,.2,1) both; }
+  .js .scroll-workspace.is-unfurling .scroll-roller-bottom { animation: scroll-roll-bottom 1.65s cubic-bezier(.22,.68,.2,1) both; }
+  @keyframes scroll-reveal { from { clip-path: inset(49% 0); } to { clip-path: inset(0); } }
+  @keyframes scroll-roll-top { from { top: calc(50% - 25px); } to { top: 5px; } }
+  @keyframes scroll-roll-bottom { from { bottom: calc(50% - 25px); } to { bottom: 5px; } }
+}
+.ortelius-page .front-tools { top: auto; bottom: 12px; left: auto; right: 12px; gap: 5px; }
+.ortelius-page .front-tools .btn { background: #f7ebd2f2; color: #473321; border: 1px solid #a48c60; min-height: 42px; font: .76rem var(--font-body); padding: 8px 12px; box-shadow: 0 2px 5px #33231433; }
+.ortelius-page .front-tools .icon { font-size: 1.3rem; min-width: 42px; padding-inline: 6px; }
+.ortelius-page .front-tools .btn:hover { background: #fff3d9; border-color: #6c4829; }
+.ortelius-page .front-slip { top: 16px; left: 16px; width: min(385px, calc(100% - 32px)); max-height: calc(100% - 86px); padding: 24px; border: 1px solid #9d8050; background: #f4e5c6 url("home-parchment.webp") center / 700px;
+  box-shadow: inset 0 0 0 5px #fff4da55, 3px 5px 0 -1px #d2ba8a, 0 12px 26px #34241466; }
+.ortelius-page .front-slip h3 { font-family: var(--font-heading); font-size: 1.65rem; }
+.ortelius-page .front-slip > p:not(.slip-k, .slip-note, .slip-go) { font: 1.1rem/1.5 var(--font-display); }
+.ortelius-page .slip-k { font: .64rem/1.4 var(--font-body); text-transform: uppercase; letter-spacing: .08em; color: #804c40; }
+.ortelius-page .slip-go { margin-top: 8px; }
+.ortelius-page .slip-go .btn { font-size: .75rem; }
+.ortelius-page .slip-note { font-size: .69rem; }
+.ortelius-page .scroll-reading { max-width: 1240px; padding: 66px 42px 36px; }
+.ortelius-page .front .passage-book { padding: 0 10px 40px; scroll-margin-top: calc(var(--header-h) + 22px); }
+.ortelius-page .passage-book .hero-card-head { gap: 24px; align-items: center; padding-bottom: 28px; }
+.ortelius-page .passage-book .hero-card-head h2 { font: clamp(1.6rem, 2.7vw, 2.3rem)/1.2 var(--font-heading); text-transform: none; letter-spacing: 0; margin-top: 8px; }
+.ortelius-page .passage-book .front-at { margin-bottom: 20px; }
+.book-return { display: block; width: fit-content; margin: 26px auto 0; color: #71522f; font: 1rem var(--font-display); text-underline-offset: 5px; }
+.ortelius-page .cabinet-rooms { border-top: 3px double #bba680; padding-top: 42px; }
+.ortelius-page .site-footer { margin-top: 30px; }
+/* Full screen retains the key and the scroll, rather than losing its context. */
+.ortelius-page .scroll-workspace.is-roaming { position: fixed; inset: 0; z-index: 60; height: 100dvh; min-height: 0; }
+.ortelius-page .front-stage.roam { position: relative; inset: auto; height: 100%; z-index: auto; border: 1px solid #9a8152; }
+.ortelius-page .front-stage.roam .front-tools { top: auto; }
+@media (min-width: 1100px) and (max-height: 730px) {
+  .scroll-workspace { min-height: 490px; padding-block: 18px; }
+  .scroll-fleuron { margin-block: 15px; }
+  .scroll-hint { margin: 18px 0 12px; }
+  .scroll-credit { margin-top: 16px; }
+}
+@media (max-width: 1099px) and (min-width: 701px) {
+  .scroll-layout { grid-template-columns: 168px minmax(0, 1fr); gap: 22px; }
+  .scroll-workspace { padding-inline: 22px; }
+  .scroll-title h1 { font-size: 2.25rem; }
+  .scroll-key > span { font-size: .92rem; gap: 11px; }
+}
+@media (max-width: 700px) {
+  .ortelius-page { --header-h: 68px; }
+  .scroll-workspace { min-height: 570px; padding: 17px 16px 20px; }
+  .scroll-layout { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); gap: 14px; }
+  .scroll-legend { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; padding: 0; gap: 8px 16px; }
+  .scroll-title h1 { margin: 7px 0 0; font-size: 1.75rem; white-space: nowrap; }
+  .scroll-title h1 br { display: none; }
+  .scroll-title h1 em::before { content: " "; }
+  .scroll-kicker { font-size: .52rem; letter-spacing: .12em; }
+  .scroll-key { grid-column: 1 / -1; grid-row: 2; display: flex; flex-wrap: wrap; gap: 11px 17px; }
+  .scroll-key > span { font-size: .79rem; gap: 9px; }
+  .scroll-key .key { width: 8px; height: 8px; }
+  .scroll-key h2, .scroll-fleuron, .scroll-hint, .scroll-credit { display: none; }
+  .scroll-read { grid-column: 2; grid-row: 1; font-size: .87rem; width: auto; border: 0; gap: 6px; padding: 13px 0; }
+  .scroll-read .atlas-icon { display: none; }
+  .scroll-sheet { padding: 8px 7px; inset-inline: 4px; }
+  .ortelius-page .front-tools { left: 6px; right: 6px; bottom: 8px; justify-content: center; gap: 4px; }
+  .ortelius-page .front-tools .btn { min-height: 44px; font-size: .64rem; padding-inline: 8px; }
+  .ortelius-page .front-tools .icon { font-size: 1.2rem; min-width: 38px; }
+  .ortelius-page .front-slip { inset: 10px 10px auto; width: auto; max-height: calc(100% - 77px); padding: 18px; }
+  .ortelius-page .front-slip h3 { font-size: 1.4rem; }
+  .ortelius-page .scroll-reading { padding: 40px 18px 16px; }
+  .ortelius-page .passage-book .hero-card-head { flex-wrap: wrap; gap: 14px; }
+  .ortelius-page .passage-book .hero-card-head h2 { font-size: 1.75rem; }
+  .ortelius-page .passage-book .book-next { font-size: 1rem; padding: 8px 14px; }
+  .ortelius-page .front .passage-book { padding-inline: 5px; }
+  .ortelius-page .cabinet-rooms { padding-top: 32px; }
+}
+@media (max-height: 520px) and (orientation: landscape) {
+  .scroll-workspace { min-height: 330px; padding-block: 12px; }
+  .scroll-layout { grid-template-columns: 165px minmax(0, 1fr); grid-template-rows: 1fr; gap: 18px; }
+  .scroll-legend { display: flex; padding: 0; }
+  .scroll-title h1 { font-size: 1.7rem; margin-top: 8px; }
+  .scroll-title h1 br { display: none; }
+  .scroll-key { display: grid; gap: 10px; margin-top: 18px; }
+  .scroll-key h2, .scroll-fleuron, .scroll-hint, .scroll-credit { display: none; }
+  .scroll-read { margin-top: 14px; font-size: .9rem; }
+}

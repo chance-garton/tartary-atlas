@@ -933,10 +933,6 @@ def page_home(site, ctx):
 
 
 def page_frontispiece(site, ctx):
-    n_read, n_written, n_profile_only = reading_progress(site)
-    n_psg = len(site.passages)
-    n_maps = sum(1 for r in site.records if r["kind"] == "map")
-
     # The passage on the front page, and the pool the "another" button draws from.
     # The pool is the strongest page-checked passages, no more than FEATURE_PER_SOURCE from any one source in a
     # trail, so a reader who keeps pressing the button meets many witnesses. The page script opens on a random one.
@@ -994,91 +990,48 @@ def page_frontispiece(site, ctx):
                             "p": [dict(psg_compact(site, p), r=p["rec"], **({"pn": pin_of[p["id"]]} if p["id"] in pin_of else {})) for p in pool],
                             "map": front_map},
                            ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
-    n_pictured = len(site.map_img)
     still = ""
     if "hero" in site.pics:
         still = f'<div class="front-still" data-still>{pic_tag(site, ctx, "hero", eager=True)}</div>'
-    front_rec = site.rec.get(fm.get("rec", ""), None)
-    credit = ""
-    if front_rec:
-        credit = (f'<p class="front-credit"><a href="{ctx.link(site.rkey(front_rec))}">Abraham Ortelius · Tartary · first printed 1570</a>'
-                  f'<span>Library of Congress</span></p>')
-    tools = ('<div class="front-tools" data-tools hidden>'
-             '<button type="button" class="btn" data-roam>Roam the map</button>'
+    tools = ('<div class="front-tools" data-tools hidden aria-label="Map controls">'
              '<span class="front-zoom"><button type="button" class="btn icon" data-zoom-out aria-label="Zoom out">−</button>'
              '<button type="button" class="btn icon" data-zoom-in aria-label="Zoom in">+</button></span>'
              '<button type="button" class="btn" data-home>Whole map</button>'
-             '<button type="button" class="btn primary" data-close hidden>Close the map</button></div>')
-    slip = '<div class="front-slip" data-slip hidden aria-live="polite"></div>'
-    stage = (f'<div class="front-stage" data-stage>{still}<div class="front-osd"><div data-osd></div></div>{tools}{slip}</div>')
-    # This is a homepage-only manuscript treatment. Shared passage cards keep their existing markup.
+             '<button type="button" class="btn" data-roam>Full screen</button>'
+             '<button type="button" class="btn" data-close hidden>Return to scroll</button></div>')
+    slip = '<div class="front-slip" data-slip hidden role="region" aria-label="Map note" tabindex="-1"></div>'
+    legend = (f'<aside class="scroll-legend" aria-label="Map legend"><div class="scroll-title">'
+              f'<p class="scroll-kicker">The opening map · 1570</p><h1>Ortelius’s<br><em>Tartary</em></h1></div>'
+              f'<span class="scroll-fleuron" aria-hidden="true">❦</span>'
+              f'<div class="scroll-key"><h2>Upon this sheet</h2>'
+              f'<span><i class="key dot" aria-hidden="true"></i>Towns</span>'
+              f'<span><i class="key ring" aria-hidden="true"></i>Regions &amp; names</span>'
+              f'<span><i class="key dia" aria-hidden="true"></i>Mapmaker’s notes</span></div>'
+              f'<p class="scroll-hint">Follow a mark.<br>Find a story.</p>'
+              f'<a class="scroll-read" href="#front-passage">{experience.icon("book")} Open the book <span aria-hidden="true">↓</span></a>'
+              f'<p class="scroll-credit"><a href="{ctx.link("m/" + fm["rec"])}">Abraham Ortelius</a>'
+              f'<span>First printed 1570</span><span>Library of Congress</span></p></aside>')
+    stage = (f'<div class="scroll-workspace" data-scroll><div class="scroll-layout">{legend}'
+             f'<div class="scroll-map"><div class="scroll-sheet">'
+             f'<div class="front-stage" data-stage aria-label="Interactive Ortelius map">{still}'
+             f'<div class="front-osd"><div data-osd></div></div>{tools}{slip}</div></div>'
+             f'<div class="scroll-roller scroll-roller-top" aria-hidden="true"></div>'
+             f'<div class="scroll-roller scroll-roller-bottom" aria-hidden="true"></div></div></div></div>')
     card = ""
     if first:
         excerpt = psg_card(site, ctx, first, book=True)
-        card = (f'<div class="hero-card passage-book" id="front-passage"><div class="hero-card-head"><h2>One passage from the record</h2>'
+        card = (f'<section class="hero-card passage-book" id="front-passage" tabindex="-1" aria-labelledby="map-book-title">'
+                f'<div class="hero-card-head"><div><p class="scroll-kicker">From the witnesses</p><h2 id="map-book-title">A voice across the centuries.</h2></div>'
                 f'<button type="button" class="btn book-next" data-next hidden aria-controls="home-book-pages">Turn the page <span aria-hidden="true">→</span></button></div>'
                 f'<p class="front-at" data-at hidden></p>'
                 f'<div class="feature-slot" id="home-book-pages" data-slot>{excerpt}</div>'
-                f'<p class="book-status sr-only" data-book-status role="status" aria-live="polite" aria-atomic="true"></p></div>')
-    hero = (f'<section class="front" data-module="feature"><script type="application/json">{feat_json}</script>'
-            f'<div class="study-table"><div class="front-opening"><div class="front-intro">'
-            f'<p class="front-kicker">The opening map · 1570</p>'
-            f'<h1>Ortelius’s<br><em>Tartary.</em></h1>'
-            f'<p class="study-invitation">Explore the places and curious notes on this original sheet. Let a place lead you to a witness.</p>'
-            f'<div class="study-actions"><a class="btn primary" href="#explore">Enter the Atlas {experience.icon("arrow")}</a>'
-            f'<a class="study-read" href="#front-passage">Open a page</a></div>'
-            f'<p class="study-totals"><span><b>{num(n_psg)}</b> passages</span><span><b>{n_maps}</b> maps</span><span><b>{n_read}</b> voices</span></p></div>'
-            f'<div class="study-map"><div class="front-map-mount">{stage}</div>'
-            f'<div class="front-map-caption">{credit}<p class="front-how" data-how hidden>'
-            f'<span><i class="key dot"></i>Places</span><span><i class="key dia"></i>Map notes</span></p></div></div></div></div>'
-            f'<div class="page cabinet-home-content">{experience.home_rooms(ctx)}'
-            f'<div class="front-body"><aside class="front-margin"><p class="front-kicker">The open volume</p>'
-            f'<h2>A voice across the centuries.</h2><a href="{ctx.link("passages")}">All {num(n_psg)} passages {experience.icon("arrow")}</a>'
-            f'<p class="front-independent">An independent account, alongside the map.</p></aside>{card}</div></div></section>')
-
-    trails = (f'<section class="band"><div class="band-head"><h2>Follow a question</h2></div>{trail_cards(site, ctx)}</section>')
-
-    picks_m = [site.rec[i] for i in HOME_MAPS if i in site.map_img]
-    maps_band = ""
-    if picks_m:
-        maps_band = (f'<section class="band"><div class="band-head row"><div><h2>Step into the map room</h2>'
-                     f'<p>Tartary as the mapmakers drew it, from 1375 to the last years the name was in use.</p></div>'
-                     f'<a class="btn" href="{ctx.link("maps")}">See all {n_pictured} maps</a></div>'
-                     f'<div class="mapstrip">{"".join(map_card(site, ctx, r) for r in picks_m)}</div></section>')
-
-    # places with the most passages
-    counts = [(len(v), pid) for pid, v in site.psg_by_place.items()
-              if site.place[pid]["lat"] is not None and site.place[pid]["type"] == "settlement"]
-    top = [pid for _, pid in sorted(counts, reverse=True)[:12]]
-    chips = "".join(
-        f'<li><a href="{ctx.link("place/" + pid)}"><span class="chip big">{esc(site.place[pid]["name"])} '
-        f'<span class="mono muted">{len(site.psg_by_place[pid])}</span></span></a></li>' for pid in top)
-    places = (f'<section class="band"><div class="band-head"><h2>Pick a place</h2>'
-              f'<p>Twelve towns the sources keep coming back to.</p></div>'
-              f'<div class="place-start"><div>{minimap(site, ctx, top, caption=False)}</div>'
-              f'<div class="place-start-list"><ul class="tags">{chips}</ul>'
-              f'<p class="small muted">Or <a href="{ctx.link("map")}">wander the map</a> and find all {len(site.places)}.</p></div></div></section>')
-
-    picks = [rid for rid in ["W043", "W132", "W073", "W074", "W001", "W053"] if rid in site.profiles]
-    witnesses = (f'<section class="band"><div class="band-head"><h2>Meet a witness</h2>'
-                 f'<p>Six people who were there. <a href="{ctx.link("sources")}">Meet all {n_read}</a>.</p></div>'
-                 f'<div class="witnesses">{"".join(source_card(site, ctx, rid) for rid in picks)}</div></section>')
-
-    deeper = (f'<section class="band"><div class="band-head"><h2>Open the vault</h2></div><ul class="deeper">'
-              f'<li><a href="{ctx.link("labels")}">The many Tartarys</a><span>Great, Little, Chinese, Independent: when each name shows up on the maps, and when it stops.</span></li>'
-              f'<li><a href="{ctx.link("lineage")}">Who copied whom</a><span>Family trees for {n_maps} maps, from Jenkinson and Ortelius onward.</span></li>'
-              f'<li><a href="{ctx.link("records")}">Every book and map</a><span>All {len(site.records)}, with dates and links.</span></li>'
-              f'<li><a href="{ctx.link("archive")}">The rest of the vault</a><span>Places, peoples, and how the atlas was made.</span></li></ul></section>')
-
-    rides = rides_band(site, ctx) or places
-    body = (f'{hero}<div class="page home cabinet-home-bottom">{trails}'
-            f'<details class="archive-cabinet"><summary><span>{experience.icon("vault")} Deeper in the cabinet</span><small>Maps, witnesses &amp; the source index</small></summary>'
-            f'{maps_band}{rides}{witnesses}{deeper}</details></div>')
-
-    desc = (f"What {n_written} historical texts and {n_maps} maps say about Tartary (Tartaria): {num(n_psg)} quoted passages on cities, "
-            f"buildings, daily life and legends, each linked to its page.")
-    return dict(title="Ortelius’s Tartary: the opening map", description=desc, body=body,
-                nav="", modules=["feature"], bare_title=True, osd=True, homepage=True)
+                f'<p class="book-status sr-only" data-book-status role="status" aria-live="polite" aria-atomic="true"></p>'
+                f'<a class="book-return" href="#main">Back to the map ↑</a></section>')
+    body = (f'<section class="front ortelius-experience" data-module="feature"><script type="application/json">{feat_json}</script>'
+            f'{stage}<div class="page scroll-reading">{card}{experience.home_rooms(ctx)}</div></section>')
+    return dict(title="Ortelius’s Tartary · The Tartary Atlas",
+                description="Unfurl Ortelius’s map of Tartary. Explore its places and mapmaker’s notes, then open the words of the historical witnesses.",
+                body=body, nav="", modules=["feature"], bare_title=True, osd=True, homepage=True, ortelius=True)
 
 
 def page_passages(site, ctx, theme=None):
@@ -3005,17 +2958,21 @@ def static_page(site, key, pg):
     if pg.get("homepage"):
         head.append(f'<link rel="stylesheet" href="{ctx.asset("home.css")}{revision}">')
     head.append(f'<link rel="stylesheet" href="{ctx.asset("cabinet.css")}{revision}">')
+    if pg.get("ortelius"):
+        head.append(f'<link rel="stylesheet" href="{ctx.asset("ortelius.css")}?v=scroll-1">')
     if pg.get("storybook"):
         head.append(f'<link rel="stylesheet" href="{ctx.asset("storybook.css")}?v=storybook-9">')
         head.append(f'<script src="{ctx.asset("storybook.js")}?v=storybook-5" defer></script>')
     head.append('<script>document.documentElement.className += " js";</script>')
     if not pg.get("storybook"):
-        head.append(f'<script src="{ctx.asset("site.js")}{revision}" defer></script>')
+        head.append(f'<script src="{ctx.asset("site.js")}{"?v=scroll-1" if pg.get("ortelius") else revision}" defer></script>')
         head.append(f'<script src="{ctx.asset("cabinet.js")}{revision}" defer></script>')
     if pg.get("jsonld"):
         head.append('<script type="application/ld+json">' + json.dumps({k: v for k, v in pg["jsonld"].items() if v is not None}, ensure_ascii=False).replace("</", "<\\/") + "</script>")
     head.append("</head>")
     home_class = ' class="atlas-home cabinet"' if pg.get("homepage") else ' class="cabinet"'
+    if pg.get("ortelius"):
+        home_class = ' class="atlas-home cabinet ortelius-page"'
     if pg.get("storybook"):
         body = f'<body data-root="{ctx.root}" class="cabinet storybook-home"><a class="skip" href="#main">Skip to the book</a><main id="main" tabindex="-1">{pg["body"]}</main>{storybook.footer(ctx)}</body></html>'
     else:
@@ -3066,6 +3023,7 @@ def write_static(site):
         keys.append(key)
     shutil.copy(STATIC / "css" / "site.css", OUT / "assets" / "site.css")
     shutil.copy(STATIC / "css" / "home.css", OUT / "assets" / "home.css")
+    shutil.copy(STATIC / "css" / "ortelius.css", OUT / "assets" / "ortelius.css")
     shutil.copy(STATIC / "textures" / "home-parchment.webp", OUT / "assets" / "home-parchment.webp")
     shutil.copy(STATIC / "js" / "site.js", OUT / "assets" / "site.js")
     shutil.copy(STATIC / "vendor" / "maplibre-gl.css", OUT / "assets" / "maplibre-gl.css")
