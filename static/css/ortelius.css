@@ -62,8 +62,8 @@
 .ortelius-page .slip-note { font-size: .69rem; }
 .ortelius-page .scroll-reading { max-width: 1240px; padding: 66px 42px 36px; }
 .ortelius-page .front .passage-book { padding: 0 10px 40px; scroll-margin-top: calc(var(--header-h) + 22px); }
-.ortelius-page .passage-book .hero-card-head { gap: 24px; align-items: center; padding-bottom: 28px; }
-.ortelius-page .passage-book .hero-card-head h2 { font: clamp(1.6rem, 2.7vw, 2.3rem)/1.2 var(--font-heading); text-transform: none; letter-spacing: 0; margin-top: 8px; }
+.ortelius-page .passage-book .hero-card-head { gap: 24px; align-items: center; justify-content: space-between; padding-bottom: 28px; }
+.ortelius-page .passage-book .hero-card-head h2 { display: block; max-width: none; font: clamp(1.6rem, 2.7vw, 2.3rem)/1.2 var(--font-heading); text-transform: none; letter-spacing: 0; margin-top: 8px; }
 .ortelius-page .passage-book .front-at { margin-bottom: 20px; }
 .book-return { display: block; width: fit-content; margin: 26px auto 0; color: #71522f; font: 1rem var(--font-display); text-underline-offset: 5px; }
 .ortelius-page .cabinet-rooms { border-top: 3px double #bba680; padding-top: 42px; }
@@ -121,4 +121,11 @@
   .scroll-key { display: grid; gap: 10px; margin-top: 18px; }
   .scroll-key h2, .scroll-fleuron, .scroll-hint, .scroll-credit { display: none; }
   .scroll-read { margin-top: 14px; font-size: .9rem; }
+}
+@media (max-width: 380px) {
+  .scroll-title h1 { font-size: 1.55rem; white-space: normal; }
+  .scroll-title h1 br { display: block; }
+  .scroll-title h1 em::before { content: ""; }
+  .scroll-key { gap: 11px 14px; }
+  .scroll-key > span { font-size: .74rem; }
 }

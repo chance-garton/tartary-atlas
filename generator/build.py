@@ -2959,7 +2959,7 @@ def static_page(site, key, pg):
         head.append(f'<link rel="stylesheet" href="{ctx.asset("home.css")}{revision}">')
     head.append(f'<link rel="stylesheet" href="{ctx.asset("cabinet.css")}{revision}">')
     if pg.get("ortelius"):
-        head.append(f'<link rel="stylesheet" href="{ctx.asset("ortelius.css")}?v=scroll-1">')
+        head.append(f'<link rel="stylesheet" href="{ctx.asset("ortelius.css")}?v=scroll-2">')
     if pg.get("storybook"):
         head.append(f'<link rel="stylesheet" href="{ctx.asset("storybook.css")}?v=storybook-9">')
         head.append(f'<script src="{ctx.asset("storybook.js")}?v=storybook-5" defer></script>')
