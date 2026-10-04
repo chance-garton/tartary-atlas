@@ -358,6 +358,187 @@
    ],
    "what": "The west coast of North America, lettered 'part of America or the New World', with Sierra Nevada and California further south.",
    "latin": "AMERICAE VEL NOVI ORBIS PARS"
+  },
+  {
+   "title": "The map’s title",
+   "xy": [
+    4640,
+    1435
+   ],
+   "what": "Map of Tartary, or of the kingdom of the Great Khan.",
+   "latin": "Tartariae sive Magni Chami Regni typus."
+  },
+  {
+   "title": "The Scythian Ocean",
+   "xy": [
+    3630,
+    1850
+   ],
+   "what": "The Scythian Ocean is fresh water, according to Pliny, who says there are many islands in it, as does Marco Polo of Venice; but neither gives their location or number. This is the map’s report of those authors.",
+   "latin": "Oceanus Scythicus dulcis est Plinio auctore, qui multas in eo insulas esse dicit, ut etiam M. Paul: Venetus: sed neuter neque situm neque numerum tradit."
+  },
+  {
+   "title": "Tartary, Sarmatia, and Scythia",
+   "xy": [
+    2130,
+    1810
+   ],
+   "what": "Tartary, which comprises Asian Sarmatia and both Scythias of the ancients. “Both Scythias” refers to the ancient geographical division on either side of Mount Imaus.",
+   "latin": "Tartaria, quae Sarmatiam Asiaticam, et utramque Scythiam veterum comprehendit."
+  },
+  {
+   "title": "Turkestan and the ten tribes",
+   "xy": [
+    1870,
+    2050
+   ],
+   "what": "The region of Turkestan, from which the allies of the ten tribes on this side of the mountains were summoned by the Persians 900 years ago against the arms of Muhammad the Ishmaelite. The wording and chronology are the map’s own.",
+   "latin": "Turchestan Regio unde cismontani 10. Tribuum socij ante 900 annos sunt accersiti a Persis contra Ismaelitae Mahumedis arma."
+  },
+  {
+   "title": "Aromatic reeds",
+   "xy": [
+    1330,
+    1490
+   ],
+   "what": "Here aromatic reed grows abundantly. Calamus aromaticus is a fragrant reed or sweet flag.",
+   "latin": "Hic magnus proventus calami aromatici."
+  },
+  {
+   "title": "Ruby deposits",
+   "xy": [
+    960,
+    2390
+   ],
+   "what": "Here ruby gemstones are found.",
+   "latin": "Hic Rubini gemmae reperiuntur."
+  },
+  {
+   "title": "The burial mountain of the emperors",
+   "xy": [
+    2810,
+    2550
+   ],
+   "what": "Mount Altai, where all the emperors of Tartary are buried, appears to be described by Hayton the Armenian under the name Belgian.",
+   "latin": "Mons Althay, ubi omnes Tartariae imperatores sepeliuntur, ab Haytone Armeno sub nomine Belgian describi videtur."
+  },
+  {
+   "title": "The Danes or Danites",
+   "xy": [
+    2910,
+    825
+   ],
+   "what": "The horde of the Danes or Danites; the accompanying gloss reads “casting down, descent, or expulsion.” The map associates the Danes with the biblical Danites.",
+   "latin": "Danorum sive Danitarum horda 1. deiectio sive descensio aut expulsio."
+  },
+  {
+   "title": "Marco Polo’s falcon island",
+   "xy": [
+    3100,
+    1480
+   ],
+   "what": "Island of falcons, according to Marco Polo of Venice.",
+   "latin": "Insula falconum, M. Pauli Veneti."
+  },
+  {
+   "title": "Cambalu’s circumference",
+   "xy": [
+    2735,
+    3000
+   ],
+   "what": "Cambalu, the chief city of Cathay, measures 28 miles around its circumference. The map’s historical distance is retained without conversion to modern miles.",
+   "latin": "Cambalu Cataiae metropolis, habet 28. mill: in circuitu."
+  },
+  {
+   "title": "Stones burned instead of wood",
+   "xy": [
+    3290,
+    3770
+   ],
+   "what": "From these mountains stones are dug out which people use for the fire instead of wood. The note describes coal.",
+   "latin": "His montibus eruuntur lapides, quibus utuntur ad focum loco lignorum."
+  },
+  {
+   "title": "Quinsai, the city of heaven",
+   "xy": [
+    3760,
+    2820
+   ],
+   "what": "Quinsai, that is, the city of heaven.",
+   "latin": "Quinsai id est civitas celi."
+  },
+  {
+   "title": "Rhubarb in the mountains",
+   "xy": [
+    2420,
+    3160
+   ],
+   "what": "Rhubarb grows in these mountains.",
+   "latin": "His montibus Rhabarbarum provenit."
+  },
+  {
+   "title": "A marble bridge",
+   "xy": [
+    3015,
+    3135
+   ],
+   "what": "A marble bridge, 300 paces long. The abbreviation pass. denotes paces; the map does not give a modern unit conversion.",
+   "latin": "Pons marmoreus 300. pass:"
+  },
+  {
+   "title": "Meaco, Japan’s chief city",
+   "xy": [
+    4570,
+    3455
+   ],
+   "what": "Meaco, the chief city of the island. Meaco is the historical name used here for Kyoto.",
+   "latin": "Meaco insulae civitas primaria."
+  },
+  {
+   "title": "Samarkand, seat of Tamerlane",
+   "xy": [
+    1620,
+    2395
+   ],
+   "what": "Samarkand, formerly the seat of the great Tamerlane.",
+   "latin": "Samarchand. magni Tamber: quondam sedes."
+  },
+  {
+   "title": "Bargu’s marshland",
+   "xy": [
+    2735,
+    1770
+   ],
+   "what": "Bargu, a marshy region.",
+   "latin": "Bargu regio palustris."
+  },
+  {
+   "title": "Cape Tabin in Pliny",
+   "xy": [
+    3745,
+    2110
+   ],
+   "what": "Cape Tabin, according to Pliny. Prom. abbreviates promontory or cape; Plin. identifies Pliny as the authority.",
+   "latin": "Tabin Prom: Plin."
+  },
+  {
+   "title": "The printing privilege",
+   "xy": [
+    940,
+    4200
+   ],
+   "what": "With privilege. This indicates an official privilege protecting the publication.",
+   "latin": "Cum Privilegio."
   }
- ]
+ ],
+ "translation_audit": {
+  "image": "https://tile.loc.gov/image-services/iiif/service:gmd:gmd7:g7270:g7270:mf000002",
+  "image_size": [
+   6279,
+   4758
+  ],
+  "added_notes": 19,
+  "method": "Read against the full-resolution Library of Congress sheet. New transcriptions expand scribal abbreviations and normalize u/v, ligatures and long s; English translations are rendered from the Latin. Place-name buttons remain separate from inscription translations.",
+  "date": "2026-10-04"
+ }
 }
