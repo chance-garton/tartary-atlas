@@ -497,7 +497,13 @@
     var slot = el.querySelector('[data-slot]'), btn = el.querySelector('[data-next]'), at = el.querySelector('[data-at]');
     var LAST = 'ta:feature-last', queue = [], cur = null, curPin = null;
     var book = el.querySelector('.passage-book'), status = el.querySelector('[data-book-status]');
-    var turning = false, finishTurn = null;
+    var turning = false, finishTurn = null, pendingPassage = null, activeMark = null;
+    var scroll = el.querySelector('[data-scroll]');
+    if (scroll && !reduced() && !TA.restoring) {
+      scroll.classList.add('is-unfurling');
+      var unfurlTimer = setTimeout(function () { scroll.classList.remove('is-unfurling'); }, 1750);
+      TA.cleanups.push(function () { clearTimeout(unfurlTimer); });
+    }
     // Decorative copies never contain active controls, duplicate IDs or screen-reader content.
     function pageCopy(page, cls) {
       var copy = page.cloneNode(true);
@@ -596,10 +602,14 @@
       vp.panTo(pt(pin.x, pin.y), still);
       vp.applyConstraints(still);
     }
-    function closeSlip() { if (slip) { slip.hidden = true; slip.innerHTML = ''; } }
+    function closeSlip(restoreFocus) {
+      if (slip) { slip.hidden = true; slip.innerHTML = ''; }
+      if (restoreFocus && activeMark) activeMark.focus({ preventScroll: true });
+    }
     function openSlip(html) {
       slip.innerHTML = '<button type="button" class="slip-x" data-slip-x aria-label="Close this note">×</button>' + html;
       slip.hidden = false;
+      slip.focus({ preventScroll: true });
     }
     function fromPin(id) {
       var here = D.p.filter(function (p) { return p.pn === id && p.i !== cur; });
@@ -608,20 +618,13 @@
     }
     function pickPin(pin) {
       closeSlip();
-      if (roaming) {
-        openSlip('<p class="slip-k">' + (pin.k === 'town' ? 'A town' : 'A name') + ' on the map</p><h3><em>' + esc(pin.m) + '</em></h3>' +
-          '<p>' + esc(pin.n) + '. ' + numText(pin.c) + ' passage' + (pin.c === 1 ? '' : 's') + ' in the atlas.</p>' +
-          '<p class="slip-go"><button type="button" class="btn primary" data-read="' + esc(pin.i) + '">Read one</button>' +
-          '<a class="btn" href="' + TA.href('place/' + pin.i) + '">Open ' + esc(pin.n) + '</a></p>');
-        curPin = pin.i;
-        Object.keys(marks).forEach(function (k) { marks[k].classList.toggle('on', k === curPin); });
-        return;
-      }
-      var p = fromPin(pin.i);
+      pendingPassage = fromPin(pin.i);
+      curPin = pin.i;
+      Object.keys(marks).forEach(function (k) { marks[k].classList.toggle('on', k === curPin); });
+      var p = pendingPassage;
       if (p) {
-        draw(p, true);
         openSlip('<p class="slip-k">From the writings · ' + esc(pin.n) + '</p><h3>' + esc(p.h) + '</h3>' +
-          '<p>' + esc(p.s) + '</p><p class="slip-go"><button type="button" class="btn primary" data-read="' + esc(pin.i) + '">Read below</button>' +
+          '<p>' + esc(p.s) + '</p><p class="slip-go"><button type="button" class="btn primary" data-read="' + esc(pin.i) + '">Read below ↓</button>' +
           '<a class="btn" href="' + TA.href('place/' + pin.i) + '">All passages</a></p>');
       }
     }
@@ -636,8 +639,9 @@
       b.setAttribute('aria-label', label);
       b.innerHTML = '<span>' + esc(tip || label) + '</span>';
       // The viewer reads the pointer itself, so a press on a mark is caught by a tracker of its own.
-      var tr = new OSD.MouseTracker({ element: b, clickHandler: function (e) { if (e.quick !== false) fn(); } });
-      b.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fn(); } });
+      function activate() { activeMark = b; fn(); }
+      var tr = new OSD.MouseTracker({ element: b, clickHandler: function (e) { if (e.quick !== false) activate(); } });
+      b.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); activate(); } });
       viewer.addOverlay({ element: b, location: pt(x, y), placement: OSD.Placement.CENTER, checkResize: false });
       TA.cleanups.push(function () { tr.destroy(); });
       return b;
@@ -645,6 +649,7 @@
     function setRoam(on) {
       roaming = on;
       stage.classList.toggle('roam', on);
+      if (scroll) { scroll.classList.remove('is-unfurling'); scroll.classList.toggle('is-roaming', on); }
       document.documentElement.classList.toggle('roaming', on);
       viewer.gestureSettingsMouse.scrollToZoom = on;
       stage.querySelector('[data-roam]').hidden = on;
@@ -695,22 +700,34 @@
         else if (b.hasAttribute('data-home')) { closeSlip(); vp.goHome(reduced()); }
         else if (b.hasAttribute('data-roam')) setRoam(true);
         else if (b.hasAttribute('data-close')) setRoam(false);
-        else if (b.hasAttribute('data-slip-x')) closeSlip();
+        else if (b.hasAttribute('data-slip-x')) closeSlip(true);
         else if (b.hasAttribute('data-read')) {
           var pinId = b.getAttribute('data-read');
-          var p = D.p.filter(function (p) { return p.i === cur && p.pn === pinId; })[0] || fromPin(pinId);
+          var p = pendingPassage && pendingPassage.pn === pinId ? pendingPassage : fromPin(pinId);
           if (roaming) setRoam(false);
           closeSlip();
-          if (p) { draw(p, true); slot.scrollIntoView({ block: 'center', behavior: reduced() ? 'auto' : 'smooth' }); }
+          if (p) {
+            draw(p, false);
+            if (status) status.textContent = 'Book opened. ' + p.h;
+            book.focus({ preventScroll: true });
+            book.scrollIntoView({ block: 'start', behavior: reduced() ? 'auto' : 'smooth' });
+          }
         }
       });
-      var key = function (e) { if (e.key === 'Escape') { if (slip && !slip.hidden) closeSlip(); else if (roaming) setRoam(false); } };
+      var key = function (e) { if (e.key === 'Escape') { if (slip && !slip.hidden) closeSlip(true); else if (roaming) setRoam(false); } };
       document.addEventListener('keydown', key);
       TA.cleanups.push(function () {
         document.removeEventListener('keydown', key);
         document.documentElement.classList.remove('roaming');
         open = false;
         try { if (viewer) viewer.destroy(); } catch (e) { /* already gone */ }
+      });
+      var openBook = el.querySelector('.scroll-read');
+      if (openBook) openBook.addEventListener('click', function (e) {
+        e.preventDefault();
+        if (roaming) setRoam(false);
+        book.focus({ preventScroll: true });
+        book.scrollIntoView({ block: 'start', behavior: reduced() ? 'auto' : 'smooth' });
       });
     }
     try { startMap(); } catch (e) { console.error('[TA] front map', e); }

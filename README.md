@@ -4,6 +4,12 @@ An open explorer of what the historical record says about Tartary: 303 written s
 
 Planned address: `https://tartary.innerversepodcast.com`
 
+## Ortelius scroll (October 4, 2026)
+
+The storybook’s first chapter opens directly into the interactive Ortelius map at `/frontispiece/`. This address now holds the full-window scroll rather than the former frontispiece introduction. A left legend identifies towns, regions, and mapmaker’s notes; on phones it sits above the sheet. The original map, 28 places, 11 notes, and source passages are preserved. Selecting a place opens its note without changing the reading volume; **Read below** loads that exact passage and moves focus to the book. The six discovery links follow the volume. The former trails and lower cabinet sections have been removed from this page.
+
+The opening unfurl uses clipping and moving rollers, leaving the map’s dimensions stable. Reduced motion skips the animation. Full screen keeps the legend and scroll together; Escape returns to the page. The still map, book, and discovery links remain available without JavaScript. Styles are isolated in `static/css/ortelius.css`; build from `generator/build.py` and `static/js/site.js`. Run `python3 generator/check_site.py` and, with jsdom available, `node review/ortelius-checks.cjs` for the note-to-book, fullscreen, keyboard, and fallback checks.
+
 ## Scholar’s cabinet interface (October 2026)
 
 The current redesign connects six experiences through one responsive Explore menu: the reading room, map room, journeys, time dial, discovery deck, and geographic atlas. The homepage sets the original Ortelius map on a dimensional walnut table. Hand-built CSS objects lead into each experience. Original lettering, witnesses, and catalogue links remain in the expandable cabinet below the anthology.
