@@ -932,7 +932,7 @@ def page_home(site, ctx):
     return storybook.page(site, ctx)
 
 
-def page_frontispiece(site, ctx):
+def page_explore(site, ctx):
     # The passage on the front page, and the pool the "another" button draws from.
     # The pool is the strongest page-checked passages, no more than FEATURE_PER_SOURCE from any one source in a
     # trail, so a reader who keeps pressing the button meets many witnesses. The page script opens on a random one.
@@ -2965,7 +2965,7 @@ def static_page(site, key, pg):
         head.append(f'<script src="{ctx.asset("storybook.js")}?v=storybook-5" defer></script>')
     head.append('<script>document.documentElement.className += " js";</script>')
     if not pg.get("storybook"):
-        head.append(f'<script src="{ctx.asset("site.js")}{"?v=scroll-1" if pg.get("ortelius") else revision}" defer></script>')
+        head.append(f'<script src="{ctx.asset("site.js")}{"?v=scroll-3" if pg.get("ortelius") else revision}" defer></script>')
         head.append(f'<script src="{ctx.asset("cabinet.js")}{revision}" defer></script>')
     if pg.get("jsonld"):
         head.append('<script type="application/ld+json">' + json.dumps({k: v for k, v in pg["jsonld"].items() if v is not None}, ensure_ascii=False).replace("</", "<\\/") + "</script>")
@@ -2983,7 +2983,7 @@ def static_page(site, key, pg):
 def all_pages(site, ctx_factory):
     """Yield (key, page dict) for every page. ctx_factory(key) builds the link context."""
     yield "", page_home(site, ctx_factory(""))
-    yield "frontispiece", page_frontispiece(site, ctx_factory("frontispiece"))
+    yield "explore", page_explore(site, ctx_factory("explore"))
     yield "passages", page_passages(site, ctx_factory("passages"))
     for t in THEMES:
         k = "passages/" + t
@@ -3021,6 +3021,16 @@ def write_static(site):
         d.mkdir(parents=True, exist_ok=True)
         (d / "index.html").write_text(static_page(site, key, pg))
         keys.append(key)
+    # Keep existing bookmarks working while publishing only /explore in the sitemap.
+    legacy = OUT / "frontispiece"
+    legacy.mkdir(parents=True, exist_ok=True)
+    (legacy / "index.html").write_text(
+        '<!doctype html><html lang="en"><head><meta charset="utf-8">'
+        '<title>Explore the Tartary Atlas</title>'
+        '<link rel="canonical" href="https://tartary.innerversepodcast.com/explore/">'
+        '<meta http-equiv="refresh" content="0;url=../explore/">'
+        '<script>location.replace("../explore/" + location.search + location.hash);</script>'
+        '</head><body><a href="../explore/">Explore the map</a></body></html>')
     shutil.copy(STATIC / "css" / "site.css", OUT / "assets" / "site.css")
     shutil.copy(STATIC / "css" / "home.css", OUT / "assets" / "home.css")
     shutil.copy(STATIC / "css" / "ortelius.css", OUT / "assets" / "ortelius.css")

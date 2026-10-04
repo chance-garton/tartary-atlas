@@ -6,7 +6,7 @@ CHAPTERS = [
     dict(key="opening", tab="Opening", title="Grand Tartary", subtitle="An invitation to the unknown", art="frontispiece", caption="A world waiting between the leaves",
          paragraphs=["Beyond the familiar edge of old maps lies a name that once stretched across Asia: Tartary. Cities, caravan roads, distant courts, and extraordinary tales fill the pages left behind.",
                      "This Atlas gathers those maps and voices. Turn the leaves to choose your own way into their world."],
-         link="Unfold the map", route="frontispiece", note="Ortelius’s Tartary, 1570", alt="A manuscript-style painting of a caravan approaching a walled Central Asian city beneath distant mountains."),
+         link="Unfold the map", route="explore", note="Ortelius’s Tartary, 1570", alt="A manuscript-style painting of a caravan approaching a walled Central Asian city beneath distant mountains."),
     dict(key="words", tab="Words", title="Voices from afar", subtitle="The reading room", art="reading", caption="Let the witnesses tell their tales",
          paragraphs=["A traveler enters a strange city. An envoy is welcomed at court. A chronicler records a custom that astonishes him. Their words are still here, waiting to be read.",
                      "Explore passages about cities, buildings, daily life, names, and marvels. Every quotation leads back to its source."],

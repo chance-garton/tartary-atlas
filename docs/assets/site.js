@@ -651,7 +651,7 @@
       stage.classList.toggle('roam', on);
       if (scroll) { scroll.classList.remove('is-unfurling'); scroll.classList.toggle('is-roaming', on); }
       document.documentElement.classList.toggle('roaming', on);
-      viewer.gestureSettingsMouse.scrollToZoom = on;
+      viewer.gestureSettingsMouse.scrollToZoom = true;
       stage.querySelector('[data-roam]').hidden = on;
       stage.querySelector('[data-close]').hidden = !on;
       closeSlip();
@@ -662,14 +662,14 @@
     function startMap() {
       var OSD = window.OpenSeadragon;
       if (!M || !OSD || !stage) return;
-      // The map can always be dragged and pinched. Only the wheel waits for roaming, so the page still scrolls past.
+      // Drag, pinch, and wheel zoom work directly over the map.
       var quiet = { dragToPan: true, pinchToZoom: true, flickEnabled: true, clickToZoom: false, dblClickToZoom: false, scrollToZoom: false };
       viewer = OSD({
         element: stage.querySelector('[data-osd]'),
         tileSources: M.tiled ? M.src : { type: 'image', url: M.src },
         showNavigationControl: false, homeFillsViewer: false, visibilityRatio: 1, constrainDuringPan: true,
         minZoomImageRatio: 1, maxZoomPixelRatio: 2, animationTime: reduced() ? 0 : 1.6, springStiffness: 6.5, minScrollDeltaTime: 0,
-        gestureSettingsMouse: { scrollToZoom: false, clickToZoom: false, dblClickToZoom: true },
+        gestureSettingsMouse: { scrollToZoom: true, clickToZoom: false, dblClickToZoom: true },
         gestureSettingsTouch: quiet, gestureSettingsPen: JSON.parse(JSON.stringify(quiet))
       });
       viewer.addHandler('open', function () {
@@ -688,8 +688,8 @@
         viewer.addOnceHandler('tile-drawn', function () { setTimeout(lift, 120); });
         setTimeout(lift, 2500);
       });
-      // The wheel scrolls the page past the map, and zooms the map only while roaming.
-      viewer.addHandler('canvas-scroll', function (e) { e.preventDefault = roaming; });
+      // Consume wheel events over the map; the rest of the page scrolls normally.
+      viewer.addHandler('canvas-scroll', function (e) { e.preventDefault = true; });
       viewer.addHandler('open-failed', function () { try { viewer.destroy(); } catch (e) { /* the still picture stays */ } viewer = null; });
       stage.addEventListener('click', function (e) {
         var b = e.target.closest ? e.target.closest('button') : null;
